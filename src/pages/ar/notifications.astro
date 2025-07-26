@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NotificationsList from '../../components/notifications/NotificationsList';
+---
+
+<BaseLayout 
+  title="الإشعارات - ZH-Love"
+  description="إشعارات المستخدم في مجتمع ZH-Love"
+>
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-white">الإشعارات</h1>
+        <div class="flex items-center space-x-4 rtl:space-x-reverse">
+          <button 
+            id="mark-all-read" 
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+          >
+            تحديد الكل كمقروء
+          </button>
+          <button 
+            id="clear-all" 
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            مسح الكل
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-white mb-4">تصفية الإشعارات</h2>
+        <div class="flex flex-wrap gap-4">
+          <button 
+            class="notification-filter px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors active" 
+            data-filter="all"
+          >
+            الكل
+          </button>
+          <button 
+            class="notification-filter px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors" 
+            data-filter="unread"
+          >
+            غير مقروء
+          </button>
+          <button 
+            class="notification-filter px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors" 
+            data-filter="tournaments"
+          >
+            البطولات
+          </button>
+          <button 
+            class="notification-filter px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors" 
+            data-filter="clans"
+          >
+            العشائر
+          </button>
+          <button 
+            class="notification-filter px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors" 
+            data-filter="admin"
+          >
+            الإدارة
+          </button>
+        </div>
+      </div>
+
+      <!-- Notifications List -->
+      <NotificationsList client:load />
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const markAllReadBtn = document.getElementById('mark-all-read');
+      const clearAllBtn = document.getElementById('clear-all');
+      const filterButtons = document.querySelectorAll('.notification-filter');
+
+      // Filter functionality
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          const filter = this.dataset.filter;
+          window.dispatchEvent(new CustomEvent('filterNotifications', { detail: { filter } }));
+        });
+      });
+
+      // Mark all as read
+      markAllReadBtn?.addEventListener('click', async function() {
+        try {
+          const token = localStorage.getItem('zh_love_token');
+          const response = await fetch('http://localhost:8080/api/notifications/mark-all-read', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error('Error marking all as read:', error);
+        }
+      });
+
+      // Clear all notifications
+      clearAllBtn?.addEventListener('click', async function() {
+        if (confirm('هل تريد مسح جميع الإشعارات؟')) {
+          try {
+            const token = localStorage.getItem('zh_love_token');
+            const response = await fetch('http://localhost:8080/api/notifications/clear-all', {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            if (response.ok) {
+              window.location.reload();
+            }
+          } catch (error) {
+            console.error('Error clearing notifications:', error);
+          }
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .notification-filter.active {
+      background-color: #059669;
+    }
+
+    .notification-filter.active:hover {
+      background-color: #047857;
+    }
+  </style>
+</BaseLayout> 

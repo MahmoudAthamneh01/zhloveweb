@@ -1,0 +1,625 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Shield, Plus, ArrowLeft, Crown, Users, Trophy, Star, AlertCircle } from 'lucide-react';
+
+const title = "إنشاء عشيرة جديدة - زد اتش لوف";
+const description = "أنشئ عشيرتك الخاصة واجمع أفضل اللاعبين في الجنرالات زيرو آور";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/clans" class="hover:text-foreground transition-colors">العشائر</a>
+        <span>/</span>
+        <span class="text-foreground">إنشاء عشيرة</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/clans" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للعشائر</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center justify-center space-x-3 rtl:space-x-reverse">
+        <Shield size={32} class="text-tactical-green" />
+        <span>إنشاء عشيرة جديدة</span>
+      </h1>
+      <p class="text-muted-foreground max-w-2xl mx-auto">
+        أنشئ عشيرتك الخاصة واجمع أفضل اللاعبين. قم بتخصيص عشيرتك وضع القوانين والمتطلبات التي تناسب أسلوب لعبك.
+      </p>
+    </div>
+
+    <!-- Requirements -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <AlertCircle size={20} class="text-tactical-green" />
+        <span>متطلبات إنشاء العشيرة</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">مستوى 20 على الأقل في اللعبة</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">حساب مفعل في المجتمع لمدة شهر</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">عدم وجود مخالفات سابقة</span>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">رسوم الإنشاء: 10,000 نقطة ذهب</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">موافقة الإدارة مطلوبة</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">الالتزام بقوانين المجتمع</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creation Cost -->
+    <div class="military-card p-6 mb-8 text-center">
+      <div class="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+        <div class="text-2xl">💰</div>
+        <div>
+          <div class="text-xl font-bold text-foreground">تكلفة إنشاء العشيرة: 10,000 نقطة ذهب</div>
+          <div class="text-sm text-muted-foreground" id="currentGold">رصيدك الحالي: 25,000 نقطة ذهب</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="max-w-4xl mx-auto">
+      <form id="clanCreationForm" class="space-y-8">
+        <!-- Basic Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Shield size={20} />
+            <span>المعلومات الأساسية</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                اسم العشيرة *
+              </label>
+              <input 
+                type="text" 
+                name="clanName"
+                placeholder="أدخل اسم العشيرة"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                maxlength="30"
+                required
+              />
+              <p class="text-xs text-muted-foreground mt-1">حد أقصى 30 حرف</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                رمز العشيرة *
+              </label>
+              <input 
+                type="text" 
+                name="clanTag"
+                placeholder="مثال: ARAB"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring uppercase"
+                maxlength="6"
+                pattern="[A-Z0-9]+"
+                required
+              />
+              <p class="text-xs text-muted-foreground mt-1">2-6 أحرف إنجليزية أو أرقام</p>
+            </div>
+          </div>
+          
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-foreground mb-2">
+              وصف العشيرة *
+            </label>
+            <textarea 
+              name="description"
+              placeholder="أدخل وصف العشيرة وأهدافها..."
+              class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              rows="4"
+              maxlength="200"
+              required
+            ></textarea>
+            <p class="text-xs text-muted-foreground mt-1">حد أقصى 200 حرف</p>
+          </div>
+        </div>
+
+        <!-- Organizer Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Crown size={20} />
+            <span>معلومات المنظم</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                الاسم الكامل *
+              </label>
+              <input 
+                type="text" 
+                name="organizerName"
+                placeholder="أدخل اسمك الكامل"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                البريد الإلكتروني *
+              </label>
+              <input 
+                type="email" 
+                name="organizerEmail"
+                placeholder="email@example.com"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                رقم الهاتف
+              </label>
+              <input 
+                type="tel" 
+                name="organizerPhone"
+                placeholder="+966 50 123 4567"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                البلد *
+              </label>
+              <select name="organizerCountry" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="">اختر البلد</option>
+                <option value="saudi">السعودية</option>
+                <option value="egypt">مصر</option>
+                <option value="uae">الإمارات</option>
+                <option value="kuwait">الكويت</option>
+                <option value="qatar">قطر</option>
+                <option value="bahrain">البحرين</option>
+                <option value="oman">عمان</option>
+                <option value="jordan">الأردن</option>
+                <option value="lebanon">لبنان</option>
+                <option value="syria">سوريا</option>
+                <option value="iraq">العراق</option>
+                <option value="morocco">المغرب</option>
+                <option value="tunisia">تونس</option>
+                <option value="algeria">الجزائر</option>
+                <option value="other">دولة أخرى</option>
+              </select>
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-foreground mb-2">
+                خبرتك في اللعبة *
+              </label>
+              <select name="organizerExperience" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="">اختر مستوى الخبرة</option>
+                <option value="beginner">مبتدئ (أقل من سنة)</option>
+                <option value="intermediate">متوسط (1-3 سنوات)</option>
+                <option value="advanced">متقدم (3-5 سنوات)</option>
+                <option value="expert">خبير (أكثر من 5 سنوات)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customization -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Star size={20} />
+            <span>التخصيص والمظهر</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                المنطقة الجغرافية *
+              </label>
+              <select name="region" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="">اختر المنطقة</option>
+                <option value="middle-east">الشرق الأوسط</option>
+                <option value="gulf">الخليج العربي</option>
+                <option value="levant">بلاد الشام</option>
+                <option value="north-africa">شمال أفريقيا</option>
+                <option value="international">دولية</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                اللغة الأساسية *
+              </label>
+              <select name="language" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="ar">العربية</option>
+                <option value="en">الإنجليزية</option>
+                <option value="fr">الفرنسية</option>
+                <option value="mixed">متعددة اللغات</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-foreground mb-2">
+              أيقونة العشيرة
+            </label>
+            <div class="grid grid-cols-6 md:grid-cols-8 gap-3">
+              {['🦅', '🏰', '⚔️', '🛡️', '👑', '🏆', '🔥', '⚡', '🌟', '💎', '🚀', '🎯', '🦁', '🐺', '🦊', '🐻'].map((icon) => (
+                <button 
+                  type="button"
+                  class="w-12 h-12 text-2xl border-2 border-border rounded-lg hover:border-primary hover:bg-primary/10 transition-colors flex items-center justify-center clan-icon"
+                  data-icon={icon}
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
+            <input type="hidden" name="clanIcon" />
+          </div>
+        </div>
+
+        <!-- Membership Settings -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Users size={20} />
+            <span>إعدادات العضوية</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                نوع العضوية *
+              </label>
+              <div class="space-y-3">
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="radio" name="membershipType" value="public" class="text-primary" />
+                  <div>
+                    <div class="font-medium text-foreground">مفتوحة للجميع</div>
+                    <div class="text-sm text-muted-foreground">يمكن لأي لاعب الانضمام مباشرة</div>
+                  </div>
+                </label>
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="radio" name="membershipType" value="invite-only" class="text-primary" />
+                  <div>
+                    <div class="font-medium text-foreground">بدعوة فقط</div>
+                    <div class="text-sm text-muted-foreground">يمكن للقادة والضباط دعوة أعضاء جدد</div>
+                  </div>
+                </label>
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="radio" name="membershipType" value="application" class="text-primary" checked />
+                  <div>
+                    <div class="font-medium text-foreground">تتطلب طلب انضمام</div>
+                    <div class="text-sm text-muted-foreground">يجب على اللاعبين تقديم طلب للانضمام</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  الحد الأدنى للمستوى *
+                </label>
+                <input 
+                  type="number" 
+                  name="minLevel"
+                  min="1" 
+                  max="100" 
+                  value="1"
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  معدل الفوز المطلوب (%) *
+                </label>
+                <input 
+                  type="number" 
+                  name="minWinRate"
+                  min="0" 
+                  max="100" 
+                  value="50"
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  الحد الأقصى للأعضاء *
+                </label>
+                <select name="maxMembers" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                  <option value="25">25 عضو</option>
+                  <option value="30">30 عضو</option>
+                  <option value="40">40 عضو</option>
+                  <option value="50" selected>50 عضو</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rules and Guidelines -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <AlertCircle size={20} />
+            <span>القوانين والتوجيهات</span>
+          </h2>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                قوانين العشيرة
+              </label>
+              <textarea 
+                name="rules"
+                placeholder="اكتب قوانين العشيرة هنا..."
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                rows="6"
+                maxlength="500"
+              ></textarea>
+              <p class="text-xs text-muted-foreground mt-1">حد أقصى 500 حرف</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                متطلبات المشاركة
+              </label>
+              <div class="space-y-2">
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="checkbox" name="participationRequirements" value="clan-wars" class="text-primary" />
+                  <span>المشاركة في حروب العشيرة إجبارية</span>
+                </label>
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="checkbox" name="participationRequirements" value="daily-activity" class="text-primary" />
+                  <span>النشاط اليومي مطلوب</span>
+                </label>
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="checkbox" name="participationRequirements" value="chat-participation" class="text-primary" />
+                  <span>المشاركة في الدردشة مطلوبة</span>
+                </label>
+                <label class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <input type="checkbox" name="participationRequirements" value="arabic-only" class="text-primary" />
+                  <span>اللعب باللغة العربية فقط</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6">الموافقات والشروط</h2>
+          
+          <div class="space-y-4">
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="termsAccept" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على <a href="/ar/terms" class="text-primary hover:underline">شروط الاستخدام</a> و
+                <a href="/ar/privacy" class="text-primary hover:underline">سياسة الخصوصية</a>
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="communityRules" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على الالتزام بقوانين المجتمع ومعايير العشائر
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="leaderResponsibility" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أتحمل المسؤولية الكاملة عن إدارة العشيرة وسلوك أعضائها
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="costAccept" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على دفع رسوم الإنشاء 10,000 نقطة ذهب (غير قابلة للاسترداد)
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6">ملخص العشيرة</h2>
+          <div class="bg-muted rounded-lg p-4 mb-6" id="clanSummary">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div class="font-medium text-foreground">الاسم: <span class="text-muted-foreground" id="summaryName">اسم العشيرة</span></div>
+                <div class="font-medium text-foreground">الرمز: <span class="text-muted-foreground" id="summaryTag">[TAG]</span></div>
+                <div class="font-medium text-foreground">النوع: <span class="text-muted-foreground" id="summaryType">تتطلب طلب انضمام</span></div>
+              </div>
+              <div>
+                <div class="font-medium text-foreground">المنطقة: <span class="text-muted-foreground" id="summaryRegion">غير محدد</span></div>
+                <div class="font-medium text-foreground">الحد الأدنى: <span class="text-muted-foreground" id="summaryMinLevel">Level 1</span></div>
+                <div class="font-medium text-foreground">معدل الفوز: <span class="text-muted-foreground" id="summaryWinRate">50%+</span></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg">
+              تقديم طلب إنشاء العشيرة
+            </button>
+            <p class="text-sm text-muted-foreground mt-2">
+              سيتم مراجعة طلبك من قبل الإدارة خلال 3-5 أيام عمل
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('clanCreationForm');
+    let selectedIcon = '';
+    
+    // Icon selection
+    document.querySelectorAll('.clan-icon').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove selection from all icons
+        document.querySelectorAll('.clan-icon').forEach(btn => {
+          btn.classList.remove('border-primary', 'bg-primary/10');
+          btn.classList.add('border-border');
+        });
+        
+        // Select this icon
+        this.classList.remove('border-border');
+        this.classList.add('border-primary', 'bg-primary/10');
+        
+        selectedIcon = this.dataset.icon;
+        document.querySelector('input[name="clanIcon"]').value = selectedIcon;
+      });
+    });
+    
+    // Update summary in real-time
+    const nameInput = document.querySelector('input[name="clanName"]');
+    const tagInput = document.querySelector('input[name="clanTag"]');
+    const membershipTypeInputs = document.querySelectorAll('input[name="membershipType"]');
+    const regionSelect = document.querySelector('select[name="region"]');
+    const minLevelInput = document.querySelector('input[name="minLevel"]');
+    const minWinRateInput = document.querySelector('input[name="minWinRate"]');
+    
+    function updateSummary() {
+      document.getElementById('summaryName').textContent = nameInput.value || 'اسم العشيرة';
+      document.getElementById('summaryTag').textContent = `[${tagInput.value || 'TAG'}]`;
+      
+      const selectedMembershipType = document.querySelector('input[name="membershipType"]:checked');
+      if (selectedMembershipType) {
+        const typeText = {
+          'public': 'مفتوحة للجميع',
+          'invite-only': 'بدعوة فقط',
+          'application': 'تتطلب طلب انضمام'
+        };
+        document.getElementById('summaryType').textContent = typeText[selectedMembershipType.value];
+      }
+      
+      const regionText = {
+        'middle-east': 'الشرق الأوسط',
+        'gulf': 'الخليج العربي',
+        'levant': 'بلاد الشام',
+        'north-africa': 'شمال أفريقيا',
+        'international': 'دولية'
+      };
+      document.getElementById('summaryRegion').textContent = regionText[regionSelect.value] || 'غير محدد';
+      document.getElementById('summaryMinLevel').textContent = `Level ${minLevelInput.value}`;
+      document.getElementById('summaryWinRate').textContent = `${minWinRateInput.value}%+`;
+    }
+    
+    [nameInput, tagInput, regionSelect, minLevelInput, minWinRateInput].forEach(input => {
+      input.addEventListener('input', updateSummary);
+      input.addEventListener('change', updateSummary);
+    });
+    
+    membershipTypeInputs.forEach(input => {
+      input.addEventListener('change', updateSummary);
+    });
+    
+    // Update tag input to uppercase
+    tagInput.addEventListener('input', function() {
+      this.value = this.value.toUpperCase();
+    });
+    
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const token = localStorage.getItem('zh_love_token');
+      if (!token) {
+        alert('يجب تسجيل الدخول أولاً');
+        window.location.href = '/ar/login';
+        return;
+      }
+
+      // Prepare data for submission
+      const data = {
+        clanName: nameInput.value,
+        clanTag: tagInput.value,
+        description: document.querySelector('textarea[name="description"]').value,
+        organizerName: document.querySelector('input[name="organizerName"]').value,
+        organizerEmail: document.querySelector('input[name="organizerEmail"]').value,
+        organizerPhone: document.querySelector('input[name="organizerPhone"]').value,
+        organizerCountry: document.querySelector('select[name="organizerCountry"]').value,
+        organizerExperience: document.querySelector('select[name="organizerExperience"]').value,
+        region: regionSelect.value,
+        language: document.querySelector('select[name="language"]').value,
+        clanIcon: selectedIcon,
+        membershipType: document.querySelector('input[name="membershipType"]:checked').value,
+        minLevel: minLevelInput.value,
+        minWinRate: minWinRateInput.value,
+        maxMembers: document.querySelector('select[name="maxMembers"]').value,
+        rules: document.querySelector('textarea[name="rules"]').value,
+        participationRequirements: Array.from(document.querySelectorAll('input[name="participationRequirements"]:checked')).map(cb => cb.value),
+        termsAccept: document.querySelector('input[name="termsAccept"]').checked,
+        communityRules: document.querySelector('input[name="communityRules"]').checked,
+        leaderResponsibility: document.querySelector('input[name="leaderResponsibility"]').checked,
+        costAccept: document.querySelector('input[name="costAccept"]').checked,
+      };
+
+      // Submit to API directly
+      try {
+        const response = await fetch('http://localhost:8080/quick_clan_fix.php?action=create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert('تم تقديم طلب إنشاء العشيرة بنجاح! سيتم مراجعته من قبل الإدارة.');
+          window.location.href = '/ar/clans';
+        } else {
+          alert(result.error || 'حدث خطأ أثناء تقديم الطلب');
+        }
+      } catch (error) {
+        alert('حدث خطأ في الاتصال بالخادم');
+      }
+    });
+    
+    // Load user's current gold
+    const currentGold = parseInt(localStorage.getItem('userGold') || '25000');
+    document.getElementById('currentGold').textContent = `رصيدك الحالي: ${currentGold.toLocaleString()} نقطة ذهب`;
+  });
+</script> 

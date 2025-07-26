@@ -1,0 +1,716 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="طلبات الانضمام - ZH-Love"
+  description="إدارة طلبات الانضمام للبطولة"
+>
+  <div class="min-h-screen bg-background">
+    <!-- Tournament Header -->
+    <div id="tournament-header" class="bg-gradient-to-r from-gray-900 via-green-900 to-gray-900 py-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 id="tournament-name" class="text-4xl font-bold text-white mb-4">
+            جاري التحميل...
+          </h1>
+          <p class="text-xl text-gray-300">إدارة طلبات الانضمام</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">
+      <!-- Statistics -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-yellow-400" id="pending-count">0</div>
+          <div class="text-gray-300">في انتظار المراجعة</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-green-400" id="approved-count">0</div>
+          <div class="text-gray-300">مقبول</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-red-400" id="rejected-count">0</div>
+          <div class="text-gray-300">مرفوض</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-blue-400" id="total-count">0</div>
+          <div class="text-gray-300">إجمالي الطلبات</div>
+        </div>
+      </div>
+
+      <!-- Actions Bar -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <h2 class="text-xl font-bold text-white">طلبات الانضمام</h2>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <label class="text-sm text-gray-300">عرض:</label>
+              <select id="status-filter" class="bg-gray-800 border border-gray-700 rounded px-3 py-1 text-white text-sm">
+                <option value="all">جميع الطلبات</option>
+                <option value="pending">في انتظار المراجعة</option>
+                <option value="approved">المقبولة</option>
+                <option value="rejected">المرفوضة</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <button id="approve-selected" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50" disabled>
+              قبول المحدد
+            </button>
+            <button id="reject-selected" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm disabled:opacity-50" disabled>
+              رفض المحدد
+            </button>
+            <button id="select-all" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+              تحديد الكل
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications List -->
+      <div id="applications-container" class="space-y-4">
+        <!-- Loading State -->
+        <div class="flex items-center justify-center py-20">
+          <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mb-4"></div>
+            <p class="text-gray-400">جاري تحميل الطلبات...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="flex items-center justify-center mt-8 hidden">
+        <nav class="flex items-center space-x-2 rtl:space-x-reverse">
+          <button id="prev-page" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50">
+            السابق
+          </button>
+          <div id="page-numbers" class="flex space-x-1 rtl:space-x-reverse">
+            <!-- Page numbers will be inserted here -->
+          </div>
+          <button id="next-page" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50">
+            التالي
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Detail Modal -->
+  <div id="application-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-semibold text-white">تفاصيل طلب الانضمام</h3>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="modal-content">
+          <!-- Application details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let tournamentId = '';
+      let applications = [];
+      let filteredApplications = [];
+      let currentPage = 1;
+      let itemsPerPage = 10;
+      let selectedApplications = new Set();
+
+      // Initialize
+      init();
+
+      function init() {
+        // Get tournament ID from URL
+        const pathParts = window.location.pathname.split('/');
+        tournamentId = pathParts[pathParts.length - 2];
+        
+        if (!tournamentId) {
+          showError('معرف البطولة غير صحيح');
+          return;
+        }
+
+        checkPermissions();
+        setupEventListeners();
+        loadTournamentInfo();
+        loadApplications();
+      }
+
+      function checkPermissions() {
+        const token = localStorage.getItem('zh_love_token');
+        if (!token) {
+          window.location.href = '/ar/login';
+          return;
+        }
+
+        // Check if user is organizer (simplified check)
+        // In real implementation, this would be verified server-side
+      }
+
+      function setupEventListeners() {
+        // Filter change
+        document.getElementById('status-filter').addEventListener('change', function() {
+          filterApplications();
+        });
+
+        // Bulk actions
+        document.getElementById('approve-selected').addEventListener('click', () => {
+          bulkAction('approve');
+        });
+
+        document.getElementById('reject-selected').addEventListener('click', () => {
+          bulkAction('reject');
+        });
+
+        document.getElementById('select-all').addEventListener('click', () => {
+          toggleSelectAll();
+        });
+
+        // Modal close
+        document.getElementById('close-modal').addEventListener('click', () => {
+          hideModal();
+        });
+
+        // Click outside modal to close
+        document.getElementById('application-modal').addEventListener('click', function(e) {
+          if (e.target === this) {
+            hideModal();
+          }
+        });
+      }
+
+      async function loadTournamentInfo() {
+        try {
+          // For demo, use mock data
+          const tournamentInfo = {
+            id: tournamentId,
+            name: 'بطولة الجنرالات الكبرى 2024',
+            maxParticipants: 128,
+            currentParticipants: 89
+          };
+
+          document.getElementById('tournament-name').textContent = tournamentInfo.name;
+          
+        } catch (error) {
+          console.error('Error loading tournament info:', error);
+          showError('فشل في تحميل معلومات البطولة');
+        }
+      }
+
+      async function loadApplications() {
+        try {
+          // Mock applications data
+          const mockApplications = [
+            {
+              id: 1,
+              userId: 101,
+              username: 'commander_ahmed',
+              displayName: 'أحمد المقاتل',
+              avatar: '/images/avatars/default.jpg',
+              level: 45,
+              rank: 'Expert',
+              gamesPlayed: 234,
+              winRate: 75,
+              appliedAt: '2024-02-15T10:30:00Z',
+              status: 'pending',
+              message: 'مرحباً، أتطلع للمشاركة في هذه البطولة المثيرة. لدي خبرة جيدة في اللعب وأتمنى أن أكون إضافة قيمة.',
+              contactInfo: {
+                discord: 'Commander_Ahmed#1234',
+                telegram: '@ahmed_commander'
+              },
+              teamInfo: null,
+              previousTournaments: [
+                { name: 'بطولة الصيف 2023', position: 3 },
+                { name: 'تحدي الخريف', position: 8 }
+              ]
+            },
+            {
+              id: 2,
+              userId: 102,
+              username: 'strategic_sara',
+              displayName: 'سارة الاستراتيجية',
+              avatar: '/images/avatars/default.jpg',
+              level: 52,
+              rank: 'Master',
+              gamesPlayed: 456,
+              winRate: 82,
+              appliedAt: '2024-02-14T15:45:00Z',
+              status: 'approved',
+              message: 'لاعبة محترفة بخبرة واسعة في البطولات الكبيرة.',
+              contactInfo: {
+                discord: 'StrategicSara#5678',
+                telegram: '@sara_strategic'
+              },
+              teamInfo: null,
+              previousTournaments: [
+                { name: 'بطولة المحترفين 2023', position: 1 },
+                { name: 'تحدي الأساطير', position: 2 }
+              ]
+            }
+          ];
+
+          applications = mockApplications;
+          filterApplications();
+          updateStatistics();
+          
+        } catch (error) {
+          console.error('Error loading applications:', error);
+          showError('فشل في تحميل الطلبات');
+        }
+      }
+
+      function filterApplications() {
+        const statusFilter = document.getElementById('status-filter').value;
+        
+        if (statusFilter === 'all') {
+          filteredApplications = [...applications];
+        } else {
+          filteredApplications = applications.filter(app => app.status === statusFilter);
+        }
+
+        currentPage = 1;
+        displayApplications();
+        updatePagination();
+      }
+
+      function displayApplications() {
+        const container = document.getElementById('applications-container');
+        
+        if (filteredApplications.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-12">
+              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              <h3 class="text-xl font-semibold text-white mb-2">لا توجد طلبات</h3>
+              <p class="text-gray-400">لا توجد طلبات انضمام حالياً</p>
+            </div>
+          `;
+          return;
+        }
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageApplications = filteredApplications.slice(startIndex, endIndex);
+
+        container.innerHTML = pageApplications.map(application => `
+          <div class="application-card bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all" data-id="${application.id}">
+            <div class="flex items-start space-x-4 rtl:space-x-reverse">
+              <!-- Checkbox -->
+              <div class="flex items-center">
+                <input type="checkbox" class="application-checkbox w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" value="${application.id}">
+              </div>
+
+              <!-- Avatar -->
+              <div class="flex-shrink-0">
+                <img src="${application.avatar}" alt="${application.displayName}" class="w-12 h-12 rounded-full object-cover border-2 border-gray-600">
+                <div class="text-center mt-1">
+                  <span class="text-xs px-2 py-1 rounded-full ${getRankColor(application.rank)}">
+                    ${application.rank}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Application Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 class="text-lg font-semibold text-white">${application.displayName}</h3>
+                    <p class="text-gray-400 text-sm">@${application.username}</p>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <span class="px-3 py-1 text-xs font-bold rounded-full ${getStatusColor(application.status)}">
+                      ${getStatusText(application.status)}
+                    </span>
+                    <span class="text-gray-400 text-xs">${formatDate(application.appliedAt)}</span>
+                  </div>
+                </div>
+
+                <!-- Player Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-blue-400">${application.level}</div>
+                    <div class="text-gray-400">المستوى</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-green-400">${application.winRate}%</div>
+                    <div class="text-gray-400">معدل الفوز</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-yellow-400">${application.gamesPlayed}</div>
+                    <div class="text-gray-400">مباراة</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-purple-400">${application.previousTournaments.length}</div>
+                    <div class="text-gray-400">بطولات سابقة</div>
+                  </div>
+                </div>
+
+                <!-- Message Preview -->
+                <div class="bg-gray-800 rounded-lg p-3 mb-4">
+                  <p class="text-gray-300 text-sm line-clamp-2">${application.message}</p>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-400 mb-4">
+                  ${application.contactInfo.discord ? `
+                    <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.010c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.195.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                      </svg>
+                      <span>${application.contactInfo.discord}</span>
+                    </div>
+                  ` : ''}
+                  ${application.contactInfo.telegram ? `
+                    <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                      </svg>
+                      <span>${application.contactInfo.telegram}</span>
+                    </div>
+                  ` : ''}
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between">
+                  <button onclick="viewApplication(${application.id})" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+                    عرض التفاصيل
+                  </button>
+                  
+                  ${application.status === 'pending' ? `
+                    <div class="flex space-x-2 rtl:space-x-reverse">
+                      <button onclick="approveApplication(${application.id})" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+                        قبول
+                      </button>
+                      <button onclick="rejectApplication(${application.id})" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm">
+                        رفض
+                      </button>
+                    </div>
+                  ` : `
+                    <div class="text-sm ${application.status === 'approved' ? 'text-green-400' : 'text-red-400'}">
+                      ${application.status === 'approved' ? '✓ تم القبول' : '✗ تم الرفض'}
+                    </div>
+                  `}
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Setup checkbox listeners
+        document.querySelectorAll('.application-checkbox').forEach(checkbox => {
+          checkbox.addEventListener('change', updateSelectedApplications);
+        });
+      }
+
+      function updateSelectedApplications() {
+        selectedApplications.clear();
+        document.querySelectorAll('.application-checkbox:checked').forEach(checkbox => {
+          selectedApplications.add(parseInt(checkbox.value));
+        });
+
+        const hasSelected = selectedApplications.size > 0;
+        document.getElementById('approve-selected').disabled = !hasSelected;
+        document.getElementById('reject-selected').disabled = !hasSelected;
+      }
+
+      function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.application-checkbox');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = !allChecked;
+        });
+
+        updateSelectedApplications();
+      }
+
+      function updateStatistics() {
+        const pending = applications.filter(app => app.status === 'pending').length;
+        const approved = applications.filter(app => app.status === 'approved').length;
+        const rejected = applications.filter(app => app.status === 'rejected').length;
+        const total = applications.length;
+
+        document.getElementById('pending-count').textContent = pending;
+        document.getElementById('approved-count').textContent = approved;
+        document.getElementById('rejected-count').textContent = rejected;
+        document.getElementById('total-count').textContent = total;
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredApplications.length / itemsPerPage);
+        const pagination = document.getElementById('pagination');
+        
+        if (totalPages <= 1) {
+          pagination.classList.add('hidden');
+          return;
+        }
+
+        pagination.classList.remove('hidden');
+        
+        // Update pagination buttons
+        document.getElementById('prev-page').disabled = currentPage === 1;
+        document.getElementById('next-page').disabled = currentPage === totalPages;
+      }
+
+      async function approveApplication(applicationId) {
+        if (!confirm('هل تريد قبول هذا الطلب؟')) return;
+        
+        try {
+          // Update local data for demo
+          const application = applications.find(app => app.id === applicationId);
+          if (application) {
+            application.status = 'approved';
+            filterApplications();
+            updateStatistics();
+            showSuccess('تم قبول الطلب بنجاح');
+          }
+        } catch (error) {
+          console.error('Error approving application:', error);
+          showError('فشل في قبول الطلب');
+        }
+      }
+
+      async function rejectApplication(applicationId) {
+        if (!confirm('هل تريد رفض هذا الطلب؟')) return;
+        
+        try {
+          // Update local data for demo
+          const application = applications.find(app => app.id === applicationId);
+          if (application) {
+            application.status = 'rejected';
+            filterApplications();
+            updateStatistics();
+            showSuccess('تم رفض الطلب');
+          }
+        } catch (error) {
+          console.error('Error rejecting application:', error);
+          showError('فشل في رفض الطلب');
+        }
+      }
+
+      async function bulkAction(action) {
+        if (selectedApplications.size === 0) return;
+        
+        const actionText = action === 'approve' ? 'قبول' : 'رفض';
+        if (!confirm(`هل تريد ${actionText} ${selectedApplications.size} طلب؟`)) return;
+
+        try {
+          // Update local data for demo
+          selectedApplications.forEach(appId => {
+            const application = applications.find(app => app.id === appId);
+            if (application) {
+              application.status = action === 'approve' ? 'approved' : 'rejected';
+            }
+          });
+
+          selectedApplications.clear();
+          filterApplications();
+          updateStatistics();
+          updateSelectedApplications();
+          showSuccess(`تم ${actionText} الطلبات المحددة`);
+          
+        } catch (error) {
+          console.error(`Error ${action}ing applications:`, error);
+          showError(`فشل في ${actionText} الطلبات`);
+        }
+      }
+
+      function viewApplication(applicationId) {
+        const application = applications.find(app => app.id === applicationId);
+        if (!application) return;
+
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `
+          <div class="space-y-6">
+            <!-- Player Header -->
+            <div class="flex items-center space-x-4 rtl:space-x-reverse">
+              <img src="${application.avatar}" alt="${application.displayName}" class="w-16 h-16 rounded-full object-cover border-2 border-gray-600">
+              <div>
+                <h3 class="text-xl font-bold text-white">${application.displayName}</h3>
+                <p class="text-gray-400">@${application.username}</p>
+                <span class="px-3 py-1 text-xs font-bold rounded-full ${getRankColor(application.rank)}">
+                  ${application.rank}
+                </span>
+              </div>
+            </div>
+
+            <!-- Player Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-gray-800 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-blue-400">${application.level}</div>
+                <div class="text-gray-400">المستوى</div>
+              </div>
+              <div class="bg-gray-800 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-green-400">${application.winRate}%</div>
+                <div class="text-gray-400">معدل الفوز</div>
+              </div>
+              <div class="bg-gray-800 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-yellow-400">${application.gamesPlayed}</div>
+                <div class="text-gray-400">مباراة</div>
+              </div>
+              <div class="bg-gray-800 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold text-purple-400">${application.previousTournaments.length}</div>
+                <div class="text-gray-400">بطولات سابقة</div>
+              </div>
+            </div>
+
+            <!-- Application Message -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">رسالة التقديم</h4>
+              <div class="bg-gray-800 rounded-lg p-4">
+                <p class="text-gray-300 leading-relaxed">${application.message}</p>
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">معلومات التواصل</h4>
+              <div class="space-y-2">
+                ${application.contactInfo.discord ? `
+                  <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.010c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.195.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    <span class="text-white">Discord: ${application.contactInfo.discord}</span>
+                  </div>
+                ` : ''}
+                ${application.contactInfo.telegram ? `
+                  <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                    <span class="text-white">Telegram: ${application.contactInfo.telegram}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Previous Tournaments -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">البطولات السابقة</h4>
+              <div class="space-y-2">
+                ${application.previousTournaments.map(tournament => `
+                  <div class="flex items-center justify-between bg-gray-800 rounded-lg p-3">
+                    <span class="text-white">${tournament.name}</span>
+                    <span class="px-2 py-1 bg-yellow-600 text-white text-xs rounded-full">المركز ${tournament.position}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Actions -->
+            ${application.status === 'pending' ? `
+              <div class="flex space-x-4 rtl:space-x-reverse pt-6 border-t border-gray-700">
+                <button onclick="approveApplication(${application.id}); hideModal();" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                  قبول الطلب
+                </button>
+                <button onclick="rejectApplication(${application.id}); hideModal();" class="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                  رفض الطلب
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        showModal();
+      }
+
+      function showModal() {
+        document.getElementById('application-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function hideModal() {
+        document.getElementById('application-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      // Helper functions
+      function getStatusColor(status) {
+        switch (status) {
+          case 'pending': return 'bg-yellow-600 text-white';
+          case 'approved': return 'bg-green-600 text-white';
+          case 'rejected': return 'bg-red-600 text-white';
+          default: return 'bg-gray-600 text-white';
+        }
+      }
+
+      function getStatusText(status) {
+        switch (status) {
+          case 'pending': return 'في انتظار المراجعة';
+          case 'approved': return 'مقبول';
+          case 'rejected': return 'مرفوض';
+          default: return status;
+        }
+      }
+
+      function getRankColor(rank) {
+        switch (rank.toLowerCase()) {
+          case 'master': return 'bg-purple-600 text-white';
+          case 'expert': return 'bg-blue-600 text-white';
+          case 'advanced': return 'bg-green-600 text-white';
+          case 'intermediate': return 'bg-yellow-600 text-white';
+          default: return 'bg-gray-600 text-white';
+        }
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      function showSuccess(message) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg z-50 shadow-lg';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 3000);
+      }
+
+      function showError(message) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg z-50 shadow-lg';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 3000);
+      }
+
+      // Global functions
+      window.approveApplication = approveApplication;
+      window.rejectApplication = rejectApplication;
+      window.viewApplication = viewApplication;
+      window.hideModal = hideModal;
+    });
+  </script>
+
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .application-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.1);
+    }
+  </style>
+</BaseLayout> 

@@ -1,0 +1,372 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Trophy, ArrowLeft, Calendar, Users, DollarSign, Settings, HelpCircle } from 'lucide-react';
+
+const title = "إنشاء بطولة جديدة - البطولات - زد اتش لوف";
+const description = "قم بإنشاء وتنظيم بطولة جديدة للجنرالات زيرو آور";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/tournaments" class="hover:text-foreground transition-colors">البطولات</a>
+        <span>/</span>
+        <span class="text-foreground">إنشاء بطولة جديدة</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/tournaments" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للبطولات</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+        <Trophy size={32} class="text-victory-gold" />
+        <span>إنشاء بطولة جديدة</span>
+      </h1>
+      <p class="text-muted-foreground">قم بإنشاء وتنظيم بطولة جديدة للجنرالات زيرو آور</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main Form -->
+      <div class="flex-1">
+        <form class="space-y-6">
+          <!-- Basic Information -->
+          <div class="military-card p-6">
+            <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+              <Trophy size={20} />
+              <span>معلومات أساسية</span>
+            </h2>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  اسم البطولة *
+                </label>
+                <input
+                  type="text"
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="مثال: بطولة الشتاء الكبرى 2024"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  وصف البطولة *
+                </label>
+                <textarea
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  rows="4"
+                  placeholder="اكتب وصفاً تفصيلياً للبطولة..."
+                ></textarea>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    نوع البطولة *
+                  </label>
+                  <select class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                    <option value="single_elimination">إقصاء مفرد</option>
+                    <option value="double_elimination">إقصاء مزدوج</option>
+                    <option value="round_robin">دوري</option>
+                    <option value="swiss">نظام سويسري</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    وضع اللعب *
+                  </label>
+                  <select class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                    <option value="1v1">1 ضد 1</option>
+                    <option value="2v2">2 ضد 2</option>
+                    <option value="3v3">3 ضد 3</option>
+                    <option value="4v4">4 ضد 4</option>
+                    <option value="ffa">الكل ضد الكل</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  المنطقة الجغرافية *
+                </label>
+                <select class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                  <option value="global">عالمي</option>
+                  <option value="middle-east">الشرق الأوسط</option>
+                  <option value="gcc">دول الخليج</option>
+                  <option value="north-africa">شمال أفريقيا</option>
+                  <option value="levant">بلاد الشام</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tournament Settings -->
+          <div class="military-card p-6">
+            <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+              <Settings size={20} />
+              <span>إعدادات البطولة</span>
+            </h2>
+            
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    الحد الأقصى للمشاركين *
+                  </label>
+                  <select class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                    <option value="8">8 مشاركين</option>
+                    <option value="16">16 مشارك</option>
+                    <option value="32">32 مشارك</option>
+                    <option value="64">64 مشارك</option>
+                    <option value="128">128 مشارك</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    رسوم الدخول (بالدولار)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  مجموع الجوائز (بالدولار)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  توزيع الجوائز
+                </label>
+                <div class="space-y-2">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="text-xs text-muted-foreground">المركز الأول (%)</label>
+                      <input type="number" min="0" max="100" value="50" class="w-full p-2 bg-input border border-border rounded text-sm">
+                    </div>
+                    <div>
+                      <label class="text-xs text-muted-foreground">المركز الثاني (%)</label>
+                      <input type="number" min="0" max="100" value="30" class="w-full p-2 bg-input border border-border rounded text-sm">
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="text-xs text-muted-foreground">المركز الثالث (%)</label>
+                      <input type="number" min="0" max="100" value="20" class="w-full p-2 bg-input border border-border rounded text-sm">
+                    </div>
+                    <div>
+                      <label class="text-xs text-muted-foreground">المركز الرابع (%)</label>
+                      <input type="number" min="0" max="100" value="0" class="w-full p-2 bg-input border border-border rounded text-sm">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule -->
+          <div class="military-card p-6">
+            <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+              <Calendar size={20} />
+              <span>الجدولة الزمنية</span>
+            </h2>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  موعد نهاية التسجيل *
+                </label>
+                <input
+                  type="datetime-local"
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    موعد بداية البطولة *
+                  </label>
+                  <input
+                    type="datetime-local"
+                    class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    موعد انتهاء البطولة *
+                  </label>
+                  <input
+                    type="datetime-local"
+                    class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rules -->
+          <div class="military-card p-6">
+            <h2 class="text-xl font-bold text-foreground mb-4">قوانين البطولة</h2>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  القوانين الأساسية
+                </label>
+                <div class="space-y-2">
+                  <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" class="rounded border-border" checked />
+                    <span class="text-sm">جميع الجيوش مسموحة</span>
+                  </label>
+                  <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" class="rounded border-border" />
+                    <span class="text-sm">بدون تعديلات أو مودز</span>
+                  </label>
+                  <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" class="rounded border-border" />
+                    <span class="text-sm">ضرورة استخدام الميكروفون</span>
+                  </label>
+                  <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" class="rounded border-border" />
+                    <span class="text-sm">تسجيل المباريات مطلوب</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  قوانين إضافية
+                </label>
+                <textarea
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  rows="6"
+                  placeholder="اكتب أي قوانين إضافية للبطولة..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button type="submit" class="btn btn-primary">
+              إنشاء البطولة
+            </button>
+            <button type="button" class="btn btn-outline">
+              حفظ كمسودة
+            </button>
+            <button type="button" class="btn btn-ghost">
+              إلغاء
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="w-full lg:w-80 space-y-6">
+        <!-- Quick Tips -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <HelpCircle size={20} />
+            <span>نصائح سريعة</span>
+          </h3>
+          <div class="space-y-3 text-sm">
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-5 h-5 bg-tactical-green/20 text-tactical-green rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">1</div>
+              <p class="text-muted-foreground">اختر اسماً واضحاً وجذاباً للبطولة</p>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-5 h-5 bg-victory-gold/20 text-victory-gold rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">2</div>
+              <p class="text-muted-foreground">حدد جوائز مناسبة لجذب المشاركين</p>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-5 h-5 bg-command-blue/20 text-command-blue rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">3</div>
+              <p class="text-muted-foreground">اختر أوقاتاً مناسبة للمنطقة المستهدفة</p>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-5 h-5 bg-neutral-silver/20 text-neutral-silver rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">4</div>
+              <p class="text-muted-foreground">وضح القوانين بشكل واضح ومفصل</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tournament Types Info -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">أنواع البطولات</h3>
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="font-medium text-foreground">إقصاء مفرد</div>
+              <div class="text-muted-foreground">خسارة واحدة تؤدي للخروج</div>
+            </div>
+            <div>
+              <div class="font-medium text-foreground">إقصاء مزدوج</div>
+              <div class="text-muted-foreground">خسارتان تؤديان للخروج</div>
+            </div>
+            <div>
+              <div class="font-medium text-foreground">دوري</div>
+              <div class="text-muted-foreground">يلعب الجميع ضد الجميع</div>
+            </div>
+            <div>
+              <div class="font-medium text-foreground">نظام سويسري</div>
+              <div class="text-muted-foreground">عدد محدد من الجولات</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">معاينة البطولة</h3>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">المشاركون:</span>
+              <span class="font-medium text-foreground">0/32</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">الجوائز:</span>
+              <span class="font-medium text-foreground">$0</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">رسوم الدخول:</span>
+              <span class="font-medium text-foreground">مجاني</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">النوع:</span>
+              <span class="font-medium text-foreground">إقصاء مفرد</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

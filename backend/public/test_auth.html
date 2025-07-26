@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testClanAPI()">Test Clan API</button>
+    <div id="results"></div>
+
+    <script>
+        async function testLogin() {
+            try {
+                // First try debug endpoint
+                const debugResponse = await fetch('http://localhost:8080/debug_auth.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'master@zh-love.com',
+                        password: 'password'
+                    })
+                });
+                
+                const debugData = await debugResponse.json();
+                console.log('Debug response:', debugData);
+                
+                if (debugData.success) {
+                    localStorage.setItem('authToken', debugData.token);
+                    document.getElementById('results').innerHTML = 'Debug login successful! Token saved.<br><pre>' + JSON.stringify(debugData, null, 2) + '</pre>';
+                } else {
+                    document.getElementById('results').innerHTML = 'Debug login failed:<br><pre>' + JSON.stringify(debugData, null, 2) + '</pre>';
+                }
+                
+                // Also try real endpoint
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'master@zh-love.com',
+                        password: 'password'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Real login response:', data);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('results').innerHTML = 'Login error: ' + error.message;
+            }
+        }
+
+        async function testClanAPI() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                document.getElementById('results').innerHTML = 'No token found. Please login first.';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('Clan API response:', data);
+                document.getElementById('results').innerHTML = 'Clan API response: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Clan API error:', error);
+                document.getElementById('results').innerHTML = 'Clan API error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

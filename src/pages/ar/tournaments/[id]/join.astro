@@ -1,0 +1,786 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  // For development, we'll return empty array and handle routing client-side
+  // In production, you'd fetch actual tournament IDs from your database
+  return [];
+}
+---
+
+<BaseLayout 
+  title="الانضمام للبطولة - ZH-Love"
+  description="تقديم طلب انضمام للبطولة"
+>
+  <div class="min-h-screen bg-background">
+    <!-- Tournament Header -->
+    <div id="tournament-header" class="bg-gradient-to-r from-gray-900 via-green-900 to-gray-900 py-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 id="tournament-name" class="text-4xl font-bold text-white mb-4">
+            جاري التحميل...
+          </h1>
+          <p class="text-xl text-gray-300">طلب الانضمام للبطولة</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        <!-- Tournament Info -->
+        <div id="tournament-info" class="bg-card border border-border rounded-lg p-6 mb-8">
+          <!-- Tournament details will be loaded here -->
+        </div>
+
+        <!-- Application Form -->
+        <div class="bg-card border border-border rounded-lg p-6">
+          <h2 class="text-2xl font-bold text-white mb-6">نموذج طلب الانضمام</h2>
+          
+          <form id="application-form" class="space-y-6">
+            <!-- Player Information -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-green-400">معلومات اللاعب</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    الاسم الظاهر *
+                  </label>
+                  <input
+                    type="text"
+                    id="display-name"
+                    name="displayName"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="الاسم الذي سيظهر في البطولة"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    مستوى اللاعب *
+                  </label>
+                  <input
+                    type="number"
+                    id="player-level"
+                    name="playerLevel"
+                    required
+                    min="1"
+                    max="100"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="المستوى الحالي"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    الرتبة الحالية *
+                  </label>
+                  <select
+                    id="player-rank"
+                    name="playerRank"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">اختر رتبتك</option>
+                    <option value="Beginner">مبتدئ</option>
+                    <option value="Intermediate">متوسط</option>
+                    <option value="Advanced">متقدم</option>
+                    <option value="Expert">خبير</option>
+                    <option value="Master">أستاذ</option>
+                    <option value="Legend">أسطورة</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    عدد المباريات المكتملة
+                  </label>
+                  <input
+                    type="number"
+                    id="games-played"
+                    name="gamesPlayed"
+                    min="0"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="العدد الإجمالي للمباريات"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    معدل الفوز (%)
+                  </label>
+                  <input
+                    type="number"
+                    id="win-rate"
+                    name="winRate"
+                    min="0"
+                    max="100"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="معدل الفوز بالنسبة المئوية"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    المنطقة الزمنية
+                  </label>
+                  <select
+                    id="timezone"
+                    name="timezone"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="Asia/Riyadh">الرياض (UTC+3)</option>
+                    <option value="Asia/Dubai">دبي (UTC+4)</option>
+                    <option value="Africa/Cairo">القاهرة (UTC+2)</option>
+                    <option value="Europe/London">لندن (UTC+0)</option>
+                    <option value="UTC">توقيت عالمي</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-green-400">معلومات التواصل *</h3>
+              <p class="text-sm text-gray-400">يجب توفير طريقة تواصل واحدة على الأقل</p>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    Discord
+                  </label>
+                  <input
+                    type="text"
+                    id="discord"
+                    name="discord"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="YourName#1234"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    Telegram
+                  </label>
+                  <input
+                    type="text"
+                    id="telegram"
+                    name="telegram"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="@your_username"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    البريد الإلكتروني
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    رقم الهاتف
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="+966 XX XXX XXXX"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Team Information (if applicable) -->
+            <div id="team-section" class="space-y-4 hidden">
+              <h3 class="text-lg font-semibold text-green-400">معلومات الفريق</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    اسم الفريق
+                  </label>
+                  <input
+                    type="text"
+                    id="team-name"
+                    name="teamName"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="اسم فريقك"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    دور اللاعب في الفريق
+                  </label>
+                  <select
+                    id="team-role"
+                    name="teamRole"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">اختر دورك</option>
+                    <option value="Captain">قائد الفريق</option>
+                    <option value="Player">لاعب</option>
+                    <option value="Substitute">بديل</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                  أعضاء الفريق (اختياري)
+                </label>
+                <textarea
+                  id="team-members"
+                  name="teamMembers"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                  placeholder="أسماء أعضاء الفريق الآخرين (كل اسم في سطر منفصل)"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Experience & Motivation -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-green-400">الخبرة والدافع</h3>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                  البطولات السابقة
+                </label>
+                <textarea
+                  id="previous-tournaments"
+                  name="previousTournaments"
+                  rows="3"
+                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                  placeholder="اذكر البطولات السابقة التي شاركت فيها ونتائجك (إن وجدت)"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">
+                  رسالة الدافع *
+                </label>
+                <textarea
+                  id="motivation-message"
+                  name="motivationMessage"
+                  rows="5"
+                  required
+                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                  placeholder="لماذا تريد المشاركة في هذه البطولة؟ اكتب عن خبرتك ودافعك للانضمام..."
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-semibold text-green-400">التوفر والالتزام</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    الأوقات المفضلة للعب
+                  </label>
+                  <select
+                    id="preferred-time"
+                    name="preferredTime"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="morning">صباحاً (6 ص - 12 ظ)</option>
+                    <option value="afternoon">بعد الظهر (12 ظ - 6 م)</option>
+                    <option value="evening">مساءً (6 م - 12 م)</option>
+                    <option value="night">ليلاً (12 م - 6 ص)</option>
+                    <option value="flexible">مرن - أي وقت</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">
+                    الأيام المتاحة
+                  </label>
+                  <select
+                    id="available-days"
+                    name="availableDays"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="weekdays">أيام الأسبوع</option>
+                    <option value="weekends">عطل نهاية الأسبوع</option>
+                    <option value="all">جميع الأيام</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h4 class="text-md font-medium text-gray-300">التزامات البطولة</h4>
+                
+                <label class="flex items-start space-x-3 rtl:space-x-reverse">
+                  <input
+                    type="checkbox"
+                    id="commitment-schedule"
+                    name="commitments"
+                    value="schedule"
+                    required
+                    class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500 mt-1"
+                  />
+                  <span class="text-gray-300">أتعهد بالالتزام بمواعيد المباريات المحددة</span>
+                </label>
+
+                <label class="flex items-start space-x-3 rtl:space-x-reverse">
+                  <input
+                    type="checkbox"
+                    id="commitment-rules"
+                    name="commitments"
+                    value="rules"
+                    required
+                    class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500 mt-1"
+                  />
+                  <span class="text-gray-300">أتعهد بالالتزام بقوانين البطولة وروح اللعب النظيف</span>
+                </label>
+
+                <label class="flex items-start space-x-3 rtl:space-x-reverse">
+                  <input
+                    type="checkbox"
+                    id="commitment-communication"
+                    name="commitments"
+                    value="communication"
+                    required
+                    class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500 mt-1"
+                  />
+                  <span class="text-gray-300">أتعهد بالتواصل الفعال مع منظمي البطولة واللاعبين الآخرين</span>
+                </label>
+
+                <label class="flex items-start space-x-3 rtl:space-x-reverse">
+                  <input
+                    type="checkbox"
+                    id="commitment-backup"
+                    name="commitments"
+                    value="backup"
+                    class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500 mt-1"
+                  />
+                  <span class="text-gray-300">أوافق على أن أكون لاعب احتياطي إذا امتلأت البطولة</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Error Messages -->
+            <div id="error-messages" class="hidden bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-red-300 font-medium">يرجى تصحيح الأخطاء التالية:</span>
+              </div>
+              <ul id="error-list" class="mt-2 text-red-300 text-sm list-disc list-inside">
+                <!-- Error messages will be added here -->
+              </ul>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-700">
+              <a href="#" id="back-button" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                العودة للبطولة
+              </a>
+              
+              <button
+                type="submit"
+                id="submit-button"
+                class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center space-x-2 rtl:space-x-reverse"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span>إرسال طلب الانضمام</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let tournamentId = '';
+      let tournament = null;
+
+      // Initialize
+      init();
+
+      function init() {
+        // Get tournament ID from URL
+        const pathParts = window.location.pathname.split('/');
+        tournamentId = pathParts[pathParts.length - 2];
+        
+        if (!tournamentId) {
+          showError('معرف البطولة غير صحيح');
+          return;
+        }
+
+        checkAuth();
+        loadTournamentInfo();
+        setupEventListeners();
+        loadUserProfile();
+      }
+
+      function checkAuth() {
+        const token = localStorage.getItem('zh_love_token');
+        if (!token) {
+          window.location.href = '/ar/login';
+          return;
+        }
+      }
+
+      function loadUserProfile() {
+        try {
+          const user = JSON.parse(localStorage.getItem('zh_love_user') || '{}');
+          if (user.username) {
+            document.getElementById('display-name').value = user.displayName || user.username;
+          }
+          if (user.email) {
+            document.getElementById('email').value = user.email;
+          }
+        } catch (error) {
+          console.error('Error loading user profile:', error);
+        }
+      }
+
+      async function loadTournamentInfo() {
+        try {
+          // Mock tournament data
+          const mockTournament = {
+            id: tournamentId,
+            name: 'بطولة الجنرالات الكبرى 2024',
+            description: 'البطولة الأكبر والأهم في المجتمع العربي لجنرالز زيرو آور',
+            format: '1v1',
+            maxParticipants: 128,
+            currentParticipants: 89,
+            prizePool: 2500,
+            entryFee: 0,
+            startDate: '2024-03-15T18:00:00',
+            registrationDeadline: '2024-03-10T23:59:59',
+            requireApproval: true,
+            isTeamBased: false,
+            status: 'open'
+          };
+
+          tournament = mockTournament;
+          displayTournamentInfo();
+          
+          // Show/hide team section based on tournament format
+          if (tournament.isTeamBased) {
+            document.getElementById('team-section').classList.remove('hidden');
+          }
+
+          // Update back button link
+          document.getElementById('back-button').href = `/ar/tournaments/${tournamentId}`;
+          
+        } catch (error) {
+          console.error('Error loading tournament info:', error);
+          showError('فشل في تحميل معلومات البطولة');
+        }
+      }
+
+      function displayTournamentInfo() {
+        document.getElementById('tournament-name').textContent = tournament.name;
+        
+        const infoContainer = document.getElementById('tournament-info');
+        infoContainer.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="text-center">
+              <div class="text-3xl font-bold text-green-400">${tournament.format}</div>
+              <div class="text-gray-300">نوع البطولة</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-blue-400">${tournament.currentParticipants}/${tournament.maxParticipants}</div>
+              <div class="text-gray-300">المشاركين</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-yellow-400">$${tournament.prizePool}</div>
+              <div class="text-gray-300">الجائزة الإجمالية</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold ${tournament.entryFee > 0 ? 'text-red-400' : 'text-green-400'}">
+                ${tournament.entryFee > 0 ? '$' + tournament.entryFee : 'مجاني'}
+              </div>
+              <div class="text-gray-300">رسوم الاشتراك</div>
+            </div>
+          </div>
+          
+          <div class="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <div class="text-blue-300 font-medium">
+                  ${tournament.requireApproval ? 'هذه البطولة تتطلب موافقة المنظم' : 'الانضمام مباشر'}
+                </div>
+                <div class="text-blue-200 text-sm">
+                  ${tournament.requireApproval 
+                    ? 'سيتم مراجعة طلبك من قبل منظم البطولة قبل القبول' 
+                    : 'سيتم قبولك في البطولة فوراً بعد التسجيل'
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4 text-center text-gray-400 text-sm">
+            آخر موعد للتسجيل: ${formatDate(tournament.registrationDeadline)}
+          </div>
+        `;
+      }
+
+      function setupEventListeners() {
+        document.getElementById('application-form').addEventListener('submit', handleSubmit);
+        
+        // Contact validation
+        ['discord', 'telegram', 'email', 'phone'].forEach(field => {
+          document.getElementById(field).addEventListener('input', validateContactInfo);
+        });
+      }
+
+      function validateContactInfo() {
+        const discord = document.getElementById('discord').value.trim();
+        const telegram = document.getElementById('telegram').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        
+        return discord || telegram || email || phone;
+      }
+
+      function validateForm() {
+        const errors = [];
+        
+        // Required fields
+        const requiredFields = [
+          { id: 'display-name', name: 'الاسم الظاهر' },
+          { id: 'player-level', name: 'مستوى اللاعب' },
+          { id: 'player-rank', name: 'الرتبة الحالية' },
+          { id: 'motivation-message', name: 'رسالة الدافع' }
+        ];
+
+        requiredFields.forEach(field => {
+          const element = document.getElementById(field.id);
+          if (!element.value.trim()) {
+            errors.push(`${field.name} مطلوب`);
+          }
+        });
+
+        // Contact info validation
+        if (!validateContactInfo()) {
+          errors.push('يجب توفير طريقة تواصل واحدة على الأقل');
+        }
+
+        // Commitment checkboxes
+        const requiredCommitments = ['commitment-schedule', 'commitment-rules', 'commitment-communication'];
+        requiredCommitments.forEach(id => {
+          const checkbox = document.getElementById(id);
+          if (!checkbox.checked) {
+            errors.push('يجب الموافقة على جميع التزامات البطولة المطلوبة');
+            return false;
+          }
+        });
+
+        // Level validation
+        const level = parseInt(document.getElementById('player-level').value);
+        if (level < 1 || level > 100) {
+          errors.push('مستوى اللاعب يجب أن يكون بين 1 و 100');
+        }
+
+        // Win rate validation
+        const winRate = document.getElementById('win-rate').value;
+        if (winRate && (parseFloat(winRate) < 0 || parseFloat(winRate) > 100)) {
+          errors.push('معدل الفوز يجب أن يكون بين 0 و 100');
+        }
+
+        return errors;
+      }
+
+      function showErrors(errors) {
+        const errorContainer = document.getElementById('error-messages');
+        const errorList = document.getElementById('error-list');
+        
+        if (errors.length > 0) {
+          errorList.innerHTML = errors.map(error => `<li>${error}</li>`).join('');
+          errorContainer.classList.remove('hidden');
+          errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          errorContainer.classList.add('hidden');
+        }
+      }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        
+        const errors = validateForm();
+        if (errors.length > 0) {
+          showErrors(errors);
+          return;
+        }
+
+        const submitButton = document.getElementById('submit-button');
+        const originalText = submitButton.innerHTML;
+        
+        try {
+          // Show loading state
+          submitButton.disabled = true;
+          submitButton.innerHTML = `
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            <span>جاري الإرسال...</span>
+          `;
+
+          // Collect form data
+          const formData = new FormData(e.target);
+          const applicationData = {
+            tournamentId: parseInt(tournamentId),
+            displayName: formData.get('displayName'),
+            playerLevel: parseInt(formData.get('playerLevel')),
+            playerRank: formData.get('playerRank'),
+            gamesPlayed: parseInt(formData.get('gamesPlayed')) || 0,
+            winRate: parseFloat(formData.get('winRate')) || 0,
+            timezone: formData.get('timezone'),
+            contactInfo: {
+              discord: formData.get('discord'),
+              telegram: formData.get('telegram'),
+              email: formData.get('email'),
+              phone: formData.get('phone')
+            },
+            teamInfo: tournament.isTeamBased ? {
+              teamName: formData.get('teamName'),
+              teamRole: formData.get('teamRole'),
+              teamMembers: formData.get('teamMembers')
+            } : null,
+            previousTournaments: formData.get('previousTournaments'),
+            motivationMessage: formData.get('motivationMessage'),
+            preferredTime: formData.get('preferredTime'),
+            availableDays: formData.get('availableDays'),
+            commitments: formData.getAll('commitments'),
+            appliedAt: new Date().toISOString(),
+            status: 'pending'
+          };
+
+          // Add user info
+          const user = JSON.parse(localStorage.getItem('zh_love_user') || '{}');
+          applicationData.userId = user.id;
+          applicationData.username = user.username;
+
+          // Save application (for demo purposes)
+          const existingApplications = JSON.parse(localStorage.getItem('tournament_applications') || '[]');
+          applicationData.id = Date.now();
+          existingApplications.push(applicationData);
+          localStorage.setItem('tournament_applications', JSON.stringify(existingApplications));
+
+          // Show success message
+          showSuccess();
+          
+        } catch (error) {
+          console.error('Error submitting application:', error);
+          showErrors(['حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.']);
+        } finally {
+          // Restore button state
+          submitButton.disabled = false;
+          submitButton.innerHTML = originalText;
+        }
+      }
+
+      function showSuccess() {
+        // Replace form with success message
+        document.querySelector('.bg-card:last-child').innerHTML = `
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-white mb-4">تم إرسال طلبك بنجاح!</h2>
+            
+            <div class="max-w-md mx-auto space-y-4">
+              ${tournament.requireApproval ? `
+                <p class="text-gray-300">
+                  سيتم مراجعة طلبك من قبل منظم البطولة. ستصلك رسالة تأكيد عبر وسائل التواصل المحددة.
+                </p>
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                  <p class="text-blue-300 text-sm">
+                    عادة ما تستغرق عملية المراجعة 24-48 ساعة
+                  </p>
+                </div>
+              ` : `
+                <p class="text-gray-300">
+                  تم قبولك في البطولة! يمكنك الآن مراجعة تفاصيل البطولة والاستعداد للمشاركة.
+                </p>
+              `}
+            </div>
+            
+            <div class="flex justify-center space-x-4 rtl:space-x-reverse mt-8">
+              <a href="/ar/tournaments/${tournamentId}" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                العودة للبطولة
+              </a>
+              <a href="/ar/my-tournaments" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                بطولاتي
+              </a>
+            </div>
+          </div>
+        `;
+
+        // Show toast notification
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg z-50 shadow-lg';
+        toast.innerHTML = `
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>تم إرسال طلب الانضمام بنجاح!</span>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 5000);
+      }
+
+      function showError(message) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg z-50 shadow-lg';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => document.body.removeChild(toast), 5000);
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+    });
+  </script>
+
+  <style>
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</BaseLayout> 

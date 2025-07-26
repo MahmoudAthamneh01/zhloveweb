@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>اختبار رفع الصور</title>
+</head>
+<body>
+    <h2>اختبار رفع صور العشيرة</h2>
+    
+    <form id="uploadForm">
+        <div>
+            <label>شعار العشيرة:</label>
+            <input type="file" id="logo" accept="image/*">
+        </div>
+        <br>
+        <div>
+            <label>خلفية العشيرة:</label>
+            <input type="file" id="banner" accept="image/*">
+        </div>
+        <br>
+        <button type="submit">رفع الصور</button>
+    </form>
+    
+    <div id="result" style="margin-top: 20px;"></div>
+    
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'جاري الرفع...';
+            
+            try {
+                const formData = new FormData();
+                
+                // Add basic clan data
+                formData.append('name', 'Test Clan');
+                formData.append('tag', 'TEST');
+                formData.append('description', 'Test Description');
+                formData.append('website', '');
+                formData.append('discord_url', '');
+                formData.append('recruitment_open', '1');
+                
+                // Add files
+                const logoFile = document.getElementById('logo').files[0];
+                const bannerFile = document.getElementById('banner').files[0];
+                
+                if (logoFile) {
+                    formData.append('logo', logoFile);
+                    console.log('Logo added:', logoFile.name, logoFile.size);
+                }
+                
+                if (bannerFile) {
+                    formData.append('banner', bannerFile);
+                    console.log('Banner added:', bannerFile.name, bannerFile.size);
+                }
+                
+                console.log('Sending request...');
+                
+                const response = await fetch('http://localhost:8080/test_upload_api.php', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    resultDiv.innerHTML = '<div style="color: green;">✅ تم رفع الصور بنجاح!</div>';
+                } else {
+                    resultDiv.innerHTML = '<div style="color: red;">❌ خطأ: ' + (data.error || 'مجهول') + '</div>';
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                resultDiv.innerHTML = '<div style="color: red;">❌ خطأ في الشبكة: ' + error.message + '</div>';
+            }
+        });
+    </script>
+</body>
+</html>

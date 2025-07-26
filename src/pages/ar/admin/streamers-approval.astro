@@ -1,0 +1,519 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Shield, ArrowLeft, Search, Filter, Youtube, Twitch, Eye, CheckCircle, XCircle, Clock, Star, Users } from 'lucide-react';
+
+const title = "إدارة الستريمرز - لوحة الأدمن - زد اتش لوف";
+const description = "مراجعة والموافقة على طلبات الانضمام للستريمرز";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/admin" class="hover:text-foreground transition-colors">لوحة الأدمن</a>
+        <span>/</span>
+        <span class="text-foreground">إدارة الستريمرز</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/admin" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للوحة الأدمن</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Shield size={32} class="text-tactical-green" />
+          <span>إدارة الستريمرز</span>
+        </h1>
+        <p class="text-muted-foreground">مراجعة والموافقة على طلبات الانضمام للستريمرز</p>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="pending-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات معلقة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1" id="approved-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات موافق عليها</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-alert-red mb-1" id="rejected-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات مرفوضة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1" id="total-count">0</div>
+        <div class="text-sm text-muted-foreground">إجمالي الطلبات</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="military-card p-4 mb-6">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="البحث في الطلبات..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <Filter size={20} class="text-muted-foreground" />
+          <select id="statusFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع الحالات</option>
+            <option value="pending">معلق</option>
+            <option value="approved">موافق عليه</option>
+            <option value="rejected">مرفوض</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <span class="text-sm text-muted-foreground">نوع المحتوى:</span>
+          <select id="contentTypeFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع الأنواع</option>
+            <option value="tutorials">تعليمي</option>
+            <option value="entertainment">ترفيهي</option>
+            <option value="competitive">تنافسي</option>
+            <option value="mixed">متنوع</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications List -->
+    <div class="space-y-6" id="applicationsList">
+      <!-- Applications will be loaded here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-12">
+      <Users class="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
+      <h3 class="text-lg font-medium text-foreground mb-2">لا توجد طلبات</h3>
+      <p class="text-muted-foreground">لم يتم العثور على طلبات بناءً على الفلاتر المحددة</p>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div id="applicationModal" class="fixed inset-0 bg-black/50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-background border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6" id="modalContent">
+          <!-- Modal content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let applications = [];
+    let filteredApplications = [];
+    
+    // Load applications from localStorage
+    loadApplications();
+    
+    // Set up event listeners
+    document.getElementById('searchInput').addEventListener('input', filterApplications);
+    document.getElementById('statusFilter').addEventListener('change', filterApplications);
+    document.getElementById('contentTypeFilter').addEventListener('change', filterApplications);
+    
+    // Close modal when clicking outside
+    document.getElementById('applicationModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+    
+    function loadApplications() {
+      applications = JSON.parse(localStorage.getItem('streamerApplications') || '[]');
+      filteredApplications = [...applications];
+      updateStatistics();
+      renderApplications();
+    }
+    
+    function updateStatistics() {
+      const pending = applications.filter(app => app.status === 'pending').length;
+      const approved = applications.filter(app => app.status === 'approved').length;
+      const rejected = applications.filter(app => app.status === 'rejected').length;
+      const total = applications.length;
+      
+      document.getElementById('pending-count').textContent = pending;
+      document.getElementById('approved-count').textContent = approved;
+      document.getElementById('rejected-count').textContent = rejected;
+      document.getElementById('total-count').textContent = total;
+    }
+    
+    function filterApplications() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const contentTypeFilter = document.getElementById('contentTypeFilter').value;
+      
+      filteredApplications = applications.filter(app => {
+        const matchesSearch = !searchTerm || 
+          app.fullName.toLowerCase().includes(searchTerm) ||
+          app.displayName.toLowerCase().includes(searchTerm) ||
+          app.email.toLowerCase().includes(searchTerm);
+          
+        const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
+        const matchesContentType = contentTypeFilter === 'all' || app.contentType === contentTypeFilter;
+        
+        return matchesSearch && matchesStatus && matchesContentType;
+      });
+      
+      renderApplications();
+    }
+    
+    function renderApplications() {
+      const container = document.getElementById('applicationsList');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (filteredApplications.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      
+      container.innerHTML = filteredApplications.map(app => `
+        <div class="military-card p-6">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-4 rtl:space-x-reverse flex-1">
+              <div class="w-16 h-16 bg-gradient-to-br from-tactical-green to-command-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                ${app.displayName.charAt(0).toUpperCase()}
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center space-x-2 rtl:space-x-reverse mb-2">
+                  <h3 class="text-lg font-bold text-foreground">${app.displayName}</h3>
+                  <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}">
+                    ${getStatusText(app.status)}
+                  </span>
+                  <span class="px-2 py-1 bg-muted text-muted-foreground rounded-full text-xs">
+                    ${getContentTypeText(app.contentType)}
+                  </span>
+                </div>
+                
+                <p class="text-sm text-muted-foreground mb-2">${app.fullName} • ${app.email}</p>
+                <p class="text-sm text-foreground mb-3 line-clamp-2">${app.description}</p>
+                
+                <div class="flex items-center space-x-4 rtl:space-x-reverse text-sm">
+                  ${app.youtubeUrl ? `
+                    <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                      <div class="w-4 h-4 bg-red-500 rounded"></div>
+                      <span>YouTube: ${app.youtubeSubscribers || 0}</span>
+                    </div>
+                  ` : ''}
+                  ${app.twitchUrl ? `
+                    <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                      <div class="w-4 h-4 bg-purple-500 rounded"></div>
+                      <span>Twitch: ${app.twitchFollowers || 0}</span>
+                    </div>
+                  ` : ''}
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="text-muted-foreground">تاريخ التقديم:</span>
+                    <span>${new Date(app.submittedAt).toLocaleDateString('ar-SA')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <button 
+                onclick="viewApplication('${app.id}')"
+                class="btn btn-outline btn-sm"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                عرض
+              </button>
+              
+              ${app.status === 'pending' ? `
+                <button 
+                  onclick="approveApplication('${app.id}')"
+                  class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"/>
+                  </svg>
+                  موافقة
+                </button>
+                <button 
+                  onclick="rejectApplication('${app.id}')"
+                  class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  رفض
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function getStatusColor(status) {
+      switch (status) {
+        case 'pending':
+          return 'bg-orange-500/20 text-orange-500';
+        case 'approved':
+          return 'bg-tactical-green/20 text-tactical-green';
+        case 'rejected':
+          return 'bg-alert-red/20 text-alert-red';
+        default:
+          return 'bg-muted text-muted-foreground';
+      }
+    }
+    
+    function getStatusText(status) {
+      switch (status) {
+        case 'pending':
+          return 'معلق';
+        case 'approved':
+          return 'موافق عليه';
+        case 'rejected':
+          return 'مرفوض';
+        default:
+          return status;
+      }
+    }
+    
+    function getContentTypeText(type) {
+      switch (type) {
+        case 'tutorials':
+          return 'تعليمي';
+        case 'entertainment':
+          return 'ترفيهي';
+        case 'competitive':
+          return 'تنافسي';
+        case 'mixed':
+          return 'متنوع';
+        default:
+          return type;
+      }
+    }
+    
+    window.viewApplication = function(id) {
+      const app = applications.find(a => a.id == id);
+      if (!app) return;
+      
+      const modal = document.getElementById('applicationModal');
+      const content = document.getElementById('modalContent');
+      
+      content.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-foreground">تفاصيل طلب الانضمام</h2>
+          <button onclick="closeModal()" class="text-muted-foreground hover:text-foreground">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">المعلومات الشخصية</h3>
+              <div class="space-y-2 text-sm">
+                <div><span class="text-muted-foreground">الاسم الكامل:</span> ${app.fullName}</div>
+                <div><span class="text-muted-foreground">اسم الشهرة:</span> ${app.displayName}</div>
+                <div><span class="text-muted-foreground">البريد الإلكتروني:</span> ${app.email}</div>
+                <div><span class="text-muted-foreground">الهاتف:</span> ${app.phone || 'غير محدد'}</div>
+                <div><span class="text-muted-foreground">البلد:</span> ${app.country}</div>
+                <div><span class="text-muted-foreground">العمر:</span> ${app.age}</div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">المنصات</h3>
+              <div class="space-y-2 text-sm">
+                ${app.youtubeUrl ? `<div><span class="text-muted-foreground">YouTube:</span> <a href="${app.youtubeUrl}" target="_blank" class="text-primary hover:underline">${app.youtubeUrl}</a> (${app.youtubeSubscribers || 0} مشترك)</div>` : ''}
+                ${app.twitchUrl ? `<div><span class="text-muted-foreground">Twitch:</span> <a href="${app.twitchUrl}" target="_blank" class="text-primary hover:underline">${app.twitchUrl}</a> (${app.twitchFollowers || 0} متابع)</div>` : ''}
+                ${app.otherPlatforms ? `<div><span class="text-muted-foreground">منصات أخرى:</span> ${app.otherPlatforms}</div>` : ''}
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-foreground mb-3">معلومات المحتوى</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><span class="text-muted-foreground">نوع المحتوى:</span> ${getContentTypeText(app.contentType)}</div>
+              <div><span class="text-muted-foreground">معدل النشر:</span> ${app.uploadFrequency}</div>
+              <div><span class="text-muted-foreground">خبرة اللعبة:</span> ${app.gameExperience}</div>
+              <div><span class="text-muted-foreground">خبرة المحتوى:</span> ${app.contentExperience}</div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-foreground mb-3">الوصف والدوافع</h3>
+            <div class="space-y-3">
+              <div>
+                <span class="text-sm text-muted-foreground">وصف القناة:</span>
+                <p class="mt-1 p-3 bg-muted rounded-lg text-sm">${app.description}</p>
+              </div>
+              <div>
+                <span class="text-sm text-muted-foreground">دوافع الانضمام:</span>
+                <p class="mt-1 p-3 bg-muted rounded-lg text-sm">${app.motivation}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-foreground mb-3">أمثلة الأعمال</h3>
+            <div class="space-y-2">
+              ${app.portfolio1 ? `<div><a href="${app.portfolio1}" target="_blank" class="text-primary hover:underline text-sm">${app.portfolio1}</a></div>` : ''}
+              ${app.portfolio2 ? `<div><a href="${app.portfolio2}" target="_blank" class="text-primary hover:underline text-sm">${app.portfolio2}</a></div>` : ''}
+              ${app.portfolio3 ? `<div><a href="${app.portfolio3}" target="_blank" class="text-primary hover:underline text-sm">${app.portfolio3}</a></div>` : ''}
+            </div>
+          </div>
+          
+          ${app.additionalInfo ? `
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">معلومات إضافية</h3>
+              <p class="p-3 bg-muted rounded-lg text-sm">${app.additionalInfo}</p>
+            </div>
+          ` : ''}
+          
+          <div class="border-t border-border pt-4">
+            <div class="text-sm text-muted-foreground">
+              <div>تاريخ التقديم: ${new Date(app.submittedAt).toLocaleString('ar-SA')}</div>
+              ${app.reviewedAt ? `<div>تاريخ المراجعة: ${new Date(app.reviewedAt).toLocaleString('ar-SA')}</div>` : ''}
+              ${app.reviewedBy ? `<div>تمت المراجعة بواسطة: ${app.reviewedBy}</div>` : ''}
+              ${app.notes ? `<div>ملاحظات: ${app.notes}</div>` : ''}
+            </div>
+          </div>
+          
+          ${app.status === 'pending' ? `
+            <div class="border-t border-border pt-6">
+              <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <button 
+                  onclick="approveApplication('${app.id}')"
+                  class="btn btn-primary"
+                >
+                  موافقة على الطلب
+                </button>
+                <button 
+                  onclick="rejectApplication('${app.id}')"
+                  class="btn btn-outline text-alert-red hover:bg-alert-red hover:text-white"
+                >
+                  رفض الطلب
+                </button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      modal.classList.remove('hidden');
+    };
+    
+    window.approveApplication = function(id) {
+      const reason = prompt('أدخل ملاحظة (اختياري):') || '';
+      
+      if (confirm('هل أنت متأكد من الموافقة على هذا الطلب؟')) {
+        updateApplicationStatus(id, 'approved', reason);
+      }
+    };
+    
+    window.rejectApplication = function(id) {
+      const reason = prompt('أدخل سبب الرفض:');
+      
+      if (!reason) {
+        alert('يجب إدخال سبب الرفض');
+        return;
+      }
+      
+      if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+        updateApplicationStatus(id, 'rejected', reason);
+      }
+    };
+    
+    window.closeModal = function() {
+      document.getElementById('applicationModal').classList.add('hidden');
+    };
+    
+    function updateApplicationStatus(id, status, notes) {
+      const appIndex = applications.findIndex(app => app.id == id);
+      if (appIndex === -1) return;
+      
+      applications[appIndex].status = status;
+      applications[appIndex].reviewedAt = new Date().toISOString();
+      applications[appIndex].reviewedBy = 'admin'; // Should get from actual user session
+      applications[appIndex].notes = notes;
+      
+      localStorage.setItem('streamerApplications', JSON.stringify(applications));
+      
+      // If approved, add to streamers list
+      if (status === 'approved') {
+        addToStreamersList(applications[appIndex]);
+      }
+      
+      loadApplications();
+      closeModal();
+      
+      alert(status === 'approved' ? 'تم قبول الطلب بنجاح!' : 'تم رفض الطلب!');
+    }
+    
+    function addToStreamersList(application) {
+      // Add approved streamer to the streamers list
+      const streamers = JSON.parse(localStorage.getItem('approvedStreamers') || '[]');
+      
+      const newStreamer = {
+        id: Date.now(),
+        username: application.displayName.toLowerCase().replace(/\s+/g, '_'),
+        displayName: application.displayName,
+        email: application.email,
+        country: application.country,
+        contentType: application.contentType,
+        platforms: [],
+        isVerified: false,
+        joinedAt: new Date().toISOString(),
+        approvedAt: new Date().toISOString(),
+        applicationId: application.id
+      };
+      
+      if (application.youtubeUrl) {
+        newStreamer.platforms.push({
+          type: 'youtube',
+          url: application.youtubeUrl,
+          followers: parseInt(application.youtubeSubscribers) || 0
+        });
+      }
+      
+      if (application.twitchUrl) {
+        newStreamer.platforms.push({
+          type: 'twitch',
+          url: application.twitchUrl,
+          followers: parseInt(application.twitchFollowers) || 0
+        });
+      }
+      
+      streamers.push(newStreamer);
+      localStorage.setItem('approvedStreamers', JSON.stringify(streamers));
+    }
+  });
+</script> 

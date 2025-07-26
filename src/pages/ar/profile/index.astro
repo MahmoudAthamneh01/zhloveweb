@@ -1,0 +1,217 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "الملف الشخصي - زد اتش لوف";
+const description = "ملفك الشخصي ومعلومات الحساب";
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-xl p-8 mb-8">
+      <div class="flex items-center gap-6">
+        <div id="userAvatar" class="w-20 h-20 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold text-gray-100" id="userName">جاري التحميل...</h1>
+          <p class="text-gray-300" id="userRole">...</p>
+          <p class="text-gray-400 text-sm mt-1" id="joinDate">عضو منذ: ...</p>
+        </div>
+        <a href="/ar/profile-edit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          تحرير الملف الشخصي
+        </a>
+      </div>
+    </div>
+
+    <!-- User Info -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Info -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Basic Info Card -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-100 mb-4">المعلومات الأساسية</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <label class="text-sm font-medium text-gray-400">الاسم الكامل</label>
+              <div class="text-lg font-semibold text-gray-100" id="fullName">جاري التحميل...</div>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <label class="text-sm font-medium text-gray-400">البريد الإلكتروني</label>
+              <div class="text-lg font-semibold text-gray-100" id="userEmail">جاري التحميل...</div>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <label class="text-sm font-medium text-gray-400">البلد</label>
+              <div class="text-lg font-semibold text-gray-100" id="userCountry">جاري التحميل...</div>
+            </div>
+            
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <label class="text-sm font-medium text-gray-400">تاريخ الانضمام</label>
+              <div class="text-lg font-semibold text-gray-100" id="memberSince">جاري التحميل...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio Card -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-100 mb-4">نبذة شخصية</h2>
+          <div class="text-gray-300" id="userBio">
+            <div class="animate-pulse bg-gray-700 h-4 rounded w-3/4 mb-2"></div>
+            <div class="animate-pulse bg-gray-700 h-4 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Stats -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-100 mb-4">إحصائيات</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-300">المنشورات</span>
+              <span class="text-green-500 font-bold" id="postCount">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-300">التعليقات</span>
+              <span class="text-blue-500 font-bold" id="commentCount">0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-300">الإعجابات</span>
+              <span class="text-yellow-500 font-bold" id="likeCount">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-100 mb-4">إجراءات سريعة</h3>
+          <div class="space-y-3">
+            <a href="/ar/forum/create_real" class="block w-full bg-green-600 text-white p-3 rounded-md hover:bg-green-700 transition-colors text-center">
+              إنشاء منشور جديد
+            </a>
+            <a href="/ar/forum" class="block w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition-colors text-center">
+              تصفح المنتدى
+            </a>
+            <div id="adminActions" class="hidden">
+              <a href="/ar/admin/categories" class="block w-full bg-orange-600 text-white p-3 rounded-md hover:bg-orange-700 transition-colors text-center">
+                إدارة الفئات
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Actions -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-100 mb-4">إجراءات الملف الشخصي</h3>
+          <div class="space-y-3">
+            <a href="/ar/profile-edit" class="block w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition-colors text-center">
+              تحرير الملف الشخصي
+            </a>
+            <button
+              onclick="logout()"
+              class="block w-full bg-red-600 text-white p-3 rounded-md hover:bg-red-700 transition-colors text-center"
+            >
+              تسجيل الخروج
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  // Logout function
+  window.logout = function() {
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      window.location.href = '/ar/login';
+    }
+  };
+  
+  // Load user info
+  async function loadUserInfo() {
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        // No token, redirect to login
+        window.location.href = '/ar/login';
+        return;
+      }
+      
+      const response = await fetch('http://localhost:8000/forum_api.php?action=get_user_info', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        // Token invalid, redirect to login
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        window.location.href = '/ar/login';
+        return;
+      }
+      
+      const user = data.user;
+      
+      // Update UI
+      document.getElementById('userName').textContent = user.username || 'مستخدم';
+      document.getElementById('userRole').textContent = user.role === 'admin' ? '🛡️ مدير الموقع' : '👤 عضو';
+      document.getElementById('joinDate').textContent = `عضو منذ: ${user.join_date || 'غير محدد'}`;
+      
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'غير محدد';
+      document.getElementById('fullName').textContent = fullName;
+      document.getElementById('userEmail').textContent = user.email || 'غير محدد';
+      document.getElementById('userCountry').textContent = user.country || 'غير محدد';
+      document.getElementById('memberSince').textContent = user.join_date || 'غير محدد';
+      
+      // Bio
+      const bioElement = document.getElementById('userBio');
+      if (user.bio) {
+        bioElement.textContent = user.bio;
+      } else {
+        bioElement.innerHTML = '<p class="text-gray-500 italic">لم يتم إضافة نبذة شخصية بعد</p>';
+      }
+      
+      // Stats (real data from API)
+      document.getElementById('postCount').textContent = user.post_count || 0;
+      document.getElementById('commentCount').textContent = user.comment_count || 0;
+      document.getElementById('likeCount').textContent = user.like_count || 0;
+      
+      // Show admin actions if admin
+      if (user.role === 'admin') {
+        document.getElementById('adminActions').classList.remove('hidden');
+      }
+      
+    } catch (error) {
+      console.error('Error loading user info:', error);
+      
+      // Error loading user, redirect to login
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      window.location.href = '/ar/login';
+    }
+  }
+  
+  // Load on page load
+  document.addEventListener('DOMContentLoaded', loadUserInfo);
+</script>

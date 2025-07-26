@@ -1,0 +1,565 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { 
+  Settings, 
+  Server, 
+  Database, 
+  Shield, 
+  Users, 
+  Bell, 
+  Mail,
+  Globe,
+  Palette,
+  Code,
+  Lock,
+  Key,
+  AlertTriangle,
+  CheckCircle,
+  Save,
+  RefreshCw,
+  Download,
+  Upload,
+  Eye,
+  EyeOff,
+  Trash2,
+  Plus,
+  Edit,
+  X
+} from 'lucide-react';
+
+const title = "إعدادات النظام - لوحة التحكم الإدارية";
+const description = "إعدادات المنصة والخادم والأمان";
+
+// Mock settings data
+const systemSettings = {
+  general: {
+    siteName: 'زد اتش لوف',
+    siteDescription: 'منصة الجنرالات زيرو آور العربية',
+    siteUrl: 'https://zhlove.com',
+    adminEmail: 'admin@zhlove.com',
+    timezone: 'Asia/Riyadh',
+    language: 'ar',
+    maintenance: false,
+    registrationEnabled: true,
+    maxUsersPerClan: 50,
+    maxClansPerUser: 1
+  },
+  security: {
+    passwordMinLength: 8,
+    requireEmailVerification: true,
+    enableTwoFactor: true,
+    sessionTimeout: 3600,
+    maxLoginAttempts: 5,
+    banDuration: 24,
+    ipWhitelist: ['192.168.1.1', '10.0.0.1'],
+    ipBlacklist: ['192.168.1.100'],
+    enableCaptcha: true
+  },
+  content: {
+    maxReplaySize: 50,
+    allowedFileTypes: ['.rep', '.txt', '.jpg', '.png'],
+    autoModeration: true,
+    requireApproval: true,
+    maxUploadsPerDay: 10,
+    enableComments: true,
+    enableRatings: true,
+    enableReports: true
+  },
+  notifications: {
+    emailNotifications: true,
+    pushNotifications: true,
+    smsNotifications: false,
+    discordWebhook: 'https://discord.com/api/webhooks/...',
+    slackWebhook: '',
+    telegramBotToken: '',
+    notifyOnNewUser: true,
+    notifyOnNewReport: true,
+    notifyOnSystemError: true
+  },
+  api: {
+    enableApi: true,
+    rateLimitPerMinute: 60,
+    requireApiKey: true,
+    allowCors: true,
+    corsOrigins: ['https://zhlove.com'],
+    apiVersion: 'v1',
+    enableWebhooks: true,
+    enableOAuth: true
+  },
+  database: {
+    backupEnabled: true,
+    backupFrequency: 'daily',
+    backupRetention: 30,
+    cleanupEnabled: true,
+    cleanupFrequency: 'weekly',
+    enableQueryLog: false,
+    maxConnections: 100,
+    connectionTimeout: 30
+  }
+};
+
+const systemStats = {
+  server: {
+    uptime: '99.98%',
+    cpu: 45,
+    memory: 62,
+    disk: 38,
+    network: 23
+  },
+  database: {
+    size: '2.3 GB',
+    tables: 25,
+    records: 145678,
+    lastBackup: '2024-01-15T02:00:00Z',
+    backupSize: '1.8 GB'
+  },
+  logs: {
+    errorCount: 12,
+    warningCount: 45,
+    infoCount: 1234,
+    debugCount: 5678
+  }
+};
+
+// Check if user is admin
+const isAdmin = true;
+if (!isAdmin) {
+  return new Response('Unauthorized', { status: 401 });
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Settings size={32} class="text-tactical-green" />
+          <span>إعدادات النظام</span>
+        </h1>
+        <p class="text-muted-foreground">إعدادات المنصة والخادم والأمان</p>
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <button class="btn btn-outline">
+          <Download size={16} />
+          <span>تصدير الإعدادات</span>
+        </button>
+        <button class="btn btn-primary">
+          <Save size={16} />
+          <span>حفظ التغييرات</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Server size={20} class="text-tactical-green" />
+          <span class="text-xs text-tactical-green">صحي</span>
+        </div>
+        <div class="text-lg font-bold text-foreground">الخادم</div>
+        <div class="text-sm text-muted-foreground">وقت التشغيل: {systemStats.server.uptime}</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Database size={20} class="text-command-blue" />
+          <span class="text-xs text-command-blue">متصل</span>
+        </div>
+        <div class="text-lg font-bold text-foreground">قاعدة البيانات</div>
+        <div class="text-sm text-muted-foreground">الحجم: {systemStats.database.size}</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Shield size={20} class="text-victory-gold" />
+          <span class="text-xs text-victory-gold">محمي</span>
+        </div>
+        <div class="text-lg font-bold text-foreground">الأمان</div>
+        <div class="text-sm text-muted-foreground">المصادقة الثنائية: مفعلة</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <AlertTriangle size={20} class="text-orange-500" />
+          <span class="text-xs text-orange-500">{systemStats.logs.errorCount} خطأ</span>
+        </div>
+        <div class="text-lg font-bold text-foreground">السجلات</div>
+        <div class="text-sm text-muted-foreground">آخر 24 ساعة</div>
+      </div>
+    </div>
+
+    <!-- Settings Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- General Settings -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- General -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Globe size={20} class="text-tactical-green" />
+            <span>الإعدادات العامة</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">اسم الموقع</label>
+                <input 
+                  type="text" 
+                  value={systemSettings.general.siteName}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">البريد الإلكتروني للمدير</label>
+                <input 
+                  type="email" 
+                  value={systemSettings.general.adminEmail}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">وصف الموقع</label>
+              <textarea 
+                rows="3"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              >{systemSettings.general.siteDescription}</textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">المنطقة الزمنية</label>
+                <select class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                  <option value="Asia/Riyadh">آسيا/الرياض</option>
+                  <option value="Asia/Dubai">آسيا/دبي</option>
+                  <option value="Asia/Kuwait">آسيا/الكويت</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">اللغة الافتراضية</label>
+                <select class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                  <option value="ar">العربية</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="maintenance"
+                checked={systemSettings.general.maintenance}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="maintenance" class="text-sm text-foreground">
+                وضع الصيانة
+              </label>
+            </div>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="registration"
+                checked={systemSettings.general.registrationEnabled}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="registration" class="text-sm text-foreground">
+                السماح بالتسجيل الجديد
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Shield size={20} class="text-alert-red" />
+            <span>إعدادات الأمان</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">الحد الأدنى لطول كلمة المرور</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.security.passwordMinLength}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">مهلة انتهاء الجلسة (ثانية)</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.security.sessionTimeout}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">الحد الأقصى لمحاولات تسجيل الدخول</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.security.maxLoginAttempts}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">مدة الحظر (ساعة)</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.security.banDuration}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <input 
+                  type="checkbox" 
+                  id="emailVerification"
+                  checked={systemSettings.security.requireEmailVerification}
+                  class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+                />
+                <label for="emailVerification" class="text-sm text-foreground">
+                  مطالبة بتأكيد البريد الإلكتروني
+                </label>
+              </div>
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <input 
+                  type="checkbox" 
+                  id="twoFactor"
+                  checked={systemSettings.security.enableTwoFactor}
+                  class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+                />
+                <label for="twoFactor" class="text-sm text-foreground">
+                  تفعيل المصادقة الثنائية
+                </label>
+              </div>
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <input 
+                  type="checkbox" 
+                  id="captcha"
+                  checked={systemSettings.security.enableCaptcha}
+                  class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+                />
+                <label for="captcha" class="text-sm text-foreground">
+                  تفعيل الكابتشا
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Settings -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Upload size={20} class="text-command-blue" />
+            <span>إعدادات المحتوى</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">الحد الأقصى لحجم الريبلاي (MB)</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.content.maxReplaySize}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">الحد الأقصى للرفع اليومي</label>
+                <input 
+                  type="number" 
+                  value={systemSettings.content.maxUploadsPerDay}
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">أنواع الملفات المسموحة</label>
+              <div class="flex flex-wrap gap-2">
+                {systemSettings.content.allowedFileTypes.map((type) => (
+                  <span key={type} class="inline-flex items-center px-2 py-1 bg-muted rounded-full text-xs">
+                    {type}
+                    <button class="ml-1 hover:text-alert-red">
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+                <button class="inline-flex items-center px-2 py-1 bg-primary text-primary-foreground rounded-full text-xs">
+                  <Plus size={12} />
+                  <span>إضافة</span>
+                </button>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <input 
+                  type="checkbox" 
+                  id="autoModeration"
+                  checked={systemSettings.content.autoModeration}
+                  class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+                />
+                <label for="autoModeration" class="text-sm text-foreground">
+                  الاشراف التلقائي
+                </label>
+              </div>
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <input 
+                  type="checkbox" 
+                  id="requireApproval"
+                  checked={systemSettings.content.requireApproval}
+                  class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+                />
+                <label for="requireApproval" class="text-sm text-foreground">
+                  مطالبة بالموافقة قبل النشر
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side Panel -->
+      <div class="space-y-6">
+        <!-- API Settings -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Code size={20} class="text-victory-gold" />
+            <span>إعدادات API</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="enableApi"
+                checked={systemSettings.api.enableApi}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="enableApi" class="text-sm text-foreground">
+                تفعيل API
+              </label>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">الحد الأقصى للطلبات/دقيقة</label>
+              <input 
+                type="number" 
+                value={systemSettings.api.rateLimitPerMinute}
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="requireApiKey"
+                checked={systemSettings.api.requireApiKey}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="requireApiKey" class="text-sm text-foreground">
+                مطالبة بمفتاح API
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Database Settings -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Database size={20} class="text-command-blue" />
+            <span>إعدادات قاعدة البيانات</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="backupEnabled"
+                checked={systemSettings.database.backupEnabled}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="backupEnabled" class="text-sm text-foreground">
+                تفعيل النسخ الاحتياطي
+              </label>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">تكرار النسخ الاحتياطي</label>
+              <select class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring">
+                <option value="daily">يومي</option>
+                <option value="weekly">أسبوعي</option>
+                <option value="monthly">شهري</option>
+              </select>
+            </div>
+            <div class="text-sm text-muted-foreground">
+              <div class="flex justify-between">
+                <span>آخر نسخة احتياطية:</span>
+                <span>{new Date(systemStats.database.lastBackup).toLocaleDateString('ar-SA')}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>حجم النسخة الاحتياطية:</span>
+                <span>{systemStats.database.backupSize}</span>
+              </div>
+            </div>
+            <button class="w-full btn btn-outline">
+              <Download size={16} />
+              <span>إنشاء نسخة احتياطية الآن</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Bell size={20} class="text-orange-500" />
+            <span>الإشعارات</span>
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="emailNotifications"
+                checked={systemSettings.notifications.emailNotifications}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="emailNotifications" class="text-sm text-foreground">
+                إشعارات البريد الإلكتروني
+              </label>
+            </div>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <input 
+                type="checkbox" 
+                id="pushNotifications"
+                checked={systemSettings.notifications.pushNotifications}
+                class="w-4 h-4 text-primary bg-input border-border rounded focus:ring-ring"
+              />
+              <label for="pushNotifications" class="text-sm text-foreground">
+                الإشعارات الفورية
+              </label>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">Discord Webhook</label>
+              <input 
+                type="url" 
+                value={systemSettings.notifications.discordWebhook}
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end space-x-4 rtl:space-x-reverse mt-8">
+      <button class="btn btn-outline">
+        <RefreshCw size={16} />
+        <span>إعادة تحميل</span>
+      </button>
+      <button class="btn btn-outline">
+        <Eye size={16} />
+        <span>معاينة</span>
+      </button>
+      <button class="btn btn-primary">
+        <Save size={16} />
+        <span>حفظ جميع الإعدادات</span>
+      </button>
+    </div>
+  </div>
+</BaseLayout> 

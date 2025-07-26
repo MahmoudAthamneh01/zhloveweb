@@ -1,0 +1,503 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TournamentCard from '../../../components/tournaments/TournamentCard.tsx';
+import { Trophy, Plus, Search, Filter, Calendar, Crown, Users, Target, Star } from 'lucide-react';
+
+const title = "البطولات - زد اتش لوف";
+const description = "تنافس في البطولات المثيرة واربح جوائز قيمة";
+
+// Mock tournaments data
+const featuredTournaments = [
+  {
+    id: 1,
+    name: "بطولة الشرق الأوسط الكبرى 2024",
+    description: "البطولة الأكبر في المنطقة للعبة الجنرالات زيرو آور، مفتوحة لجميع اللاعبين من الشرق الأوسط",
+    banner: "/banners/mega_tournament.jpg",
+    type: "single_elimination",
+    format: "1v1",
+    status: "registration",
+    gameMode: "ranked",
+    maxParticipants: 256,
+    currentParticipants: 187,
+    prizePool: 5000,
+    currency: "USD",
+    entryFee: 10,
+    startDate: "2024-02-15T18:00:00Z",
+    endDate: "2024-02-25T22:00:00Z",
+    registrationDeadline: "2024-02-10T23:59:59Z",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-15T12:00:00Z",
+    organizer: {
+      id: 1,
+      username: "tournament_admin",
+      displayName: "إدارة البطولات",
+      avatar: "/avatars/tournament_admin.png",
+      verified: true
+    },
+    rules: {
+      mapPool: ["Tournament Desert", "Scorched Earth", "Winter Wolf", "Final Crusade"],
+      gameSettings: "تصفيات سريعة - 30 دقيقة",
+      timeLimit: 1800,
+      allowedFactions: ["USA", "China", "GLA"],
+      banRules: "حظر الخرائط حسب الاتفاق"
+    },
+    prizes: [
+      { position: 1, amount: 2000, title: "البطل", description: "المركز الأول" },
+      { position: 2, amount: 1200, title: "الوصيف", description: "المركز الثاني" },
+      { position: 3, amount: 800, title: "المركز الثالث", description: "الميدالية البرونزية" },
+      { position: 4, amount: 500, title: "المركز الرابع", description: "جائزة تشجيعية" }
+    ],
+    sponsors: [
+      { name: "شركة الألعاب العربية", logo: "/sponsors/arab_games.png", url: "https://arabgames.com" }
+    ],
+    participants: [],
+    stats: {
+      totalViews: 45000,
+      totalMatches: 0,
+      averageMatchDuration: 1200,
+      totalPrizeMoney: 5000,
+      popularityScore: 95
+    },
+    tags: ["الشرق الأوسط", "كبرى", "جوائز عالية", "تنافسي"],
+    featured: true,
+    isRegistered: false,
+    canRegister: true,
+    region: "الشرق الأوسط",
+    difficulty: "pro",
+    streamUrl: "https://twitch.tv/zhlove_tournaments",
+    discordServer: "https://discord.gg/zhlove"
+  },
+  {
+    id: 2,
+    name: "كأس السعودية للمبتدئين",
+    description: "بطولة خاصة باللاعبين المبتدئين والجدد، فرصة رائعة لتعلم اللعب التنافسي",
+    banner: "/banners/saudi_cup.jpg",
+    type: "double_elimination",
+    format: "1v1",
+    status: "upcoming",
+    gameMode: "casual",
+    maxParticipants: 64,
+    currentParticipants: 23,
+    prizePool: 1000,
+    currency: "SAR",
+    entryFee: 0,
+    startDate: "2024-02-20T19:00:00Z",
+    endDate: "2024-02-27T21:00:00Z",
+    registrationDeadline: "2024-02-18T23:59:59Z",
+    createdAt: "2024-01-10T00:00:00Z",
+    updatedAt: "2024-01-14T15:30:00Z",
+    organizer: {
+      id: 2,
+      username: "saudi_gaming",
+      displayName: "المجتمع السعودي للألعاب",
+      avatar: "/avatars/saudi_gaming.png",
+      verified: true
+    },
+    rules: {
+      mapPool: ["Tournament Desert", "Green Pastures", "Heartland Shield"],
+      gameSettings: "إعدادات المبتدئين",
+      timeLimit: 2400,
+      allowedFactions: ["USA", "China", "GLA"],
+      banRules: "بدون حظر - تعليمية"
+    },
+    prizes: [
+      { position: 1, amount: 500, title: "البطل", description: "المركز الأول" },
+      { position: 2, amount: 300, title: "الوصيف", description: "المركز الثاني" },
+      { position: 3, amount: 200, title: "المركز الثالث", description: "الميدالية البرونزية" }
+    ],
+    participants: [],
+    stats: {
+      totalViews: 12000,
+      totalMatches: 0,
+      averageMatchDuration: 1800,
+      totalPrizeMoney: 1000,
+      popularityScore: 78
+    },
+    tags: ["مبتدئين", "تعليمي", "السعودية", "مجاني"],
+    featured: true,
+    isRegistered: false,
+    canRegister: true,
+    region: "السعودية",
+    difficulty: "beginner",
+    discordServer: "https://discord.gg/saudi_gaming"
+  }
+];
+
+const activeTournaments = [
+  {
+    id: 3,
+    name: "بطولة الخليج السريعة",
+    description: "بطولة سريعة للاعبي دول الخليج مع مباريات قصيرة ومثيرة",
+    type: "swiss",
+    format: "1v1",
+    status: "in_progress",
+    gameMode: "ranked",
+    maxParticipants: 32,
+    currentParticipants: 32,
+    prizePool: 800,
+    currency: "AED",
+    entryFee: 25,
+    startDate: "2024-01-12T20:00:00Z",
+    endDate: "2024-01-19T22:00:00Z",
+    registrationDeadline: "2024-01-10T23:59:59Z",
+    createdAt: "2024-01-01T00:00:00Z",
+    updatedAt: "2024-01-15T18:45:00Z",
+    organizer: {
+      id: 3,
+      username: "gulf_esports",
+      displayName: "الخليج للرياضات الإلكترونية",
+      avatar: "/avatars/gulf_esports.png",
+      verified: true
+    },
+    rules: {
+      mapPool: ["Tournament Desert", "Scorched Earth"],
+      gameSettings: "مباريات سريعة - 20 دقيقة",
+      timeLimit: 1200,
+      allowedFactions: ["USA", "China", "GLA"]
+    },
+    prizes: [
+      { position: 1, amount: 400, title: "البطل" },
+      { position: 2, amount: 240, title: "الوصيف" },
+      { position: 3, amount: 160, title: "المركز الثالث" }
+    ],
+    participants: [],
+    stats: {
+      totalViews: 8500,
+      totalMatches: 16,
+      averageMatchDuration: 900,
+      totalPrizeMoney: 800,
+      popularityScore: 82
+    },
+    tags: ["سريع", "الخليج", "جاري"],
+    featured: false,
+    isRegistered: false,
+    canRegister: false,
+    region: "الخليج",
+    difficulty: "intermediate"
+  }
+];
+
+const upcomingTournaments = [
+  {
+    id: 4,
+    name: "ليلة الأساطير",
+    description: "بطولة ليلية خاصة بأفضل اللاعبين في المنطقة",
+    type: "round_robin",
+    format: "1v1",
+    status: "upcoming",
+    gameMode: "custom",
+    maxParticipants: 16,
+    currentParticipants: 8,
+    prizePool: 2000,
+    currency: "USD",
+    entryFee: 50,
+    startDate: "2024-03-01T21:00:00Z",
+    endDate: "2024-03-03T23:00:00Z",
+    registrationDeadline: "2024-02-25T23:59:59Z",
+    createdAt: "2024-01-05T00:00:00Z",
+    updatedAt: "2024-01-15T14:20:00Z",
+    organizer: {
+      id: 4,
+      username: "legends_org",
+      displayName: "منظمة الأساطير",
+      avatar: "/avatars/legends_org.png",
+      verified: true
+    },
+    rules: {
+      mapPool: ["Tournament Desert", "Scorched Earth", "Winter Wolf", "Final Crusade", "Defcon 6"],
+      gameSettings: "إعدادات الأساطير",
+      timeLimit: 3600,
+      allowedFactions: ["USA", "China", "GLA"]
+    },
+    prizes: [
+      { position: 1, amount: 1000, title: "أسطورة الليل" },
+      { position: 2, amount: 600, title: "فارس الظلام" },
+      { position: 3, amount: 400, title: "محارب القمر" }
+    ],
+    participants: [],
+    stats: {
+      totalViews: 25000,
+      totalMatches: 0,
+      averageMatchDuration: 2400,
+      totalPrizeMoney: 2000,
+      popularityScore: 90
+    },
+    tags: ["ليلي", "أساطير", "VIP", "حصري"],
+    featured: false,
+    isRegistered: false,
+    canRegister: true,
+    region: "عالمي",
+    difficulty: "pro",
+    streamUrl: "https://youtube.com/zhlove_legends"
+  }
+];
+
+const tournamentStats = {
+  totalTournaments: 156,
+  activeTournaments: 12,
+  totalPrizeMoney: 25000,
+  totalParticipants: 4560,
+  completedTournaments: 89
+};
+
+const categories = [
+  { id: "all", name: "جميع البطولات", count: 156, icon: Trophy },
+  { id: "featured", name: "البطولات المميزة", count: 8, icon: Crown },
+  { id: "beginner", name: "للمبتدئين", count: 23, icon: Star },
+  { id: "pro", name: "للمحترفين", count: 45, icon: Target },
+  { id: "team", name: "الفرق", count: 12, icon: Users },
+  { id: "free", name: "مجانية", count: 67, icon: Calendar }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Trophy size={32} class="text-victory-gold" />
+          <span>البطولات</span>
+        </h1>
+        <p class="text-muted-foreground">تنافس في البطولات المثيرة واربح جوائز قيمة</p>
+      </div>
+      <a href="/ar/tournaments/create" class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+        <Plus size={20} />
+        <span>إنشاء بطولة</span>
+      </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">{tournamentStats.totalTournaments}</div>
+        <div class="text-sm text-muted-foreground">إجمالي البطولات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">{tournamentStats.activeTournaments}</div>
+        <div class="text-sm text-muted-foreground">نشطة الآن</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">{(tournamentStats.totalPrizeMoney / 1000).toFixed(0)}K</div>
+        <div class="text-sm text-muted-foreground">جوائز إجمالية</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">{(tournamentStats.totalParticipants / 1000).toFixed(1)}K</div>
+        <div class="text-sm text-muted-foreground">مشارك</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-neutral-silver mb-1">{tournamentStats.completedTournaments}</div>
+        <div class="text-sm text-muted-foreground">مكتملة</div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="البحث في البطولات..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <Filter size={20} class="text-muted-foreground" />
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الحالات</option>
+            <option value="registration">التسجيل مفتوح</option>
+            <option value="upcoming">قادمة</option>
+            <option value="in_progress">جارية</option>
+            <option value="completed">مكتملة</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأنواع</option>
+            <option value="single_elimination">إقصاء مباشر</option>
+            <option value="double_elimination">إقصاء مزدوج</option>
+            <option value="round_robin">دوري</option>
+            <option value="swiss">سويسري</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع المستويات</option>
+            <option value="beginner">مبتدئ</option>
+            <option value="intermediate">متوسط</option>
+            <option value="advanced">متقدم</option>
+            <option value="pro">محترف</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="prize_desc">أعلى جائزة</option>
+            <option value="participants_desc">الأكثر مشاركة</option>
+            <option value="date_asc">الأقرب موعداً</option>
+            <option value="created_desc">الأحدث</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      {categories.map((category) => (
+        <a 
+          key={category.id}
+          href={`/ar/tournaments?category=${category.id}`} 
+          class="military-card p-4 text-center hover:shadow-lg transition-shadow"
+        >
+          <category.icon size={24} class="mx-auto text-primary mb-2" />
+          <div class="font-medium text-foreground text-sm">{category.name}</div>
+          <div class="text-xs text-muted-foreground">{category.count}</div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Featured Tournaments -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Crown size={24} class="text-victory-gold" />
+        <span>البطولات المميزة</span>
+      </h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {featuredTournaments.map(tournament => (
+          <TournamentCard 
+            tournament={tournament}
+            onJoin={(id) => window.location.href = `/ar/tournaments/${id}/register`}
+            onView={(id) => window.location.href = `/ar/tournaments/${id}`}
+            onShare={(id) => console.log('Share tournament:', id)}
+            isCompact={false}
+            showActions={true}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Active Tournaments -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <div class="w-3 h-3 bg-tactical-green rounded-full animate-pulse"></div>
+        <span>البطولات النشطة</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {activeTournaments.map(tournament => (
+          <TournamentCard 
+            tournament={tournament}
+            onJoin={(id) => window.location.href = `/ar/tournaments/${id}/register`}
+            onView={(id) => window.location.href = `/ar/tournaments/${id}`}
+            onShare={(id) => console.log('Share tournament:', id)}
+            isCompact={true}
+            showActions={true}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Upcoming Tournaments -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Calendar size={24} class="text-command-blue" />
+        <span>البطولات القادمة</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {upcomingTournaments.map(tournament => (
+          <TournamentCard 
+            tournament={tournament}
+            onJoin={(id) => window.location.href = `/ar/tournaments/${id}/register`}
+            onView={(id) => window.location.href = `/ar/tournaments/${id}`}
+            onShare={(id) => console.log('Share tournament:', id)}
+            isCompact={true}
+            showActions={true}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Tournament Organization Info -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4">كيف تنظم بطولة؟</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-tactical-green/20 text-tactical-green rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">1</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">حدد تفاصيل البطولة</h3>
+              <p class="text-sm text-muted-foreground">اختر نوع البطولة، عدد المشاركين، والجوائز</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-command-blue/20 text-command-blue rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">2</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">اضبط قواعد اللعب</h3>
+              <p class="text-sm text-muted-foreground">حدد الخرائط المسموحة والإعدادات</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-victory-gold/20 text-victory-gold rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">3</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">انشر البطولة</h3>
+              <p class="text-sm text-muted-foreground">شارك البطولة وادع اللاعبين للمشاركة</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-orange-500/20 text-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">4</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">أدر البطولة</h3>
+              <p class="text-sm text-muted-foreground">تابع النتائج ووزع الجوائز</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <a href="/ar/tournaments/create" class="btn btn-primary">
+          ابدأ تنظيم بطولتك
+        </a>
+      </div>
+    </div>
+
+    <!-- Tournament Rules -->
+    <div class="military-card p-6">
+      <h2 class="text-xl font-bold text-foreground mb-4">قوانين البطولات</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+        <div>
+          <h3 class="font-semibold text-foreground mb-2">للمشاركين</h3>
+          <ul class="space-y-1 text-muted-foreground">
+            <li>• يجب التسجيل قبل انتهاء المهلة</li>
+            <li>• الالتزام بالمواعيد المحددة</li>
+            <li>• احترام اللاعبين الآخرين</li>
+            <li>• عدم استخدام الغش أو البرامج المحظورة</li>
+            <li>• تسليم الريبلايز عند الطلب</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-foreground mb-2">للمنظمين</h3>
+          <ul class="space-y-1 text-muted-foreground">
+            <li>• توضيح جميع القوانين مسبقاً</li>
+            <li>• ضمان عدالة التحكيم</li>
+            <li>• توزيع الجوائز في المواعيد</li>
+            <li>• التواصل الواضح مع المشاركين</li>
+            <li>• الحفاظ على سرية معلومات المشاركين</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZH-Love - Image Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .image-card {
+            background: #374151;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #10b981;
+        }
+        .canvas-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        canvas {
+            border: 2px solid #10b981;
+            border-radius: 8px;
+            background: white;
+        }
+        .btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #10b981;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #10b981;
+            margin-bottom: 15px;
+        }
+        .instructions {
+            background: #1f2937;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 ZH-Love Image Generator</h1>
+        
+        <div class="instructions">
+            <h3>📝 Instructions:</h3>
+            <p>1. Click "Generate" for each image type</p>
+            <p>2. Right-click on the generated image and save it</p>
+            <p>3. Place the images in their respective folders</p>
+            <p>4. Use the exact filenames as shown</p>
+        </div>
+
+        <div class="grid">
+            <!-- Default Avatar -->
+            <div class="image-card">
+                <h2>👤 Default Avatar</h2>
+                <p>Filename: public/images/avatars/default.png</p>
+                <p>Size: 200x200px</p>
+                <div class="canvas-container">
+                    <canvas id="defaultAvatar" width="200" height="200"></canvas>
+                </div>
+                <button class="btn" onclick="generateDefaultAvatar()">Generate Default Avatar</button>
+            </div>
+
+            <!-- Admin Avatar -->
+            <div class="image-card">
+                <h2>👑 Admin Avatar</h2>
+                <p>Filename: public/images/avatars/admin.png</p>
+                <p>Size: 200x200px</p>
+                <div class="canvas-container">
+                    <canvas id="adminAvatar" width="200" height="200"></canvas>
+                </div>
+                <button class="btn" onclick="generateAdminAvatar()">Generate Admin Avatar</button>
+            </div>
+
+            <!-- Clan Logo -->
+            <div class="image-card">
+                <h2>🦁 Arab Lions Clan Logo</h2>
+                <p>Filename: public/images/clans/arab-lions.png</p>
+                <p>Size: 100x100px</p>
+                <div class="canvas-container">
+                    <canvas id="arabLions" width="100" height="100"></canvas>
+                </div>
+                <button class="btn" onclick="generateArabLions()">Generate Arab Lions Logo</button>
+            </div>
+
+            <!-- Tournament Banner -->
+            <div class="image-card">
+                <h2>🏆 Tournament Banner</h2>
+                <p>Filename: public/images/tournaments/middle-east-2024.jpg</p>
+                <p>Size: 800x300px</p>
+                <div class="canvas-container">
+                    <canvas id="tournamentBanner" width="800" height="300"></canvas>
+                </div>
+                <button class="btn" onclick="generateTournamentBanner()">Generate Tournament Banner</button>
+            </div>
+
+            <!-- Replay Thumbnail -->
+            <div class="image-card">
+                <h2>📹 Replay Thumbnail</h2>
+                <p>Filename: public/images/replays/gla-vs-usa-thumb.jpg</p>
+                <p>Size: 640x360px</p>
+                <div class="canvas-container">
+                    <canvas id="replayThumb" width="640" height="360"></canvas>
+                </div>
+                <button class="btn" onclick="generateReplayThumb()">Generate Replay Thumbnail</button>
+            </div>
+
+            <!-- Streamer Avatar -->
+            <div class="image-card">
+                <h2>🎥 Streamer Avatar</h2>
+                <p>Filename: public/images/streamers/zh-legend-avatar.jpg</p>
+                <p>Size: 200x200px</p>
+                <div class="canvas-container">
+                    <canvas id="streamerAvatar" width="200" height="200"></canvas>
+                </div>
+                <button class="btn" onclick="generateStreamerAvatar()">Generate Streamer Avatar</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>🔄 Next Steps:</h3>
+            <p>1. Create the required folders if they don't exist</p>
+            <p>2. Copy these patterns for other similar images</p>
+            <p>3. Use online tools or AI image generators for better quality</p>
+            <p>4. Consider using Command & Conquer game assets (with permission)</p>
+        </div>
+    </div>
+
+    <script>
+        // Default Avatar Generator
+        function generateDefaultAvatar() {
+            const canvas = document.getElementById('defaultAvatar');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Circle
+            ctx.beginPath();
+            ctx.arc(100, 100, 80, 0, 2 * Math.PI);
+            ctx.fillStyle = '#10b981';
+            ctx.fill();
+            
+            // User icon
+            ctx.fillStyle = 'white';
+            ctx.font = '60px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('👤', 100, 120);
+            
+            // Border
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // Admin Avatar Generator
+        function generateAdminAvatar() {
+            const canvas = document.getElementById('adminAvatar');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Circle
+            ctx.beginPath();
+            ctx.arc(100, 100, 80, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fill();
+            
+            // Crown icon
+            ctx.fillStyle = 'white';
+            ctx.font = '60px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('👑', 100, 120);
+            
+            // Border
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // Arab Lions Logo Generator
+        function generateArabLions() {
+            const canvas = document.getElementById('arabLions');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, 100, 100);
+            
+            // Circle
+            ctx.beginPath();
+            ctx.arc(50, 50, 40, 0, 2 * Math.PI);
+            ctx.fillStyle = '#f59e0b';
+            ctx.fill();
+            
+            // Lion icon
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🦁', 50, 60);
+            
+            // Border
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // Tournament Banner Generator
+        function generateTournamentBanner() {
+            const canvas = document.getElementById('tournamentBanner');
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 800, 0);
+            gradient.addColorStop(0, '#1f2937');
+            gradient.addColorStop(1, '#059669');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 300);
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('بطولة الشرق الأوسط الكبرى', 400, 120);
+            
+            // Subtitle
+            ctx.font = '24px Arial';
+            ctx.fillText('Middle East Championship 2024', 400, 160);
+            
+            // Trophy
+            ctx.font = '60px Arial';
+            ctx.fillText('🏆', 400, 240);
+            
+            // Border
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(3, 3, 794, 294);
+        }
+
+        // Replay Thumbnail Generator
+        function generateReplayThumb() {
+            const canvas = document.getElementById('replayThumb');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            const gradient = ctx.createLinearGradient(0, 0, 640, 360);
+            gradient.addColorStop(0, '#374151');
+            gradient.addColorStop(1, '#1f2937');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 640, 360);
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('GLA vs USA Epic Battle', 320, 120);
+            
+            // Subtitle
+            ctx.font = '20px Arial';
+            ctx.fillText('معركة ملحمية - المعركة الأسطورية', 320, 160);
+            
+            // Duration
+            ctx.fillStyle = '#10b981';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText('30:00', 620, 340);
+            
+            // Play button
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(320, 200, 40, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Play icon
+            ctx.fillStyle = '#1f2937';
+            ctx.font = '40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('▶', 320, 215);
+        }
+
+        // Streamer Avatar Generator
+        function generateStreamerAvatar() {
+            const canvas = document.getElementById('streamerAvatar');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Circle
+            ctx.beginPath();
+            ctx.arc(100, 100, 80, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+            
+            // Camera icon
+            ctx.fillStyle = 'white';
+            ctx.font = '60px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎥', 100, 120);
+            
+            // Border
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // Auto-generate all images on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                generateDefaultAvatar();
+                generateAdminAvatar();
+                generateArabLions();
+                generateTournamentBanner();
+                generateReplayThumb();
+                generateStreamerAvatar();
+            }, 500);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,988 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="إعدادات البطولات - لوحة الإدارة"
+  description="إدارة جميع إعدادات البطولات والمسابقات"
+>
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-900 to-blue-800 py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">إعدادات البطولات</h1>
+            <p class="text-blue-200">إدارة شاملة لجميع إعدادات البطولات والمسابقات</p>
+          </div>
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button id="save-all-settings" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+              حفظ جميع الإعدادات
+            </button>
+            <button id="reset-settings" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+              إعادة تعيين
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+      <!-- Navigation Tabs -->
+      <div class="bg-card border border-border rounded-lg p-1 mb-8 inline-flex">
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors active"
+          data-tab="tournament-types"
+        >
+          أنواع البطولات
+        </button>
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors"
+          data-tab="game-modes"
+        >
+          أنماط اللعب
+        </button>
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors"
+          data-tab="maps"
+        >
+          الخرائط
+        </button>
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors"
+          data-tab="rules"
+        >
+          القوانين
+        </button>
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors"
+          data-tab="regions"
+        >
+          المناطق
+        </button>
+        <button 
+          class="tab-button px-6 py-3 rounded-md text-sm font-medium transition-colors"
+          data-tab="settings"
+        >
+          إعدادات عامة
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="space-y-8">
+        <!-- Tournament Types Tab -->
+        <div id="tournament-types" class="tab-content">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-white">أنواع البطولات</h2>
+              <button id="add-tournament-type" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                إضافة نوع جديد
+              </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tournament-types-grid">
+              <!-- Tournament types will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Modes Tab -->
+        <div id="game-modes" class="tab-content hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-white">أنماط اللعب</h2>
+              <button id="add-game-mode" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                إضافة نمط جديد
+              </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="game-modes-grid">
+              <!-- Game modes will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Maps Tab -->
+        <div id="maps" class="tab-content hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-white">الخرائط</h2>
+              <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <button id="import-maps" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                  استيراد خرائط
+                </button>
+                <button id="add-map" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                  إضافة خريطة
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <input 
+                  type="search" 
+                  id="map-search" 
+                  placeholder="البحث في الخرائط..."
+                  class="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <select id="map-category-filter" class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                  <option value="">جميع الفئات</option>
+                  <option value="official">رسمية</option>
+                  <option value="tournament">بطولات</option>
+                  <option value="custom">مخصصة</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="maps-grid">
+              <!-- Maps will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Rules Tab -->
+        <div id="rules" class="tab-content hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-white">القوانين المعدة مسبقاً</h2>
+              <button id="add-rule-template" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                إضافة قالب جديد
+              </button>
+            </div>
+            
+            <div class="space-y-4" id="rules-list">
+              <!-- Rules will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Regions Tab -->
+        <div id="regions" class="tab-content hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-semibold text-white">المناطق الجغرافية</h2>
+              <button id="add-region" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                إضافة منطقة
+              </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="regions-grid">
+              <!-- Regions will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- General Settings Tab -->
+        <div id="settings" class="tab-content hidden">
+          <div class="space-y-6">
+            <!-- Tournament Creation Settings -->
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-white mb-4">إعدادات إنشاء البطولات</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">السماح للمستخدمين بإنشاء بطولات</label>
+                    <p class="text-gray-400 text-sm">يمكن للمستخدمين العاديين إنشاء بطولات جديدة</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="allow-user-tournaments" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">موافقة إدارية مطلوبة</label>
+                    <p class="text-gray-400 text-sm">البطولات الجديدة تحتاج موافقة من الإدارة</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="require-admin-approval" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">السماح بالبطولات الخاصة</label>
+                    <p class="text-gray-400 text-sm">يمكن إنشاء بطولات خاصة بدعوة فقط</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="allow-private-tournaments" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prize Settings -->
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-white mb-4">إعدادات الجوائز</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">الحد الأدنى للجائزة</label>
+                  <input 
+                    type="number" 
+                    id="min-prize" 
+                    value="0" 
+                    min="0"
+                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">الحد الأقصى للجائزة</label>
+                  <input 
+                    type="number" 
+                    id="max-prize" 
+                    value="10000" 
+                    min="0"
+                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">العملات المسموحة</label>
+                  <div class="space-y-2">
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                      <span class="text-gray-300">USD - دولار أمريكي</span>
+                    </label>
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                      <span class="text-gray-300">SAR - ريال سعودي</span>
+                    </label>
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                      <span class="text-gray-300">AED - درهم إماراتي</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-300 mb-2">طرق الدفع المسموحة</label>
+                  <div class="space-y-2">
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                      <span class="text-gray-300">PayPal</span>
+                    </label>
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                      <span class="text-gray-300">تحويل بنكي</span>
+                    </label>
+                    <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500">
+                      <span class="text-gray-300">عملة رقمية</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-white mb-4">إعدادات الإشعارات</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">إشعار عند إنشاء بطولة جديدة</label>
+                    <p class="text-gray-400 text-sm">إرسال إشعار للإدارة عند إنشاء بطولة جديدة</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="notify-new-tournament" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">إشعار عام عند الموافقة</label>
+                    <p class="text-gray-400 text-sm">إرسال إشعار عام للمستخدمين عند الموافقة على بطولة</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="notify-approval" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                  <div>
+                    <label class="text-white font-medium">إشعار البطولات المميزة</label>
+                    <p class="text-gray-400 text-sm">إرسال إشعار خاص للبطولات المميزة</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="notify-featured" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 id="modal-title" class="text-xl font-semibold text-white">إضافة عنصر جديد</h3>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="modal-content">
+          <!-- Dynamic content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initial data
+      const tournamentTypes = [
+        { id: 'single_elimination', name: 'إقصاء مباشر', description: 'الخاسر يخرج نهائياً', icon: '🏆', enabled: true },
+        { id: 'double_elimination', name: 'إقصاء مزدوج', description: 'فرصة ثانية للخاسرين', icon: '🎯', enabled: true },
+        { id: 'round_robin', name: 'دوري', description: 'الكل يلعب ضد الكل', icon: '🔄', enabled: true },
+        { id: 'swiss', name: 'نظام سويسري', description: 'مباريات متوازنة', icon: '⚖️', enabled: true },
+        { id: 'ladder', name: 'سلم', description: 'تسلق الترتيب', icon: '📈', enabled: false }
+      ];
+
+      const gameModes = [
+        { id: '1v1', name: 'فردي (1v1)', description: 'مباراة فردية', icon: '⚔️', enabled: true, rules: 'قوانين خاصة بالمباريات الفردية' },
+        { id: '2v2', name: 'ثنائي (2v2)', description: 'فريق من لاعبين', icon: '👥', enabled: true, rules: 'قوانين خاصة بالفرق الثنائية' },
+        { id: '3v3', name: 'ثلاثي (3v3)', description: 'فريق من 3 لاعبين', icon: '👫', enabled: true, rules: 'قوانين خاصة بالفرق الثلاثية' },
+        { id: '4v4', name: 'رباعي (4v4)', description: 'فريق من 4 لاعبين', icon: '👨‍👩‍👧‍👦', enabled: true, rules: 'قوانين خاصة بالفرق الرباعية' },
+        { id: 'team', name: 'فريق مخصص', description: 'حدد حجم الفريق', icon: '🏘️', enabled: true, rules: 'قوانين مخصصة للفرق' }
+      ];
+
+      const maps = [
+        { id: 'desert_fury', name: 'Desert Fury', category: 'official', enabled: true, description: 'خريطة رسمية كلاسيكية', image: '/maps/desert_fury.jpg' },
+        { id: 'winter_wolf', name: 'Winter Wolf', category: 'official', enabled: true, description: 'خريطة الذئب الشتوي', image: '/maps/winter_wolf.jpg' },
+        { id: 'tournament_desert', name: 'Tournament Desert', category: 'tournament', enabled: true, description: 'خريطة خاصة بالبطولات', image: '/maps/tournament_desert.jpg' },
+        { id: 'green_pastures', name: 'Green Pastures', category: 'official', enabled: true, description: 'المراعي الخضراء', image: '/maps/green_pastures.jpg' },
+        { id: 'scorched_earth', name: 'Scorched Earth', category: 'official', enabled: true, description: 'الأرض المحروقة', image: '/maps/scorched_earth.jpg' },
+        { id: 'urban_combat', name: 'Urban Combat', category: 'tournament', enabled: true, description: 'القتال الحضري', image: '/maps/urban_combat.jpg' },
+        { id: 'mountain_pass', name: 'Mountain Pass', category: 'custom', enabled: false, description: 'ممر الجبل', image: '/maps/mountain_pass.jpg' },
+        { id: 'coastal_clash', name: 'Coastal Clash', category: 'custom', enabled: false, description: 'صدام الساحل', image: '/maps/coastal_clash.jpg' },
+        { id: 'industrial_zone', name: 'Industrial Zone', category: 'custom', enabled: true, description: 'المنطقة الصناعية', image: '/maps/industrial_zone.jpg' }
+      ];
+
+      const ruleTemplates = [
+        { 
+          id: 'standard_1v1', 
+          name: 'قوانين المباريات الفردية القياسية',
+          gameMode: '1v1',
+          content: 'قوانين المباريات الفردية:\n1. مدة المباراة: 45 دقيقة\n2. الفصائل المسموحة: جميع الفصائل\n3. ممنوع استخدام الغش\n4. احترام الخصم',
+          enabled: true
+        },
+        { 
+          id: 'team_2v2', 
+          name: 'قوانين الفرق الثنائية',
+          gameMode: '2v2',
+          content: 'قوانين الفرق الثنائية:\n1. مدة المباراة: 60 دقيقة\n2. التنسيق بين أعضاء الفريق مسموح\n3. لا يجوز تغيير الفريق أثناء البطولة\n4. احترام الفريق المنافس',
+          enabled: true
+        },
+        { 
+          id: 'tournament_rules', 
+          name: 'قوانين البطولات الرسمية',
+          gameMode: 'all',
+          content: 'قوانين البطولات الرسمية:\n1. الحضور قبل 15 دقيقة من المباراة\n2. عدم التأخير أكثر من 10 دقائق\n3. احترام جميع المشاركين\n4. اتباع تعليمات الإدارة',
+          enabled: true
+        }
+      ];
+
+      const regions = [
+        { id: 'global', name: 'عالمي', description: 'جميع أنحاء العالم', enabled: true, timezone: 'UTC' },
+        { id: 'mena', name: 'الشرق الأوسط وشمال أفريقيا', description: 'منطقة الشرق الأوسط', enabled: true, timezone: 'Asia/Riyadh' },
+        { id: 'europe', name: 'أوروبا', description: 'القارة الأوروبية', enabled: true, timezone: 'Europe/London' },
+        { id: 'asia', name: 'آسيا', description: 'القارة الآسيوية', enabled: true, timezone: 'Asia/Tokyo' },
+        { id: 'americas', name: 'الأمريكتين', description: 'القارتين الأمريكيتين', enabled: true, timezone: 'America/New_York' }
+      ];
+
+      let currentData = {
+        tournamentTypes,
+        gameModes,
+        maps,
+        ruleTemplates,
+        regions
+      };
+
+      // Initialize
+      setupTabs();
+      loadTournamentTypes();
+      loadGameModes();
+      loadMaps();
+      loadRuleTemplates();
+      loadRegions();
+      setupEventListeners();
+
+      function setupTabs() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            
+            // Update active tab
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show corresponding content
+            tabContents.forEach(content => {
+              if (content.id === tabId) {
+                content.classList.remove('hidden');
+              } else {
+                content.classList.add('hidden');
+              }
+            });
+          });
+        });
+      }
+
+      function loadTournamentTypes() {
+        const grid = document.getElementById('tournament-types-grid');
+        grid.innerHTML = currentData.tournamentTypes.map(type => `
+          <div class="tournament-type-card bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-green-500 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-2xl">${type.icon}</div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${type.enabled ? 'checked' : ''} onchange="toggleTournamentType('${type.id}')">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2">${type.name}</h3>
+            <p class="text-gray-400 text-sm mb-4">${type.description}</p>
+            <div class="flex space-x-2 rtl:space-x-reverse">
+              <button onclick="editTournamentType('${type.id}')" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                تعديل
+              </button>
+              <button onclick="deleteTournamentType('${type.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors">
+                حذف
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function loadGameModes() {
+        const grid = document.getElementById('game-modes-grid');
+        grid.innerHTML = currentData.gameModes.map(mode => `
+          <div class="game-mode-card bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-green-500 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-2xl">${mode.icon}</div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${mode.enabled ? 'checked' : ''} onchange="toggleGameMode('${mode.id}')">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-2">${mode.name}</h3>
+            <p class="text-gray-400 text-sm mb-4">${mode.description}</p>
+            <div class="flex space-x-2 rtl:space-x-reverse">
+              <button onclick="editGameMode('${mode.id}')" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                تعديل
+              </button>
+              <button onclick="deleteGameMode('${mode.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors">
+                حذف
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function loadMaps() {
+        const grid = document.getElementById('maps-grid');
+        const filteredMaps = currentData.maps.filter(map => {
+          const searchTerm = document.getElementById('map-search')?.value.toLowerCase() || '';
+          const categoryFilter = document.getElementById('map-category-filter')?.value || '';
+          
+          const matchesSearch = map.name.toLowerCase().includes(searchTerm) || 
+                               map.description.toLowerCase().includes(searchTerm);
+          const matchesCategory = !categoryFilter || map.category === categoryFilter;
+          
+          return matchesSearch && matchesCategory;
+        });
+
+        grid.innerHTML = filteredMaps.map(map => `
+          <div class="map-card bg-gray-800 border border-gray-700 rounded-lg overflow-hidden hover:border-green-500 transition-colors">
+            <div class="relative h-32 bg-gray-900 overflow-hidden">
+              <img src="${map.image}" alt="${map.name}" class="w-full h-full object-cover" onerror="this.src='/images/map-placeholder.jpg'">
+              <div class="absolute top-2 right-2">
+                <span class="px-2 py-1 text-xs rounded-full ${
+                  map.category === 'official' ? 'bg-green-600 text-white' :
+                  map.category === 'tournament' ? 'bg-blue-600 text-white' :
+                  'bg-purple-600 text-white'
+                }">
+                  ${map.category === 'official' ? 'رسمية' : map.category === 'tournament' ? 'بطولة' : 'مخصصة'}
+                </span>
+              </div>
+              <div class="absolute bottom-2 left-2">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer" ${map.enabled ? 'checked' : ''} onchange="toggleMap('${map.id}')">
+                  <div class="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            </div>
+            <div class="p-3">
+              <h3 class="text-sm font-semibold text-white mb-1">${map.name}</h3>
+              <p class="text-xs text-gray-400 mb-2">${map.description}</p>
+              <div class="flex space-x-1 rtl:space-x-reverse">
+                <button onclick="editMap('${map.id}')" class="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors">
+                  تعديل
+                </button>
+                <button onclick="deleteMap('${map.id}')" class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs transition-colors">
+                  حذف
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function loadRuleTemplates() {
+        const list = document.getElementById('rules-list');
+        list.innerHTML = currentData.ruleTemplates.map(rule => `
+          <div class="rule-template-card bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-green-500 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <h3 class="text-lg font-semibold text-white">${rule.name}</h3>
+                <span class="px-2 py-1 text-xs rounded-full ${
+                  rule.gameMode === 'all' ? 'bg-purple-600 text-white' : 'bg-blue-600 text-white'
+                }">
+                  ${rule.gameMode === 'all' ? 'عام' : rule.gameMode}
+                </span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${rule.enabled ? 'checked' : ''} onchange="toggleRuleTemplate('${rule.id}')">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <div class="bg-gray-900 rounded p-3 mb-3">
+              <pre class="text-gray-300 text-sm whitespace-pre-wrap">${rule.content}</pre>
+            </div>
+            <div class="flex space-x-2 rtl:space-x-reverse">
+              <button onclick="editRuleTemplate('${rule.id}')" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                تعديل
+              </button>
+              <button onclick="deleteRuleTemplate('${rule.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors">
+                حذف
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function loadRegions() {
+        const grid = document.getElementById('regions-grid');
+        grid.innerHTML = currentData.regions.map(region => `
+          <div class="region-card bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-green-500 transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-semibold text-white">${region.name}</h3>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" ${region.enabled ? 'checked' : ''} onchange="toggleRegion('${region.id}')">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            <p class="text-gray-400 text-sm mb-2">${region.description}</p>
+            <p class="text-gray-500 text-xs mb-4">المنطقة الزمنية: ${region.timezone}</p>
+            <div class="flex space-x-2 rtl:space-x-reverse">
+              <button onclick="editRegion('${region.id}')" class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                تعديل
+              </button>
+              <button onclick="deleteRegion('${region.id}')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors">
+                حذف
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function setupEventListeners() {
+        // Search and filter
+        document.getElementById('map-search')?.addEventListener('input', loadMaps);
+        document.getElementById('map-category-filter')?.addEventListener('change', loadMaps);
+
+        // Add buttons
+        document.getElementById('add-tournament-type')?.addEventListener('click', () => openAddModal('tournamentType'));
+        document.getElementById('add-game-mode')?.addEventListener('click', () => openAddModal('gameMode'));
+        document.getElementById('add-map')?.addEventListener('click', () => openAddModal('map'));
+        document.getElementById('add-rule-template')?.addEventListener('click', () => openAddModal('ruleTemplate'));
+        document.getElementById('add-region')?.addEventListener('click', () => openAddModal('region'));
+
+        // Save settings
+        document.getElementById('save-all-settings')?.addEventListener('click', saveAllSettings);
+        document.getElementById('reset-settings')?.addEventListener('click', resetSettings);
+
+        // Modal
+        document.getElementById('close-modal')?.addEventListener('click', closeModal);
+      }
+
+      function openAddModal(type) {
+        const modal = document.getElementById('settings-modal');
+        const title = document.getElementById('modal-title');
+        const content = document.getElementById('modal-content');
+
+        const titles = {
+          tournamentType: 'إضافة نوع بطولة جديد',
+          gameMode: 'إضافة نمط لعب جديد',
+          map: 'إضافة خريطة جديدة',
+          ruleTemplate: 'إضافة قالب قوانين جديد',
+          region: 'إضافة منطقة جديدة'
+        };
+
+        title.textContent = titles[type];
+        content.innerHTML = getModalContent(type);
+        modal.classList.remove('hidden');
+      }
+
+      function getModalContent(type) {
+        switch (type) {
+          case 'tournamentType':
+            return `
+              <form id="tournament-type-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">معرف النوع</label>
+                    <input type="text" name="id" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">اسم النوع</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الوصف</label>
+                    <textarea name="description" rows="3" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الرمز</label>
+                    <input type="text" name="icon" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="🏆" required>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" name="enabled" id="enabled" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                    <label for="enabled" class="text-gray-300">مفعل</label>
+                  </div>
+                  <div class="flex space-x-3 rtl:space-x-reverse pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                      إضافة
+                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              </form>
+            `;
+          case 'gameMode':
+            return `
+              <form id="game-mode-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">معرف النمط</label>
+                    <input type="text" name="id" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">اسم النمط</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الوصف</label>
+                    <textarea name="description" rows="3" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الرمز</label>
+                    <input type="text" name="icon" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="⚔️" required>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" name="enabled" id="enabled" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                    <label for="enabled" class="text-gray-300">مفعل</label>
+                  </div>
+                  <div class="flex space-x-3 rtl:space-x-reverse pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                      إضافة
+                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              </form>
+            `;
+          case 'map':
+            return `
+              <form id="map-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">معرف الخريطة</label>
+                    <input type="text" name="id" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">اسم الخريطة</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الوصف</label>
+                    <textarea name="description" rows="3" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الصورة</label>
+                    <input type="file" name="image" accept="image/*" class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الفئة</label>
+                    <select name="category" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                      <option value="official">رسمية</option>
+                      <option value="tournament">بطولات</option>
+                      <option value="custom">مخصصة</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" name="enabled" id="enabled" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                    <label for="enabled" class="text-gray-300">مفعل</label>
+                  </div>
+                  <div class="flex space-x-3 rtl:space-x-reverse pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                      إضافة
+                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              </form>
+            `;
+          case 'ruleTemplate':
+            return `
+              <form id="rule-template-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">معرف القالب</label>
+                    <input type="text" name="id" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">اسم القالب</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">النمط المرتبط</label>
+                    <select name="gameMode" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                      <option value="all">الكل</option>
+                      ${currentData.gameModes.map(mode => `<option value="${mode.id}">${mode.name}</option>`).join('')}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">القوانين</label>
+                    <textarea name="content" rows="8" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" name="enabled" id="enabled" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                    <label for="enabled" class="text-gray-300">مفعل</label>
+                  </div>
+                  <div class="flex space-x-3 rtl:space-x-reverse pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                      إضافة
+                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              </form>
+            `;
+          case 'region':
+            return `
+              <form id="region-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">معرف المنطقة</label>
+                    <input type="text" name="id" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">اسم المنطقة</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">الوصف</label>
+                    <textarea name="description" rows="3" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">المنطقة الزمنية</label>
+                    <select name="timezone" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                      <option value="UTC">UTC</option>
+                      <option value="Asia/Riyadh">Asia/Riyadh</option>
+                      <option value="Europe/London">Europe/London</option>
+                      <option value="Asia/Tokyo">Asia/Tokyo</option>
+                      <option value="America/New_York">America/New_York</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <input type="checkbox" name="enabled" id="enabled" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                    <label for="enabled" class="text-gray-300">مفعل</label>
+                  </div>
+                  <div class="flex space-x-3 rtl:space-x-reverse pt-4">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                      إضافة
+                    </button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              </form>
+            `;
+          default:
+            return '<p class="text-gray-300">محتوى النموذج غير متاح</p>';
+        }
+      }
+
+      function closeModal() {
+        document.getElementById('settings-modal').classList.add('hidden');
+      }
+
+      // Global functions for toggle and edit operations
+      window.toggleTournamentType = function(id) {
+        const type = currentData.tournamentTypes.find(t => t.id === id);
+        if (type) {
+          type.enabled = !type.enabled;
+          showToast(type.enabled ? 'تم تفعيل النوع' : 'تم إلغاء تفعيل النوع', 'success');
+        }
+      };
+
+      window.toggleGameMode = function(id) {
+        const mode = currentData.gameModes.find(m => m.id === id);
+        if (mode) {
+          mode.enabled = !mode.enabled;
+          showToast(mode.enabled ? 'تم تفعيل النمط' : 'تم إلغاء تفعيل النمط', 'success');
+        }
+      };
+
+      window.toggleMap = function(id) {
+        const map = currentData.maps.find(m => m.id === id);
+        if (map) {
+          map.enabled = !map.enabled;
+          showToast(map.enabled ? 'تم تفعيل الخريطة' : 'تم إلغاء تفعيل الخريطة', 'success');
+        }
+      };
+
+      window.toggleRuleTemplate = function(id) {
+        const rule = currentData.ruleTemplates.find(r => r.id === id);
+        if (rule) {
+          rule.enabled = !rule.enabled;
+          showToast(rule.enabled ? 'تم تفعيل القالب' : 'تم إلغاء تفعيل القالب', 'success');
+        }
+      };
+
+      window.toggleRegion = function(id) {
+        const region = currentData.regions.find(r => r.id === id);
+        if (region) {
+          region.enabled = !region.enabled;
+          showToast(region.enabled ? 'تم تفعيل المنطقة' : 'تم إلغاء تفعيل المنطقة', 'success');
+        }
+      };
+
+      // Edit functions
+      window.editTournamentType = function(id) {
+        console.log('Edit tournament type:', id);
+      };
+
+      window.editGameMode = function(id) {
+        console.log('Edit game mode:', id);
+      };
+
+      window.editMap = function(id) {
+        console.log('Edit map:', id);
+      };
+
+      window.editRuleTemplate = function(id) {
+        console.log('Edit rule template:', id);
+      };
+
+      window.editRegion = function(id) {
+        console.log('Edit region:', id);
+      };
+
+      // Delete functions
+      window.deleteTournamentType = function(id) {
+        if (confirm('هل أنت متأكد من حذف هذا النوع؟')) {
+          currentData.tournamentTypes = currentData.tournamentTypes.filter(t => t.id !== id);
+          loadTournamentTypes();
+          showToast('تم حذف النوع', 'success');
+        }
+      };
+
+      window.deleteGameMode = function(id) {
+        if (confirm('هل أنت متأكد من حذف هذا النمط؟')) {
+          currentData.gameModes = currentData.gameModes.filter(m => m.id !== id);
+          loadGameModes();
+          showToast('تم حذف النمط', 'success');
+        }
+      };
+
+      window.deleteMap = function(id) {
+        if (confirm('هل أنت متأكد من حذف هذه الخريطة؟')) {
+          currentData.maps = currentData.maps.filter(m => m.id !== id);
+          loadMaps();
+          showToast('تم حذف الخريطة', 'success');
+        }
+      };
+
+      window.deleteRuleTemplate = function(id) {
+        if (confirm('هل أنت متأكد من حذف هذا القالب؟')) {
+          currentData.ruleTemplates = currentData.ruleTemplates.filter(r => r.id !== id);
+          loadRuleTemplates();
+          showToast('تم حذف القالب', 'success');
+        }
+      };
+
+      window.deleteRegion = function(id) {
+        if (confirm('هل أنت متأكد من حذف هذه المنطقة؟')) {
+          currentData.regions = currentData.regions.filter(r => r.id !== id);
+          loadRegions();
+          showToast('تم حذف المنطقة', 'success');
+        }
+      };
+
+      function saveAllSettings() {
+        // Simulate saving to server
+        showToast('تم حفظ جميع الإعدادات بنجاح', 'success');
+        console.log('Saving settings:', currentData);
+      }
+
+      function resetSettings() {
+        if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
+          location.reload();
+        }
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 
+          type === 'error' ? 'bg-red-600' : 
+          'bg-blue-600'
+        }`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .tab-button.active {
+    background-color: rgb(34, 197, 94);
+    color: white;
+  }
+
+  .tab-button:hover {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: rgb(34, 197, 94);
+  }
+</style> 

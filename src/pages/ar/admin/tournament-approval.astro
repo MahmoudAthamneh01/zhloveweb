@@ -1,0 +1,458 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="مراجعة البطولات - لوحة الإدارة"
+  description="مراجعة والموافقة على البطولات الجديدة"
+>
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 py-16">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-white mb-4">مراجعة البطولات</h1>
+          <p class="text-xl text-gray-300">الموافقة على البطولات الجديدة المقترحة</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-yellow-400" id="pending-count">--</div>
+          <div class="text-gray-300">في انتظار المراجعة</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-green-400" id="approved-count">--</div>
+          <div class="text-gray-300">موافق عليها</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-red-400" id="rejected-count">--</div>
+          <div class="text-gray-300">مرفوضة</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-blue-400" id="total-count">--</div>
+          <div class="text-gray-300">المجموع</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <div class="flex flex-wrap items-center gap-4">
+          <select id="status-filter" class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white">
+            <option value="all">جميع الحالات</option>
+            <option value="pending">في انتظار المراجعة</option>
+            <option value="approved">موافق عليها</option>
+            <option value="rejected">مرفوضة</option>
+          </select>
+          
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="البحث في البطولات..."
+            class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-green-500"
+          />
+          
+          <button 
+            id="refresh-btn"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            تحديث
+          </button>
+        </div>
+      </div>
+
+      <!-- Debug Info -->
+      <div id="debug-info" class="hidden bg-gray-800 border border-gray-600 rounded-lg p-4 mb-6">
+        <h3 class="text-yellow-400 font-bold mb-2">معلومات التصحيح</h3>
+        <div id="debug-content" class="text-gray-300 text-sm"></div>
+      </div>
+
+      <!-- Tournaments List -->
+      <div id="tournaments-container" class="space-y-6">
+        <!-- Loading state -->
+        <div class="text-center py-12">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p class="text-gray-400">جاري تحميل البطولات...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let allTournaments = [];
+      let debugMode = true; // Enable debugging
+      
+      // Initialize
+      init();
+
+      function init() {
+        if (debugMode) {
+          document.getElementById('debug-info').classList.remove('hidden');
+        }
+        
+        if (checkAdminAuth()) {
+          loadTournaments();
+          setupEventListeners();
+        }
+      }
+
+      function checkAdminAuth() {
+        try {
+          const user = JSON.parse(localStorage.getItem('zh_love_user') || '{}');
+          
+          updateDebugInfo('تحقق من المستخدم الحالي', {
+            user: user,
+            hasId: !!user.id,
+            email: user.email,
+            username: user.username,
+            isAdmin: user.isAdmin
+          });
+          
+          // Check if user is logged in first
+          if (!user.id) {
+            updateDebugInfo('لا يوجد معرف مستخدم', 'إعادة توجيه إلى صفحة تسجيل الدخول');
+            setTimeout(() => {
+              alert('يرجى تسجيل الدخول أولاً');
+              window.location.href = '/ar/login';
+            }, 1000);
+            return false;
+          }
+          
+          // For demo purposes, allow access if user is logged in
+          // In a real app, you would check actual admin permissions here
+          const allowedUsers = [
+            'admin@zh-love.com',
+            'legend@zh-love.com',
+            'admin',
+            'legend'
+          ];
+          
+          const isAdmin = user.isAdmin || 
+                         allowedUsers.includes(user.email) || 
+                         allowedUsers.includes(user.username);
+          
+          updateDebugInfo('نتيجة فحص الأدمن', {
+            isAdmin: isAdmin,
+            allowedUsers: allowedUsers,
+            userEmail: user.email,
+            userUsername: user.username
+          });
+          
+          if (!isAdmin) {
+            updateDebugInfo('المستخدم ليس أدمن', 'إعادة توجيه إلى لوحة الإدارة');
+            setTimeout(() => {
+              alert('غير مسموح لك بالوصول لهذه الصفحة');
+              window.location.href = '/ar/admin';
+            }, 1000);
+            return false;
+          }
+          
+          updateDebugInfo('تم منح صلاحية الوصول للأدمن', 'المتابعة لتحميل البطولات');
+          return true;
+          
+        } catch (error) {
+          updateDebugInfo('خطأ في التحقق من الأدمن', error.message);
+          console.error('Admin auth error:', error);
+          setTimeout(() => {
+            alert('حدث خطأ في التحقق من الصلاحيات');
+            window.location.href = '/ar/admin';
+          }, 1000);
+          return false;
+        }
+      }
+
+      function updateDebugInfo(title, data) {
+        if (!debugMode) return;
+        
+        const debugContent = document.getElementById('debug-content');
+        const timestamp = new Date().toLocaleTimeString('ar-SA');
+        const dataStr = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        
+        debugContent.innerHTML += `
+          <div class="mb-2 p-2 bg-gray-900 rounded">
+            <strong>[${timestamp}] ${title}:</strong><br>
+            <pre class="text-xs mt-1">${dataStr}</pre>
+          </div>
+        `;
+      }
+
+      function setupEventListeners() {
+        document.getElementById('status-filter').addEventListener('change', filterTournaments);
+        document.getElementById('search-input').addEventListener('input', filterTournaments);
+        document.getElementById('refresh-btn').addEventListener('click', loadTournaments);
+      }
+
+      function loadTournaments() {
+        updateDebugInfo('بدء تحميل البطولات', 'قراءة من localStorage');
+        
+        try {
+          // Load user tournaments (demo data)
+          const userTournaments = JSON.parse(localStorage.getItem('user_tournaments') || '[]');
+          allTournaments = userTournaments.map(tournament => ({
+            ...tournament,
+            createdAt: tournament.createdAt || new Date().toISOString(),
+            adminStatus: tournament.adminStatus || 'pending'
+          }));
+          
+          updateDebugInfo('تم تحميل البطولات', {
+            count: allTournaments.length,
+            tournaments: allTournaments.map(t => ({ id: t.id, name: t.name, status: t.adminStatus }))
+          });
+          
+          updateStatistics();
+          displayTournaments();
+        } catch (error) {
+          updateDebugInfo('خطأ في تحميل البطولات', error.message);
+          console.error('Error loading tournaments:', error);
+          showError('فشل في تحميل البطولات');
+        }
+      }
+
+      function updateStatistics() {
+        const pending = allTournaments.filter(t => t.adminStatus === 'pending').length;
+        const approved = allTournaments.filter(t => t.adminStatus === 'approved').length;
+        const rejected = allTournaments.filter(t => t.adminStatus === 'rejected').length;
+        
+        document.getElementById('pending-count').textContent = pending;
+        document.getElementById('approved-count').textContent = approved;
+        document.getElementById('rejected-count').textContent = rejected;
+        document.getElementById('total-count').textContent = allTournaments.length;
+        
+        updateDebugInfo('تحديث الإحصائيات', {
+          pending: pending,
+          approved: approved,
+          rejected: rejected,
+          total: allTournaments.length
+        });
+      }
+
+      function filterTournaments() {
+        const statusFilter = document.getElementById('status-filter').value;
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        
+        let filteredTournaments = allTournaments;
+        
+        if (statusFilter !== 'all') {
+          filteredTournaments = filteredTournaments.filter(t => t.adminStatus === statusFilter);
+        }
+        
+        if (searchTerm) {
+          filteredTournaments = filteredTournaments.filter(t => 
+            t.name.toLowerCase().includes(searchTerm) ||
+            t.organizerName.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        updateDebugInfo('تصفية البطولات', {
+          statusFilter: statusFilter,
+          searchTerm: searchTerm,
+          filteredCount: filteredTournaments.length
+        });
+        
+        displayTournaments(filteredTournaments);
+      }
+
+      function displayTournaments(tournaments = allTournaments) {
+        const container = document.getElementById('tournaments-container');
+        
+        if (tournaments.length === 0) {
+          container.innerHTML = `
+            <div class="bg-card border border-border rounded-lg p-8 text-center">
+              <div class="text-6xl mb-4">🏆</div>
+              <h3 class="text-xl font-semibold text-white mb-2">لا توجد بطولات</h3>
+              <p class="text-gray-400">لا توجد بطولات تطابق معايير البحث</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = tournaments.map(tournament => {
+          const statusColor = tournament.adminStatus === 'pending' ? 'text-yellow-400' :
+                             tournament.adminStatus === 'approved' ? 'text-green-400' : 'text-red-400';
+          const statusText = tournament.adminStatus === 'pending' ? 'في انتظار المراجعة' :
+                            tournament.adminStatus === 'approved' ? 'موافق عليها' : 'مرفوضة';
+          
+          return `
+            <div class="bg-card border border-border rounded-lg p-6">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-3 rtl:space-x-reverse mb-4">
+                    <h3 class="text-xl font-bold text-white">${tournament.name}</h3>
+                    <span class="px-3 py-1 rounded-full text-sm font-bold ${statusColor} bg-gray-800">
+                      ${statusText}
+                    </span>
+                    ${tournament.featured ? '<span class="px-2 py-1 bg-yellow-600 text-black rounded-full text-xs font-bold">مميزة</span>' : ''}
+                  </div>
+                  
+                  <p class="text-gray-300 mb-4">${tournament.description}</p>
+                  
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-green-400">${tournament.format || '1v1'}</div>
+                      <div class="text-gray-400">النوع</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-blue-400">${tournament.maxParticipants}</div>
+                      <div class="text-gray-400">الحد الأقصى</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-yellow-400">$${tournament.prizePool || 0}</div>
+                      <div class="text-gray-400">الجائزة</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-2xl font-bold text-purple-400">${formatDate(tournament.startDate)}</div>
+                      <div class="text-gray-400">تاريخ البداية</div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-4 rtl:space-x-reverse text-sm text-gray-400">
+                    <span>المنظم: ${tournament.organizerName}</span>
+                    <span>تاريخ الإنشاء: ${formatDate(tournament.createdAt)}</span>
+                  </div>
+                </div>
+                
+                ${tournament.adminStatus === 'pending' ? `
+                  <div class="flex flex-col space-y-2 mr-4 rtl:mr-0 rtl:ml-4">
+                    <button 
+                      onclick="approveTournament(${tournament.id})"
+                      class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    >
+                      موافقة
+                    </button>
+                    <button 
+                      onclick="rejectTournament(${tournament.id})"
+                      class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    >
+                      رفض
+                    </button>
+                    <button 
+                      onclick="viewTournamentDetails(${tournament.id})"
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    >
+                      تفاصيل
+                    </button>
+                  </div>
+                ` : `
+                  <div class="mr-4 rtl:mr-0 rtl:ml-4">
+                    <button 
+                      onclick="viewTournamentDetails(${tournament.id})"
+                      class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    >
+                      عرض التفاصيل
+                    </button>
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        updateDebugInfo('عرض البطولات', {
+          displayedCount: tournaments.length,
+          totalCount: allTournaments.length
+        });
+      }
+
+      // Global functions
+      window.approveTournament = function(tournamentId) {
+        if (confirm('هل تريد الموافقة على هذه البطولة؟')) {
+          updateTournamentStatus(tournamentId, 'approved');
+        }
+      };
+
+      window.rejectTournament = function(tournamentId) {
+        const reason = prompt('سبب الرفض (اختياري):');
+        if (confirm('هل تريد رفض هذه البطولة؟')) {
+          updateTournamentStatus(tournamentId, 'rejected', reason);
+        }
+      };
+
+      window.viewTournamentDetails = function(tournamentId) {
+        window.location.href = `/ar/tournaments/${tournamentId}`;
+      };
+
+      function updateTournamentStatus(tournamentId, status, reason = '') {
+        try {
+          const userTournaments = JSON.parse(localStorage.getItem('user_tournaments') || '[]');
+          const tournamentIndex = userTournaments.findIndex(t => t.id === tournamentId);
+          
+          if (tournamentIndex !== -1) {
+            userTournaments[tournamentIndex].adminStatus = status;
+            userTournaments[tournamentIndex].status = status === 'approved' ? 'open' : 'cancelled';
+            userTournaments[tournamentIndex].adminReview = {
+              status: status,
+              reviewedAt: new Date().toISOString(),
+              reviewedBy: 'admin',
+              reason: reason
+            };
+            
+            localStorage.setItem('user_tournaments', JSON.stringify(userTournaments));
+            
+            updateDebugInfo('تحديث حالة البطولة', {
+              tournamentId: tournamentId,
+              newStatus: status,
+              reason: reason
+            });
+            
+            showToast(
+              status === 'approved' ? 'تم قبول البطولة بنجاح' : 'تم رفض البطولة',
+              status === 'approved' ? 'success' : 'error'
+            );
+            
+            loadTournaments(); // Reload data
+          }
+        } catch (error) {
+          updateDebugInfo('خطأ في تحديث حالة البطولة', error.message);
+          console.error('Error updating tournament status:', error);
+          showToast('حدث خطأ أثناء تحديث حالة البطولة', 'error');
+        }
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return 'غير محدد';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600';
+        toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg z-50 shadow-lg`;
+        toast.innerHTML = `
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <span>${message}</span>
+          </div>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          if (document.body.contains(toast)) {
+            document.body.removeChild(toast);
+          }
+        }, 4000);
+      }
+
+      function showError(message) {
+        showToast(message, 'error');
+      }
+    });
+  </script>
+
+  <style>
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</BaseLayout> 

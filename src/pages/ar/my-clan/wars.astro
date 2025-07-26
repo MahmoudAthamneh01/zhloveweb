@@ -1,0 +1,524 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="إدارة الحروب - موقع ZH Love">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- العنوان الرئيسي -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-foreground mb-4">⚔️ إدارة الحروب</h1>
+            <p class="text-muted-foreground text-lg">تتبع حروب عشيرتك وإدارة التحديات</p>
+        </div>
+
+        <!-- التنقل السريع -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <button onclick="switchWarTab('pending')" class="military-card p-4 text-center hover:bg-muted transition-colors tab-button active" data-tab="pending">
+                <div class="text-2xl mb-2">⏳</div>
+                <div class="font-semibold">تحديات في الانتظار</div>
+                <div id="pendingCount" class="text-tactical-orange font-bold">0</div>
+            </button>
+            
+            <button onclick="switchWarTab('active')" class="military-card p-4 text-center hover:bg-muted transition-colors tab-button" data-tab="active">
+                <div class="text-2xl mb-2">⚔️</div>
+                <div class="font-semibold">حروب نشطة</div>
+                <div id="activeCount" class="text-tactical-green font-bold">0</div>
+            </button>
+            
+            <button onclick="switchWarTab('completed')" class="military-card p-4 text-center hover:bg-muted transition-colors tab-button" data-tab="completed">
+                <div class="text-2xl mb-2">🏁</div>
+                <div class="font-semibold">حروب منتهية</div>
+                <div id="completedCount" class="text-muted-foreground font-bold">0</div>
+            </button>
+            
+            <a href="/ar/my-clan/declare-war" class="military-card p-4 text-center hover:bg-muted transition-colors border-2 border-tactical-green">
+                <div class="text-2xl mb-2">⚡</div>
+                <div class="font-semibold text-tactical-green">إعلان حرب جديدة</div>
+                <div class="text-sm text-muted-foreground">تحدى عشيرة أخرى</div>
+            </a>
+        </div>
+
+        <!-- War Lists -->
+        <div id="pending-wars" class="war-tab-content">
+            <div class="space-y-4" id="pendingWarsList">
+                <!-- Pending wars will be loaded here -->
+            </div>
+        </div>
+
+        <div id="active-wars" class="war-tab-content hidden">
+            <div class="space-y-4" id="activeWarsList">
+                <!-- Active wars will be loaded here -->
+            </div>
+        </div>
+
+        <div id="completed-wars" class="war-tab-content hidden">
+            <div class="space-y-4" id="completedWarsList">
+                <!-- Completed wars will be loaded here -->
+            </div>
+        </div>
+
+        <!-- War Details Modal -->
+        <div id="warDetailsModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-zinc-800 rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="text-xl font-bold text-white">تفاصيل الحرب</h3>
+                    <button onclick="closeModal('warDetailsModal')" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="warDetailsContent">
+                    <!-- War details will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- War Chat Modal -->
+        <div id="warChatModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+            <div class="bg-zinc-800 rounded-lg p-6 max-w-2xl w-full mx-4 h-[70vh] flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-white">محادثة الحرب</h3>
+                    <button onclick="closeModal('warChatModal')" class="text-gray-400 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="flex-1 bg-zinc-700 rounded-lg p-4 overflow-y-auto mb-4" id="chatMessages">
+                    <!-- Chat messages will be loaded here -->
+                </div>
+                
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        id="chatInput"
+                        placeholder="اكتب رسالة..." 
+                        class="flex-1 bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
+                        onkeypress="if(event.key==='Enter') sendChatMessage()"
+                    >
+                    <button 
+                        onclick="sendChatMessage()"
+                        class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                    >
+                        إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</MyClanLayout>
+
+<style>
+.tab-button {
+    @apply flex-1 text-center py-3 px-4 text-gray-400 font-medium rounded-md transition-all;
+}
+
+.tab-button.active {
+    @apply bg-orange-600 text-white;
+}
+
+.tab-button:not(.active):hover {
+    @apply bg-zinc-700 text-gray-300;
+}
+
+.war-card {
+    @apply bg-zinc-800 border border-zinc-700 rounded-lg p-6 hover:border-orange-500 transition-all;
+}
+
+.war-card.urgent {
+    @apply border-red-500 bg-red-900 bg-opacity-20;
+}
+
+.war-card.active {
+    @apply border-green-500 bg-green-900 bg-opacity-20;
+}
+</style>
+
+<script>
+let currentWarId = null;
+let allWars = [];
+
+// Load wars on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadWars();
+    setInterval(loadWars, 30000); // Refresh every 30 seconds
+});
+
+async function loadWars() {
+    try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/ar/login';
+            return;
+        }
+
+        const response = await fetch('http://localhost/zhlove/backend/public/clan_api.php?action=get_clan_wars', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            allWars = data.wars;
+            displayWars();
+        } else {
+            console.error('Failed to load wars:', data.error);
+        }
+    } catch (error) {
+        console.error('Error loading wars:', error);
+    }
+}
+
+function displayWars() {
+    const pendingWars = allWars.filter(war => war.status === 'pending');
+    const activeWars = allWars.filter(war => ['accepted', 'active'].includes(war.status));
+    const completedWars = allWars.filter(war => ['completed', 'cancelled'].includes(war.status));
+
+    // Update counts
+    document.getElementById('pendingCount').textContent = pendingWars.length;
+    document.getElementById('activeCount').textContent = activeWars.length;
+    document.getElementById('completedCount').textContent = completedWars.length;
+
+    // Display wars in each tab
+    displayWarList('pendingWarsList', pendingWars, 'pending');
+    displayWarList('activeWarsList', activeWars, 'active');
+    displayWarList('completedWarsList', completedWars, 'completed');
+}
+
+function displayWarList(containerId, wars, type) {
+    const container = document.getElementById(containerId);
+    
+    if (wars.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-gray-400">
+                <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p>لا توجد حروب في هذا القسم</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = wars.map(war => createWarCard(war, type)).join('');
+}
+
+function createWarCard(war, type) {
+    const isChallenger = war.is_challenger;
+    const opponentName = isChallenger ? war.challenged_clan_name : war.challenger_clan_name;
+    const opponentTag = isChallenger ? war.challenged_clan_tag : war.challenger_clan_tag;
+    const warDate = new Date(war.scheduled_at).toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    let cardClass = 'war-card';
+    if (type === 'pending') cardClass += ' urgent';
+    if (type === 'active') cardClass += ' active';
+
+    let actionButtons = '';
+    if (type === 'pending' && !isChallenger) {
+        actionButtons = `
+            <div class="flex gap-2 mt-4">
+                <button onclick="respondToWar(${war.id}, 'accepted')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                    قبول
+                </button>
+                <button onclick="respondToWar(${war.id}, 'rejected')" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">
+                    رفض
+                </button>
+                <button onclick="openWarDetails(${war.id})" class="bg-zinc-600 text-white px-4 py-2 rounded hover:bg-zinc-700 transition-colors">
+                    التفاصيل
+                </button>
+            </div>
+        `;
+    } else if (type === 'active') {
+        actionButtons = `
+            <div class="flex gap-2 mt-4">
+                <button onclick="openWarChat(${war.id})" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    المحادثة
+                </button>
+                <button onclick="openWarDetails(${war.id})" class="bg-zinc-600 text-white px-4 py-2 rounded hover:bg-zinc-700 transition-colors">
+                    التفاصيل
+                </button>
+                <button onclick="reportResult(${war.id})" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors">
+                    تسجيل النتيجة
+                </button>
+            </div>
+        `;
+    } else if (type === 'completed') {
+        actionButtons = `
+            <div class="flex gap-2 mt-4">
+                <button onclick="openWarDetails(${war.id})" class="bg-zinc-600 text-white px-4 py-2 rounded hover:bg-zinc-700 transition-colors">
+                    النتائج
+                </button>
+            </div>
+        `;
+    } else if (type === 'pending' && isChallenger) {
+        actionButtons = `
+            <div class="flex gap-2 mt-4">
+                <button onclick="openWarDetails(${war.id})" class="bg-zinc-600 text-white px-4 py-2 rounded hover:bg-zinc-700 transition-colors">
+                    التفاصيل
+                </button>
+                <button onclick="cancelWar(${war.id})" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">
+                    إلغاء التحدي
+                </button>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="${cardClass}">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">${opponentTag}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">${opponentName}</h3>
+                        <p class="text-gray-400">${isChallenger ? 'تحديت هذه العشيرة' : 'تحدتك هذه العشيرة'}</p>
+                        <p class="text-sm text-gray-500">الموعد: ${warDate}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(war.status)}">
+                        ${getStatusText(war.status)}
+                    </span>
+                    <p class="text-gray-400 text-sm mt-2">المدة: ${war.duration} دقيقة</p>
+                </div>
+            </div>
+            ${war.challenge_message ? `
+                <div class="mt-4 p-4 bg-zinc-700 rounded-lg">
+                    <p class="text-gray-300">"${war.challenge_message}"</p>
+                </div>
+            ` : ''}
+            ${actionButtons}
+        </div>
+    `;
+}
+
+function getStatusColor(status) {
+    switch (status) {
+        case 'pending': return 'bg-yellow-600 text-white';
+        case 'accepted': return 'bg-green-600 text-white';
+        case 'active': return 'bg-blue-600 text-white';
+        case 'completed': return 'bg-gray-600 text-white';
+        case 'cancelled': return 'bg-red-600 text-white';
+        default: return 'bg-gray-600 text-white';
+    }
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 'pending': return 'في الانتظار';
+        case 'accepted': return 'مقبولة';
+        case 'active': return 'نشطة';
+        case 'completed': return 'مكتملة';
+        case 'cancelled': return 'ملغاة';
+        default: return status;
+    }
+}
+
+function switchWarTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+    // Show/hide content
+    document.querySelectorAll('.war-tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    document.getElementById(`${tabName}-wars`).classList.remove('hidden');
+}
+
+async function respondToWar(warId, response) {
+    try {
+        const token = localStorage.getItem('authToken');
+        const result = await fetch('http://localhost/zhlove/backend/public/clan_api.php?action=respond_to_war', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                war_id: warId,
+                response: response
+            })
+        });
+
+        const data = await result.json();
+        if (data.success) {
+            alert(response === 'accepted' ? 'تم قبول التحدي!' : 'تم رفض التحدي');
+            loadWars(); // Refresh the wars list
+        } else {
+            alert('خطأ: ' + (data.error || 'فشل في الرد على التحدي'));
+        }
+    } catch (error) {
+        console.error('Error responding to war:', error);
+        alert('حدث خطأ في الرد على التحدي');
+    }
+}
+
+async function openWarChat(warId) {
+    currentWarId = warId;
+    showModal('warChatModal');
+    loadChatMessages();
+}
+
+async function loadChatMessages() {
+    if (!currentWarId) return;
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`http://localhost/zhlove/backend/public/war_api.php?action=get_war_chat&war_id=${currentWarId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            displayChatMessages(data.messages);
+        }
+    } catch (error) {
+        console.error('Error loading chat messages:', error);
+    }
+}
+
+function displayChatMessages(messages) {
+    const container = document.getElementById('chatMessages');
+    
+    if (messages.length === 0) {
+        container.innerHTML = '<div class="text-center text-gray-400 py-4">لا توجد رسائل بعد</div>';
+        return;
+    }
+
+    container.innerHTML = messages.map(msg => `
+        <div class="mb-4">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">${msg.clan_tag}</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-medium text-white">${msg.first_name} ${msg.last_name}</span>
+                        <span class="text-xs text-gray-400">${new Date(msg.created_at).toLocaleString('ar-EG')}</span>
+                    </div>
+                    <p class="text-gray-300">${msg.message}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    // Scroll to bottom
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+
+    if (!message || !currentWarId) return;
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('http://localhost/zhlove/backend/public/war_api.php?action=send_war_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                war_id: currentWarId,
+                message: message
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            input.value = '';
+            loadChatMessages();
+        } else {
+            alert('فشل في إرسال الرسالة: ' + (data.error || 'خطأ غير معروف'));
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+        alert('حدث خطأ في إرسال الرسالة');
+    }
+}
+
+function openWarDetails(warId) {
+    const war = allWars.find(w => w.id === warId);
+    if (!war) return;
+
+    const content = `
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-zinc-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">العشيرة المتحدية</h4>
+                    <p class="text-orange-400">[${war.challenger_clan_tag}] ${war.challenger_clan_name}</p>
+                </div>
+                <div class="bg-zinc-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">العشيرة المتحداة</h4>
+                    <p class="text-red-400">[${war.challenged_clan_tag}] ${war.challenged_clan_name}</p>
+                </div>
+            </div>
+            
+            <div class="bg-zinc-700 p-4 rounded-lg">
+                <h4 class="font-semibold text-white mb-2">رسالة التحدي</h4>
+                <p class="text-gray-300">${war.challenge_message || 'لا توجد رسالة'}</p>
+            </div>
+            
+            ${war.rules ? `
+                <div class="bg-zinc-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">القوانين</h4>
+                    <p class="text-gray-300">${war.rules}</p>
+                </div>
+            ` : ''}
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-zinc-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">الموعد المحدد</h4>
+                    <p class="text-gray-300">${new Date(war.scheduled_at).toLocaleString('ar-EG')}</p>
+                </div>
+                <div class="bg-zinc-700 p-4 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">المدة</h4>
+                    <p class="text-gray-300">${war.duration} دقيقة</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('warDetailsContent').innerHTML = content;
+    showModal('warDetailsModal');
+}
+
+function reportResult(warId) {
+    // Redirect to result reporting page
+    window.location.href = `/ar/my-clan/report-result?war_id=${warId}`;
+}
+
+function cancelWar(warId) {
+    if (confirm('هل أنت متأكد من إلغاء هذا التحدي؟')) {
+        respondToWar(warId, 'cancelled');
+    }
+}
+
+function showModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+    if (modalId === 'warChatModal') {
+        currentWarId = null;
+    }
+}
+</script>

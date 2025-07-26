@@ -1,0 +1,446 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="إعدادات العشيرة - زد اتش لوف">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Navigation -->
+        <div class="mb-6">
+            <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+                <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+                <span>/</span>
+                <a href="/ar/my-clan" class="hover:text-foreground transition-colors">عشيرتي</a>
+                <span>/</span>
+                <span class="text-foreground">الإعدادات</span>
+            </nav>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mb-6">
+            <a 
+                href="/ar/my-clan" 
+                class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+            >
+                <svg class="w-5 h-5 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span>العودة إلى العشيرة</span>
+            </a>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-12">
+            <div class="animate-spin w-12 h-12 border-4 border-tactical-green border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-muted-foreground">جاري تحميل إعدادات العشيرة...</p>
+        </div>
+
+        <!-- Settings Content -->
+        <div id="settings-content" class="hidden">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-foreground mb-2">⚙️ إعدادات العشيرة</h1>
+                <p class="text-muted-foreground">قم بتخصيص مظهر وإعدادات عشيرتك</p>
+            </div>
+
+            <!-- Settings Form -->
+            <div class="military-card p-6">
+                <form id="clan-settings-form" class="space-y-6">
+                    <!-- Basic Information -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-bold text-tactical-green mb-4">📝 المعلومات الأساسية</h2>
+                        
+                        <!-- Clan Name -->
+                        <div>
+                            <label for="clan-name" class="block text-sm font-medium text-foreground mb-2">
+                                اسم العشيرة
+                            </label>
+                            <input 
+                                type="text" 
+                                id="clan-name" 
+                                name="name"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                                placeholder="اسم العشيرة"
+                                required
+                            />
+                        </div>
+
+                        <!-- Clan Tag -->
+                        <div>
+                            <label for="clan-tag" class="block text-sm font-medium text-foreground mb-2">
+                                اختصار العشيرة
+                            </label>
+                            <input 
+                                type="text" 
+                                id="clan-tag" 
+                                name="tag"
+                                maxlength="10"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                                placeholder="[TAG]"
+                                required
+                            />
+                            <p class="text-xs text-muted-foreground mt-1">الحد الأقصى 10 أحرف</p>
+                        </div>
+
+                        <!-- Clan Description -->
+                        <div>
+                            <label for="clan-description" class="block text-sm font-medium text-foreground mb-2">
+                                وصف العشيرة
+                            </label>
+                            <textarea 
+                                id="clan-description" 
+                                name="description"
+                                rows="4"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                                placeholder="اكتب وصفاً مختصراً عن عشيرتك..."
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Visual Settings -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-bold text-tactical-green mb-4">🎨 الإعدادات المرئية</h2>
+                        
+                        <!-- Current Logo Preview -->
+                        <div id="logo-preview-section" class="hidden">
+                            <label class="block text-sm font-medium text-foreground mb-2">
+                                شعار العشيرة الحالي
+                            </label>
+                            <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+                                <img id="current-logo" src="" alt="شعار العشيرة" class="w-16 h-16 rounded-lg object-cover border border-border">
+                                <span class="text-sm text-muted-foreground">الشعار الحالي</span>
+                            </div>
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div>
+                            <label for="clan-logo" class="block text-sm font-medium text-foreground mb-2">
+                                شعار العشيرة الجديد
+                            </label>
+                            <input 
+                                type="file" 
+                                id="clan-logo" 
+                                name="logo"
+                                accept="image/*"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                            />
+                            <p class="text-xs text-muted-foreground mt-1">يُفضل مقاس 256x256 بكسل، PNG أو JPG</p>
+                        </div>
+
+                        <!-- Current Banner Preview -->
+                        <div id="banner-preview-section" class="hidden">
+                            <label class="block text-sm font-medium text-foreground mb-2">
+                                خلفية العشيرة الحالية
+                            </label>
+                            <div class="mb-4">
+                                <img id="current-banner" src="" alt="خلفية العشيرة" class="w-full h-32 rounded-lg object-cover border border-border">
+                                <span class="text-sm text-muted-foreground mt-2 block">الخلفية الحالية</span>
+                            </div>
+                        </div>
+
+                        <!-- Banner Upload -->
+                        <div>
+                            <label for="clan-banner" class="block text-sm font-medium text-foreground mb-2">
+                                خلفية العشيرة الجديدة
+                            </label>
+                            <input 
+                                type="file" 
+                                id="clan-banner" 
+                                name="banner"
+                                accept="image/*"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                            />
+                            <p class="text-xs text-muted-foreground mt-1">يُفضل مقاس 1200x300 بكسل، PNG أو JPG</p>
+                        </div>
+                    </div>
+
+                    <!-- Additional Settings -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-bold text-tactical-green mb-4">🔧 إعدادات إضافية</h2>
+                        
+                        <!-- Website -->
+                        <div>
+                            <label for="clan-website" class="block text-sm font-medium text-foreground mb-2">
+                                موقع العشيرة
+                            </label>
+                            <input 
+                                type="url" 
+                                id="clan-website" 
+                                name="website"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                                placeholder="https://example.com"
+                            />
+                        </div>
+
+                        <!-- Discord -->
+                        <div>
+                            <label for="clan-discord" class="block text-sm font-medium text-foreground mb-2">
+                                رابط Discord
+                            </label>
+                            <input 
+                                type="url" 
+                                id="clan-discord" 
+                                name="discord_url"
+                                class="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                                placeholder="https://discord.gg/example"
+                            />
+                        </div>
+
+                        <!-- Recruitment -->
+                        <div>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                                <input 
+                                    type="checkbox" 
+                                    id="recruitment-open" 
+                                    name="recruitment_open"
+                                    value="1"
+                                    class="rounded border-border text-tactical-green focus:ring-tactical-green"
+                                />
+                                <span class="text-sm font-medium text-foreground">السماح بالتسجيل في العشيرة</span>
+                            </label>
+                            <p class="text-xs text-muted-foreground mt-1 mr-6 rtl:mr-0 rtl:ml-6">عند التفعيل، يمكن للاعبين طلب الانضمام للعشيرة</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-end space-x-4 rtl:space-x-reverse pt-6 border-t border-border">
+                        <button 
+                            type="button" 
+                            onclick="window.location.href='/ar/my-clan'"
+                            class="px-6 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            إلغاء
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-6 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors font-medium"
+                        >
+                            حفظ التغييرات
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden text-center py-12">
+            <div class="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 class="text-2xl font-bold text-foreground mb-2">خطأ في تحميل الإعدادات</h2>
+            <p class="text-muted-foreground mb-6">حدث خطأ أثناء تحميل إعدادات العشيرة</p>
+            <button 
+                onclick="location.reload()" 
+                class="px-6 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors"
+            >
+                إعادة المحاولة
+            </button>
+        </div>
+
+        <!-- Not Leader State -->
+        <div id="not-leader-state" class="hidden text-center py-12">
+            <div class="text-yellow-500 text-6xl mb-4">🔒</div>
+            <h2 class="text-2xl font-bold text-foreground mb-2">غير مسموح</h2>
+            <p class="text-muted-foreground mb-6">يمكن لقائد العشيرة فقط تعديل هذه الإعدادات</p>
+            <a 
+                href="/ar/my-clan"
+                class="px-6 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors inline-block"
+            >
+                العودة إلى العشيرة
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentClan = null;
+        let currentUser = null;
+
+        async function loadClanSettings() {
+            try {
+                const token = localStorage.getItem('zh_love_token');
+                if (!token) {
+                    alert('يجب تسجيل الدخول أولاً');
+                    window.location.href = '/ar/login';
+                    return;
+                }
+
+                // Get user's clan
+                const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Note: No Content-Type needed for GET requests
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                console.log('API Response:', data); // للتشخيص
+                
+                if (!data.success) {
+                    if (data.error === 'Unauthorized') {
+                        alert('انتهت صلاحية تسجيل الدخول، يرجى تسجيل الدخول مرة أخرى');
+                        localStorage.removeItem('zh_love_token');
+                        localStorage.removeItem('zh_love_user');
+                        window.location.href = '/ar/login';
+                        return;
+                    }
+                    throw new Error(data.error || 'فشل في تحميل بيانات العشيرة');
+                }
+                
+                if (!data.clan) {
+                    alert('لست عضواً في أي عشيرة');
+                    window.location.href = '/ar/my-clan';
+                    return;
+                }
+
+                currentClan = data.clan;
+                
+                // Check if user is leader
+                const userMember = data.clan.members.find(member => {
+                    const storedUser = JSON.parse(localStorage.getItem('zh_love_user') || '{}');
+                    return member.email === storedUser.email;
+                });
+
+                if (!userMember || userMember.role !== 'leader') {
+                    document.getElementById('loading-state').classList.add('hidden');
+                    document.getElementById('not-leader-state').classList.remove('hidden');
+                    return;
+                }
+
+                // Fill form with current data
+                document.getElementById('clan-name').value = currentClan.name || '';
+                document.getElementById('clan-tag').value = currentClan.tag || '';
+                document.getElementById('clan-description').value = currentClan.description || '';
+                document.getElementById('clan-website').value = currentClan.website || '';
+                document.getElementById('clan-discord').value = currentClan.discord_url || '';
+                document.getElementById('recruitment-open').checked = currentClan.recruitment_open === '1' || currentClan.recruitment_open === 1;
+
+                // Show current images if they exist
+                if (currentClan.logo_url) {
+                    // Fix URL if it's relative
+                    const logoUrl = currentClan.logo_url.startsWith('http') 
+                        ? currentClan.logo_url 
+                        : `http://localhost:8080${currentClan.logo_url}`;
+                    document.getElementById('current-logo').src = logoUrl;
+                    document.getElementById('logo-preview-section').classList.remove('hidden');
+                }
+
+                if (currentClan.banner_url) {
+                    // Fix URL if it's relative
+                    const bannerUrl = currentClan.banner_url.startsWith('http') 
+                        ? currentClan.banner_url 
+                        : `http://localhost:8080${currentClan.banner_url}`;
+                    document.getElementById('current-banner').src = bannerUrl;
+                    document.getElementById('banner-preview-section').classList.remove('hidden');
+                }
+
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('settings-content').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading clan settings:', error);
+                
+                // Show more specific error message
+                let errorMessage = 'حدث خطأ أثناء تحميل إعدادات العشيرة';
+                if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'لا يمكن الاتصال بالخادم. تأكد من أن الخادم يعمل.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'مشكلة في إعدادات الأمان. تأكد من إعدادات CORS.';
+                }
+                
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+                
+                // Update error message
+                const errorElement = document.querySelector('#error-state p');
+                if (errorElement) {
+                    errorElement.textContent = errorMessage;
+                }
+            }
+        }
+
+        async function updateClanSettings(event) {
+            event.preventDefault();
+            
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'جاري الحفظ...';
+            submitButton.disabled = true;
+
+            try {
+                const token = localStorage.getItem('zh_love_token');
+                
+                // Create FormData from the form itself
+                const form = event.target;
+                const formData = new FormData(form);
+                
+                console.log('=== FORM DATA DEBUG ===');
+                console.log('Form element:', form);
+                console.log('Form data entries:');
+                for (let [key, value] of formData.entries()) {
+                    if (value instanceof File) {
+                        console.log(`FormData[${key}]:`, `File: ${value.name}, Size: ${value.size}, Type: ${value.type}`);
+                    } else {
+                        console.log(`FormData[${key}]:`, value);
+                    }
+                }
+                console.log('=== END DEBUG ===');
+                
+                const response = await fetch('http://localhost:8080/clan_api.php?action=update_clan_settings', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Note: Do NOT set Content-Type for FormData - browser sets it automatically with boundary
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+                console.log('Server response:', data);
+                
+                if (data.success) {
+                    // Show success message
+                    alert('تم حفظ إعدادات العشيرة بنجاح!');
+                    // Redirect back to clan page
+                    window.location.href = '/ar/my-clan';
+                } else {
+                    alert('خطأ: ' + (data.error || 'فشل في حفظ الإعدادات'));
+                }
+
+            } catch (error) {
+                console.error('Error updating clan settings:', error);
+                alert('حدث خطأ أثناء حفظ الإعدادات');
+            } finally {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClanSettings();
+            document.getElementById('clan-settings-form').addEventListener('submit', updateClanSettings);
+            
+            // Add image preview functionality
+            document.getElementById('clan-logo').addEventListener('change', function(e) {
+                previewImage(e.target, 'current-logo', 'logo-preview-section');
+            });
+            
+            document.getElementById('clan-banner').addEventListener('change', function(e) {
+                previewImage(e.target, 'current-banner', 'banner-preview-section');
+            });
+        });
+
+        function previewImage(input, previewId, sectionId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewId).src = e.target.result;
+                    document.getElementById(sectionId).classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</BaseLayout>

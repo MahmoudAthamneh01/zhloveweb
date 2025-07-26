@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation';
+import AuthForm from '../../components/AuthForm';
+---
+
+<BaseLayout 
+  title="Login - ZH-Love"
+  description="Login to ZH-Love platform for Generals Zero Hour players"
+>
+  <Navigation 
+    slot="header"
+    client:load
+    currentLang="en"
+    currentPath="/en/login"
+  />
+
+  <div class="min-h-screen bg-gradient-to-br from-background via-background to-gunmetal-gray flex items-center justify-center py-12 px-4">
+    <div class="max-w-md w-full">
+      <AuthForm 
+        client:load
+        mode="login"
+        language="en"
+        onSubmit={async (data) => {
+          const { useAuth } = await import('../../store/authStore');
+          const { login } = useAuth();
+          const success = await login(data);
+          if (success) {
+            window.location.href = '/en';
+          } else {
+            window.showToast('Login failed. Please check your credentials and try again', 'error');
+          }
+        }}
+        isLoading={false}
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .gradient-bg {
+    background: linear-gradient(135deg, 
+      hsl(var(--background)) 0%, 
+      hsl(var(--muted)) 50%, 
+      hsl(var(--background)) 100%
+    );
+  }
+</style>
+
+<script>
+  // Initialize auth state
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { initializeAuth } = await import('../../store/authStore');
+    await initializeAuth();
+  });
+</script> 

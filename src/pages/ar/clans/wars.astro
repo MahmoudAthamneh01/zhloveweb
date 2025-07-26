@@ -1,0 +1,652 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Swords, Trophy, Clock, Users, Play, Filter, Search, ArrowLeft, Star, Shield, Crown } from 'lucide-react';
+
+const title = "حروب العشائر - زد اتش لوف";
+const description = "تابع وشارك في حروب العشائر الملحمية";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/clans" class="hover:text-foreground transition-colors">العشائر</a>
+        <span>/</span>
+        <span class="text-foreground">حروب العشائر</span>
+      </nav>
+    </div>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Swords size={32} class="text-alert-red" />
+          <span>حروب العشائر</span>
+        </h1>
+        <p class="text-muted-foreground">تابع وشارك في حروب العشائر الملحمية</p>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-alert-red mb-1" id="activeWarsCount">0</div>
+        <div class="text-sm text-muted-foreground">حروب نشطة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="pendingWarsCount">0</div>
+        <div class="text-sm text-muted-foreground">في انتظار الرد</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1" id="completedWarsCount">0</div>
+        <div class="text-sm text-muted-foreground">حروب مكتملة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1" id="totalParticipants">0</div>
+        <div class="text-sm text-muted-foreground">عشائر مشاركة</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="البحث في الحروب..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <Filter size={20} class="text-muted-foreground" />
+          <select id="statusFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع الحالات</option>
+            <option value="active">نشطة</option>
+            <option value="pending">في انتظار الرد</option>
+            <option value="completed">مكتملة</option>
+            <option value="cancelled">ملغية</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <span class="text-sm text-muted-foreground">المنطقة:</span>
+          <select id="regionFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع المناطق</option>
+            <option value="middle-east">الشرق الأوسط</option>
+            <option value="gulf">الخليج العربي</option>
+            <option value="levant">بلاد الشام</option>
+            <option value="north-africa">شمال أفريقيا</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Wars Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+        <span>الحروب النشطة</span>
+      </h2>
+      <div id="activeWarsList" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Active wars will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Pending Wars Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Clock size={24} class="text-orange-500" />
+        <span>في انتظار الرد</span>
+      </h2>
+      <div id="pendingWarsList" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Pending wars will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Recent Wars Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Trophy size={24} class="text-victory-gold" />
+        <span>الحروب الأخيرة</span>
+      </h2>
+      <div id="completedWarsList" class="space-y-4">
+        <!-- Completed wars will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Hall of Fame -->
+    <section class="military-card p-6">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <Crown size={20} class="text-victory-gold" />
+        <span>قاعة المجد</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h3 class="font-semibold text-foreground mb-3">أكثر العشائر فوزاً</h3>
+          <div id="topWinningClans" class="space-y-2">
+            <!-- Top winning clans will be loaded here -->
+          </div>
+        </div>
+        <div>
+          <h3 class="font-semibold text-foreground mb-3">أطول سلسلة انتصارات</h3>
+          <div id="longestWinStreaks" class="space-y-2">
+            <!-- Longest win streaks will be loaded here -->
+          </div>
+        </div>
+        <div>
+          <h3 class="font-semibold text-foreground mb-3">الحروب الملحمية</h3>
+          <div id="epicWars" class="space-y-2">
+            <!-- Epic wars will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- War Details Modal -->
+  <div id="warDetailsModal" class="fixed inset-0 bg-black/50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-background border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6" id="warDetailsContent">
+          <!-- War details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- War Response Modal -->
+  <div id="warResponseModal" class="fixed inset-0 bg-black/50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-background border border-border rounded-lg max-w-2xl w-full">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-foreground">الرد على تحدي الحرب</h2>
+            <button id="closeResponseModal" class="text-muted-foreground hover:text-foreground">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div id="warResponseContent">
+            <!-- Response content will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let wars = [];
+    let clans = [];
+    let streamers = [];
+    let currentUser = null;
+    
+    // Load data
+    loadData();
+    setupEventListeners();
+    
+    function loadData() {
+      wars = JSON.parse(localStorage.getItem('clanWars') || '[]');
+      clans = JSON.parse(localStorage.getItem('approvedClans') || '[]');
+      streamers = JSON.parse(localStorage.getItem('approvedStreamers') || '[]');
+      currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      updateStatistics();
+      loadWars();
+    }
+    
+    function setupEventListeners() {
+      document.getElementById('searchInput').addEventListener('input', filterWars);
+      document.getElementById('statusFilter').addEventListener('change', filterWars);
+      document.getElementById('regionFilter').addEventListener('change', filterWars);
+      
+      // Modal event listeners
+      document.getElementById('warDetailsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeWarDetailsModal();
+        }
+      });
+      
+      document.getElementById('warResponseModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeResponseModal();
+        }
+      });
+      
+      document.getElementById('closeResponseModal').addEventListener('click', closeResponseModal);
+    }
+    
+    function updateStatistics() {
+      const activeWars = wars.filter(war => war.status === 'active').length;
+      const pendingWars = wars.filter(war => war.status === 'pending').length;
+      const completedWars = wars.filter(war => war.status === 'completed').length;
+      const participatingClans = new Set();
+      
+      wars.forEach(war => {
+        participatingClans.add(war.challengerClanId);
+        participatingClans.add(war.challengedClanId);
+      });
+      
+      document.getElementById('activeWarsCount').textContent = activeWars;
+      document.getElementById('pendingWarsCount').textContent = pendingWars;
+      document.getElementById('completedWarsCount').textContent = completedWars;
+      document.getElementById('totalParticipants').textContent = participatingClans.size;
+    }
+    
+    function loadWars() {
+      const activeWars = wars.filter(war => war.status === 'active');
+      const pendingWars = wars.filter(war => war.status === 'pending');
+      const completedWars = wars.filter(war => war.status === 'completed').slice(0, 10);
+      
+      loadActiveWars(activeWars);
+      loadPendingWars(pendingWars);
+      loadCompletedWars(completedWars);
+      loadHallOfFame();
+    }
+    
+    function loadActiveWars(activeWars) {
+      const container = document.getElementById('activeWarsList');
+      
+      if (activeWars.length === 0) {
+        container.innerHTML = '<div class="col-span-full text-center py-8"><p class="text-muted-foreground">لا توجد حروب نشطة حالياً</p></div>';
+        return;
+      }
+      
+      container.innerHTML = activeWars.map(war => renderWarCard(war, 'active')).join('');
+    }
+    
+    function loadPendingWars(pendingWars) {
+      const container = document.getElementById('pendingWarsList');
+      
+      if (pendingWars.length === 0) {
+        container.innerHTML = '<div class="col-span-full text-center py-8"><p class="text-muted-foreground">لا توجد حروب في انتظار الرد</p></div>';
+        return;
+      }
+      
+      container.innerHTML = pendingWars.map(war => renderWarCard(war, 'pending')).join('');
+    }
+    
+    function loadCompletedWars(completedWars) {
+      const container = document.getElementById('completedWarsList');
+      
+      if (completedWars.length === 0) {
+        container.innerHTML = '<div class="text-center py-8"><p class="text-muted-foreground">لا توجد حروب مكتملة</p></div>';
+        return;
+      }
+      
+      container.innerHTML = completedWars.map(war => renderCompletedWarCard(war)).join('');
+    }
+    
+    function renderWarCard(war, type) {
+      const challengerClan = getClanById(war.challengerClanId);
+      const challengedClan = getClanById(war.challengedClanId);
+      const streamer = war.streamerId ? getStreamerById(war.streamerId) : null;
+      
+      const timeLeft = getTimeLeft(war.scheduledAt);
+      const canRespond = canUserRespondToWar(war);
+      
+      return `
+        <div class="military-card p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="showWarDetails(${war.id})">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <span class="px-2 py-1 rounded-full text-xs font-medium ${getWarStatusColor(war.status)}">
+                ${getWarStatusText(war.status)}
+              </span>
+              ${war.isLive ? '<span class="px-2 py-1 bg-red-500 text-white rounded-full text-xs font-medium animate-pulse">مباشر</span>' : ''}
+            </div>
+            ${streamer ? '<div class="flex items-center space-x-1 rtl:space-x-reverse text-sm text-muted-foreground"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span>بث مباشر</span></div>' : ''}
+          </div>
+          
+          <div class="text-center mb-4">
+            <h3 class="text-lg font-bold text-foreground">
+              [${challengerClan.tag}] ${challengerClan.name}
+            </h3>
+            <div class="flex items-center justify-center space-x-2 rtl:space-x-reverse my-2">
+              <div class="w-8 h-8 bg-gradient-to-br from-alert-red to-orange-500 rounded-full flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <span class="text-xl font-bold text-foreground">ضد</span>
+              <div class="w-8 h-8 bg-gradient-to-br from-command-blue to-tactical-green rounded-full flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-foreground">
+              [${challengedClan.tag}] ${challengedClan.name}
+            </h3>
+          </div>
+          
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">موعد البداية:</span>
+              <span class="font-medium text-foreground">${new Date(war.scheduledAt).toLocaleString('ar-SA')}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">المدة:</span>
+              <span class="font-medium text-foreground">${war.duration} ساعة</span>
+            </div>
+            ${type === 'active' ? `
+              <div class="flex items-center justify-between">
+                <span class="text-muted-foreground">الوقت المتبقي:</span>
+                <span class="font-medium text-foreground">${timeLeft}</span>
+              </div>
+            ` : ''}
+          </div>
+          
+          ${type === 'pending' && canRespond ? `
+            <div class="mt-4 flex space-x-2 rtl:space-x-reverse">
+              <button onclick="event.stopPropagation(); respondToWar(${war.id}, 'accept')" class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white flex-1">
+                قبول التحدي
+              </button>
+              <button onclick="event.stopPropagation(); respondToWar(${war.id}, 'reject')" class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white flex-1">
+                رفض التحدي
+              </button>
+            </div>
+          ` : ''}
+          
+          ${streamer && type === 'active' ? `
+            <div class="mt-4">
+              <a href="${streamer.platforms[0]?.url || '#'}" target="_blank" class="btn btn-sm btn-primary w-full">
+                مشاهدة البث المباشر
+              </a>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    
+    function renderCompletedWarCard(war) {
+      const challengerClan = getClanById(war.challengerClanId);
+      const challengedClan = getClanById(war.challengedClanId);
+      const winner = war.winnerId ? getClanById(war.winnerId) : null;
+      
+      return `
+        <div class="military-card p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="showWarDetails(${war.id})">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <div class="text-center">
+                <div class="text-sm font-medium text-foreground">[${challengerClan.tag}] ${challengerClan.name}</div>
+                ${war.challengerScore !== undefined ? `<div class="text-lg font-bold ${war.winnerId === challengerClan.id ? 'text-tactical-green' : 'text-muted-foreground'}">${war.challengerScore}</div>` : ''}
+              </div>
+              <div class="text-muted-foreground text-sm">ضد</div>
+              <div class="text-center">
+                <div class="text-sm font-medium text-foreground">[${challengedClan.tag}] ${challengedClan.name}</div>
+                ${war.challengedScore !== undefined ? `<div class="text-lg font-bold ${war.winnerId === challengedClan.id ? 'text-tactical-green' : 'text-muted-foreground'}">${war.challengedScore}</div>` : ''}
+              </div>
+            </div>
+            <div class="text-right">
+              ${winner ? `
+                <div class="text-sm font-medium text-tactical-green">
+                  الفائز: [${winner.tag}] ${winner.name}
+                </div>
+              ` : ''}
+              <div class="text-xs text-muted-foreground">
+                ${new Date(war.completedAt || war.scheduledAt).toLocaleDateString('ar-SA')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function loadHallOfFame() {
+      // Calculate clan war statistics
+      const clanStats = {};
+      
+      wars.filter(war => war.status === 'completed').forEach(war => {
+        if (!clanStats[war.challengerClanId]) {
+          clanStats[war.challengerClanId] = { wins: 0, losses: 0, totalWars: 0, currentStreak: 0, bestStreak: 0 };
+        }
+        if (!clanStats[war.challengedClanId]) {
+          clanStats[war.challengedClanId] = { wins: 0, losses: 0, totalWars: 0, currentStreak: 0, bestStreak: 0 };
+        }
+        
+        clanStats[war.challengerClanId].totalWars++;
+        clanStats[war.challengedClanId].totalWars++;
+        
+        if (war.winnerId === war.challengerClanId) {
+          clanStats[war.challengerClanId].wins++;
+          clanStats[war.challengedClanId].losses++;
+        } else if (war.winnerId === war.challengedClanId) {
+          clanStats[war.challengedClanId].wins++;
+          clanStats[war.challengerClanId].losses++;
+        }
+      });
+      
+      // Top winning clans
+      const topWinning = Object.entries(clanStats)
+        .sort(([,a], [,b]) => b.wins - a.wins)
+        .slice(0, 5);
+      
+      document.getElementById('topWinningClans').innerHTML = topWinning.map(([clanId, stats], index) => {
+        const clan = getClanById(parseInt(clanId));
+        return `
+          <div class="flex items-center justify-between text-sm">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <span class="text-victory-gold font-bold">#${index + 1}</span>
+              <span class="font-medium text-foreground">[${clan.tag}] ${clan.name}</span>
+            </div>
+            <span class="text-muted-foreground">${stats.wins} فوز</span>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    function filterWars() {
+      // Implementation for filtering wars
+      loadWars();
+    }
+    
+    function getClanById(id) {
+      return clans.find(clan => clan.id === id) || { name: 'عشيرة محذوفة', tag: '???' };
+    }
+    
+    function getStreamerById(id) {
+      return streamers.find(streamer => streamer.id === id);
+    }
+    
+    function getWarStatusColor(status) {
+      switch(status) {
+        case 'pending': return 'bg-orange-500/20 text-orange-500';
+        case 'active': return 'bg-tactical-green/20 text-tactical-green';
+        case 'completed': return 'bg-command-blue/20 text-command-blue';
+        case 'cancelled': return 'bg-alert-red/20 text-alert-red';
+        default: return 'bg-muted text-muted-foreground';
+      }
+    }
+    
+    function getWarStatusText(status) {
+      switch(status) {
+        case 'pending': return 'في انتظار الرد';
+        case 'active': return 'نشطة';
+        case 'completed': return 'مكتملة';
+        case 'cancelled': return 'ملغية';
+        default: return status;
+      }
+    }
+    
+    function getTimeLeft(scheduledAt) {
+      const now = new Date();
+      const scheduled = new Date(scheduledAt);
+      const diff = scheduled.getTime() - now.getTime();
+      
+      if (diff <= 0) return 'انتهت';
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      
+      return `${hours}س ${minutes}د`;
+    }
+    
+    function canUserRespondToWar(war) {
+      if (!currentUser.id || war.status !== 'pending') return false;
+      
+      // Find user's clan (check both ownership and membership)
+      const userClan = clans.find(clan => 
+        clan.ownerId === currentUser.id || 
+        (clan.members && clan.members.some(member => member.id === currentUser.id))
+      );
+
+      if (!userClan) return false;
+
+      // Check if user is leader/officer of challenged clan
+      const clanMembers = JSON.parse(localStorage.getItem('clanMembers') || '[]');
+      const userMembership = clanMembers.find(m => 
+        m.clanId === war.challengedClanId && 
+        m.userId === currentUser.id && 
+        ['leader', 'officer'].includes(m.role)
+      );
+      
+      return !!userMembership;
+    }
+    
+    function showWarDetails(warId) {
+      const war = wars.find(w => w.id === warId);
+      if (!war) return;
+      
+      const challengerClan = getClanById(war.challengerClanId);
+      const challengedClan = getClanById(war.challengedClanId);
+      const streamer = war.streamerId ? getStreamerById(war.streamerId) : null;
+      
+      const modal = document.getElementById('warDetailsModal');
+      const content = document.getElementById('warDetailsContent');
+      
+      content.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-foreground">تفاصيل الحرب</h2>
+          <button onclick="closeWarDetailsModal()" class="text-muted-foreground hover:text-foreground">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="text-center">
+            <h3 class="text-xl font-bold text-foreground mb-4">
+              [${challengerClan.tag}] ${challengerClan.name} ضد [${challengedClan.tag}] ${challengedClan.name}
+            </h3>
+            <span class="px-3 py-1 rounded-full text-sm font-medium ${getWarStatusColor(war.status)}">
+              ${getWarStatusText(war.status)}
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold text-foreground mb-3">معلومات الحرب</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">موعد البداية:</span>
+                  <span class="font-medium text-foreground">${new Date(war.scheduledAt).toLocaleString('ar-SA')}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-muted-foreground">المدة:</span>
+                  <span class="font-medium text-foreground">${war.duration} ساعة</span>
+                </div>
+                ${war.completedAt ? `
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">تاريخ الانتهاء:</span>
+                    <span class="font-medium text-foreground">${new Date(war.completedAt).toLocaleString('ar-SA')}</span>
+                  </div>
+                ` : ''}
+                ${streamer ? `
+                  <div class="flex justify-between">
+                    <span class="text-muted-foreground">الستريمر:</span>
+                    <span class="font-medium text-foreground">${streamer.displayName}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            
+            ${war.status === 'completed' && (war.challengerScore !== undefined || war.challengedScore !== undefined) ? `
+              <div>
+                <h4 class="font-semibold text-foreground mb-3">النتيجة النهائية</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 rounded-lg ${war.winnerId === challengerClan.id ? 'bg-tactical-green/20 border border-tactical-green' : 'bg-muted'}">
+                    <span class="font-medium">[${challengerClan.tag}] ${challengerClan.name}</span>
+                    <span class="text-xl font-bold">${war.challengerScore || 0}</span>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-lg ${war.winnerId === challengedClan.id ? 'bg-tactical-green/20 border border-tactical-green' : 'bg-muted'}">
+                    <span class="font-medium">[${challengedClan.tag}] ${challengedClan.name}</span>
+                    <span class="text-xl font-bold">${war.challengedScore || 0}</span>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+          
+          ${war.rules ? `
+            <div>
+              <h4 class="font-semibold text-foreground mb-3">قوانين الحرب</h4>
+              <p class="p-3 bg-muted rounded-lg text-sm whitespace-pre-wrap">${war.rules}</p>
+            </div>
+          ` : ''}
+          
+          ${war.challengeMessage ? `
+            <div>
+              <h4 class="font-semibold text-foreground mb-3">رسالة التحدي</h4>
+              <p class="p-3 bg-muted rounded-lg text-sm whitespace-pre-wrap">${war.challengeMessage}</p>
+            </div>
+          ` : ''}
+          
+          ${streamer && war.status === 'active' ? `
+            <div class="text-center">
+              <a href="${streamer.platforms[0]?.url || '#'}" target="_blank" class="btn btn-primary">
+                مشاهدة البث المباشر
+              </a>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      modal.classList.remove('hidden');
+    }
+    
+    function respondToWar(warId, response) {
+      const war = wars.find(w => w.id === warId);
+      if (!war || !canUserRespondToWar(war)) return;
+      
+      if (response === 'accept') {
+        war.status = 'active';
+        war.acceptedAt = new Date().toISOString();
+        war.acceptedBy = currentUser.id;
+        alert('تم قبول التحدي! الحرب الآن نشطة.');
+      } else {
+        war.status = 'cancelled';
+        war.rejectedAt = new Date().toISOString();
+        war.rejectedBy = currentUser.id;
+        alert('تم رفض التحدي.');
+      }
+      
+      localStorage.setItem('clanWars', JSON.stringify(wars));
+      loadData();
+    }
+    
+    function closeWarDetailsModal() {
+      document.getElementById('warDetailsModal').classList.add('hidden');
+    }
+    
+    function closeResponseModal() {
+      document.getElementById('warResponseModal').classList.add('hidden');
+    }
+    
+    // Global functions
+    window.showWarDetails = showWarDetails;
+    window.respondToWar = respondToWar;
+    window.closeWarDetailsModal = closeWarDetailsModal;
+  });
+</script> 

@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "تسجيل دخول اختباري - زد اتش لوف";
+const description = "صفحة لاختبار تسجيل الدخول";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <div class="max-w-md mx-auto">
+      <div class="military-card p-6">
+        <h1 class="text-2xl font-bold text-foreground mb-6">تسجيل دخول اختباري</h1>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-foreground mb-2">User ID</label>
+            <input 
+              type="number" 
+              id="userId" 
+              value="23"
+              class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          
+          <button 
+            onclick="generateAndLoginUser()" 
+            class="w-full btn btn-primary"
+          >
+            تسجيل الدخول
+          </button>
+          
+          <div class="space-y-2">
+            <button onclick="checkCurrentToken()" class="w-full btn btn-outline">
+              فحص التوكن الحالي
+            </button>
+            <button onclick="testClanAPI()" class="w-full btn btn-outline">
+              اختبار API العشيرة
+            </button>
+          </div>
+        </div>
+        
+        <div id="result" class="mt-6 p-4 bg-background/50 rounded-lg hidden">
+          <h3 class="font-semibold mb-2">النتيجة:</h3>
+          <pre id="resultText" class="text-sm text-muted-foreground whitespace-pre-wrap"></pre>
+        </div>
+        
+        <div class="mt-6 space-y-2">
+          <a href="/ar/my-clan" class="block w-full text-center btn btn-outline">
+            الذهاب إلى عشيرتي
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  async function generateAndLoginUser() {
+    const userId = document.getElementById('userId').value;
+    
+    if (!userId) {
+      showResult('يرجى إدخال User ID');
+      return;
+    }
+    
+    try {
+      showResult('جاري إنشاء التوكن...');
+      
+      // Generate token via backend
+      const response = await fetch(`http://localhost:8080/debug_login.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'debug_login',
+          user_id: parseInt(userId)
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('فشل في إنشاء التوكن');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.token) {
+        // Save token to localStorage
+        localStorage.setItem('zh_love_token', data.token);
+        localStorage.setItem('currentUser', JSON.stringify({
+          id: data.user.id,
+          username: data.user.username,
+          email: data.user.email || data.user.username,
+          role: data.user.role
+        }));
+        
+        showResult(`تم تسجيل الدخول بنجاح!
+User: ${data.user.username}
+Token: ${data.token.substring(0, 50)}...`);
+      } else {
+        showResult('فشل في تسجيل الدخول: ' + (data.message || 'خطأ غير معروف'));
+      }
+      
+    } catch (error) {
+      showResult('خطأ: ' + error.message);
+    }
+  }
+  
+  function checkCurrentToken() {
+    const token = localStorage.getItem('zh_love_token');
+    const user = localStorage.getItem('currentUser');
+    
+    if (token) {
+      showResult(`التوكن الحالي:
+${token}
+
+المستخدم الحالي:
+${user || 'غير موجود'}`);
+    } else {
+      showResult('لا يوجد توكن محفوظ');
+    }
+  }
+  
+  async function testClanAPI() {
+    const token = localStorage.getItem('zh_love_token');
+    
+    if (!token) {
+      showResult('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    try {
+      showResult('جاري اختبار API العشيرة...');
+      
+      const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      showResult('نتيجة API العشيرة:\n' + JSON.stringify(data, null, 2));
+      
+    } catch (error) {
+      showResult('خطأ في API: ' + error.message);
+    }
+  }
+  
+  function showResult(text) {
+    const resultDiv = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+    
+    resultText.textContent = text;
+    resultDiv.classList.remove('hidden');
+  }
+</script>

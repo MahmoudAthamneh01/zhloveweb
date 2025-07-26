@@ -1,0 +1,596 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { ArrowLeft, Youtube, Twitch, Users, Star, AlertCircle, Play, Upload, Link } from 'lucide-react';
+
+const title = "تقديم طلب الانضمام كستريمر - زد اتش لوف";
+const description = "انضم إلى قائمة صناع المحتوى المعتمدين في زد اتش لوف";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/streamers" class="hover:text-foreground transition-colors">الستريمرز</a>
+        <span>/</span>
+        <span class="text-foreground">تقديم طلب</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/streamers" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للستريمرز</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center justify-center space-x-3 rtl:space-x-reverse">
+        <Star size={32} class="text-victory-gold" />
+        <span>تقديم طلب الانضمام كستريمر</span>
+      </h1>
+      <p class="text-muted-foreground max-w-2xl mx-auto">
+        انضم إلى قائمة صناع المحتوى المعتمدين في زد اتش لوف وساهم في نمو مجتمع الجنرالات زيرو آور
+      </p>
+    </div>
+
+    <!-- Requirements -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <AlertCircle size={20} class="text-tactical-green" />
+        <span>متطلبات الانضمام</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">1000 متابع على الأقل في إحدى المنصات</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">محتوى منتظم (مرة أسبوعياً على الأقل)</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">محتوى باللغة العربية</span>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">التخصص في الجنرالات زيرو آور</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">جودة المحتوى والصوت</span>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-foreground">الالتزام بقوانين المجتمع</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Form -->
+    <div class="max-w-4xl mx-auto">
+      <form id="streamerApplicationForm" class="space-y-8">
+        <!-- Personal Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Users size={20} />
+            <span>المعلومات الشخصية</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                الاسم الكامل *
+              </label>
+              <input 
+                type="text" 
+                name="fullName"
+                placeholder="أدخل اسمك الكامل"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                اسم الشهرة/القناة *
+              </label>
+              <input 
+                type="text" 
+                name="displayName"
+                placeholder="الاسم الذي تظهر به"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                البريد الإلكتروني *
+              </label>
+              <input 
+                type="email" 
+                name="email"
+                placeholder="email@example.com"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                رقم الهاتف
+              </label>
+              <input 
+                type="tel" 
+                name="phone"
+                placeholder="+966 50 123 4567"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                البلد *
+              </label>
+              <select name="country" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="">اختر البلد</option>
+                <option value="saudi">السعودية</option>
+                <option value="egypt">مصر</option>
+                <option value="uae">الإمارات</option>
+                <option value="kuwait">الكويت</option>
+                <option value="qatar">قطر</option>
+                <option value="bahrain">البحرين</option>
+                <option value="oman">عمان</option>
+                <option value="jordan">الأردن</option>
+                <option value="lebanon">لبنان</option>
+                <option value="syria">سوريا</option>
+                <option value="iraq">العراق</option>
+                <option value="morocco">المغرب</option>
+                <option value="tunisia">تونس</option>
+                <option value="algeria">الجزائر</option>
+                <option value="other">دولة أخرى</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                العمر *
+              </label>
+              <input 
+                type="number" 
+                name="age"
+                min="16" 
+                max="80"
+                placeholder="العمر"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Platforms Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Play size={20} />
+            <span>معلومات المنصات</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <!-- YouTube -->
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mb-4">
+                <Youtube class="text-red-500" size={20} />
+                <span class="font-medium text-foreground">YouTube</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    رابط القناة
+                  </label>
+                  <input 
+                    type="url" 
+                    name="youtubeUrl"
+                    placeholder="https://youtube.com/@channelname"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    عدد المشتركين
+                  </label>
+                  <input 
+                    type="number" 
+                    name="youtubeSubscribers"
+                    placeholder="1000"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Twitch -->
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mb-4">
+                <Twitch class="text-purple-500" size={20} />
+                <span class="font-medium text-foreground">Twitch</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    رابط القناة
+                  </label>
+                  <input 
+                    type="url" 
+                    name="twitchUrl"
+                    placeholder="https://twitch.tv/channelname"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">
+                    عدد المتابعين
+                  </label>
+                  <input 
+                    type="number" 
+                    name="twitchFollowers"
+                    placeholder="500"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Other Platforms -->
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mb-4">
+                <Link class="text-muted-foreground" size={20} />
+                <span class="font-medium text-foreground">منصات أخرى</span>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  روابط إضافية (Facebook, TikTok, etc.)
+                </label>
+                <textarea 
+                  name="otherPlatforms"
+                  placeholder="أضف روابط منصاتك الأخرى..."
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  rows="3"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Star size={20} />
+            <span>معلومات المحتوى</span>
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                نوع المحتوى الأساسي *
+              </label>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="radio" name="contentType" value="tutorials" class="text-primary" required />
+                  <span>تعليمي</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="radio" name="contentType" value="entertainment" class="text-primary" required />
+                  <span>ترفيهي</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="radio" name="contentType" value="competitive" class="text-primary" required />
+                  <span>تنافسي</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="radio" name="contentType" value="mixed" class="text-primary" required />
+                  <span>متنوع</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                التخصص في اللعبة *
+              </label>
+              <div class="space-y-2">
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="checkbox" name="specialization" value="usa" class="text-primary" />
+                  <span>تكتيكات USA</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="checkbox" name="specialization" value="china" class="text-primary" />
+                  <span>تكتيكات الصين</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="checkbox" name="specialization" value="gla" class="text-primary" />
+                  <span>تكتيكات GLA</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="checkbox" name="specialization" value="general" class="text-primary" />
+                  <span>استراتيجيات عامة</span>
+                </label>
+                <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <input type="checkbox" name="specialization" value="mods" class="text-primary" />
+                  <span>التعديلات والمودز</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                معدل النشر *
+              </label>
+              <select name="uploadFrequency" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                <option value="">اختر معدل النشر</option>
+                <option value="daily">يومي</option>
+                <option value="3-weekly">3 مرات أسبوعياً</option>
+                <option value="weekly">أسبوعي</option>
+                <option value="bi-weekly">كل أسبوعين</option>
+                <option value="monthly">شهري</option>
+              </select>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  مدة الخبرة في اللعبة *
+                </label>
+                <select name="gameExperience" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                  <option value="">اختر مدة الخبرة</option>
+                  <option value="1-2">1-2 سنة</option>
+                  <option value="3-5">3-5 سنوات</option>
+                  <option value="5-10">5-10 سنوات</option>
+                  <option value="10+">أكثر من 10 سنوات</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-foreground mb-2">
+                  مدة إنشاء المحتوى *
+                </label>
+                <select name="contentExperience" class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring" required>
+                  <option value="">اختر مدة إنشاء المحتوى</option>
+                  <option value="new">جديد (أقل من 6 أشهر)</option>
+                  <option value="6-12">6-12 شهر</option>
+                  <option value="1-2">1-2 سنة</option>
+                  <option value="2-5">2-5 سنوات</option>
+                  <option value="5+">أكثر من 5 سنوات</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6">معلومات إضافية</h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                وصف موجز عن قناتك ومحتواك *
+              </label>
+              <textarea 
+                name="description"
+                placeholder="اكتب وصفاً موجزاً عن قناتك ونوع المحتوى الذي تقدمه..."
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                rows="4"
+                maxlength="500"
+                required
+              ></textarea>
+              <p class="text-xs text-muted-foreground mt-1">حد أقصى 500 حرف</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                لماذا تريد الانضمام لزد اتش لوف؟ *
+              </label>
+              <textarea 
+                name="motivation"
+                placeholder="اشرح دوافعك للانضمام وكيف ستساهم في المجتمع..."
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                rows="4"
+                maxlength="500"
+                required
+              ></textarea>
+              <p class="text-xs text-muted-foreground mt-1">حد أقصى 500 حرف</p>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                روابط لأفضل أعمالك (3 روابط كحد أقصى) *
+              </label>
+              <div class="space-y-2">
+                <input 
+                  type="url" 
+                  name="portfolio1"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                />
+                <input 
+                  type="url" 
+                  name="portfolio2"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <input 
+                  type="url" 
+                  name="portfolio3"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">
+                معلومات إضافية
+              </label>
+              <textarea 
+                name="additionalInfo"
+                placeholder="أي معلومات إضافية تريد مشاركتها..."
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                rows="3"
+                maxlength="300"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agreement -->
+        <div class="military-card p-6">
+          <h2 class="text-xl font-bold text-foreground mb-6">الموافقات والشروط</h2>
+          
+          <div class="space-y-4">
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="termsAccept" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على <a href="/ar/terms" class="text-primary hover:underline">شروط الاستخدام</a> و
+                <a href="/ar/privacy" class="text-primary hover:underline">سياسة الخصوصية</a>
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="communityRules" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على الالتزام بقوانين المجتمع ومعايير المحتوى
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="dataConsent" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أوافق على استخدام بياناتي لأغراض المراجعة والتواصل
+              </span>
+            </label>
+            
+            <label class="flex items-start space-x-3 rtl:space-x-reverse">
+              <input type="checkbox" name="authenticInfo" class="text-primary mt-1" required />
+              <span class="text-sm text-foreground">
+                أؤكد أن جميع المعلومات المقدمة صحيحة ودقيقة
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary btn-lg">
+            تقديم الطلب
+          </button>
+          <p class="text-sm text-muted-foreground mt-2">
+            سيتم مراجعة طلبك خلال 3-5 أيام عمل
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('streamerApplicationForm');
+    
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Collect form data
+      const formData = new FormData(form);
+      const data = {};
+      
+      for (let [key, value] = formData.entries()) {
+        if (data[key]) {
+          if (Array.isArray(data[key])) {
+            data[key].push(value);
+          } else {
+            data[key] = [data[key], value];
+          }
+        } else {
+          data[key] = value;
+        }
+      }
+      
+      // Validate required fields
+      const requiredFields = ['fullName', 'displayName', 'email', 'country', 'age', 'contentType', 'uploadFrequency', 'gameExperience', 'contentExperience', 'description', 'motivation', 'portfolio1'];
+      const missing = requiredFields.filter(field => !data[field]);
+      
+      if (missing.length > 0) {
+        alert('يرجى ملء جميع الحقول المطلوبة: ' + missing.join(', '));
+        return;
+      }
+      
+      // Check age requirement
+      if (parseInt(data.age) < 16) {
+        alert('يجب أن يكون عمرك 16 عاماً على الأقل');
+        return;
+      }
+      
+      // Check platform requirements
+      const hasValidPlatform = (data.youtubeUrl && parseInt(data.youtubeSubscribers) >= 1000) || 
+                              (data.twitchUrl && parseInt(data.twitchFollowers) >= 1000);
+      
+      if (!hasValidPlatform) {
+        alert('يجب أن يكون لديك 1000 متابع على الأقل في إحدى المنصات');
+        return;
+      }
+      
+      try {
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'جاري الإرسال...';
+        submitBtn.disabled = true;
+        
+        // Save application data to localStorage (simulate sending to admin)
+        const applications = JSON.parse(localStorage.getItem('streamerApplications') || '[]');
+        const newApplication = {
+          id: Date.now(),
+          ...data,
+          status: 'pending',
+          submittedAt: new Date().toISOString(),
+          reviewedAt: null,
+          reviewedBy: null,
+          notes: ''
+        };
+        
+        applications.push(newApplication);
+        localStorage.setItem('streamerApplications', JSON.stringify(applications));
+        
+        // Show success message
+        alert('تم تقديم طلبك بنجاح! سيتم مراجعته خلال 3-5 أيام عمل وسنتواصل معك عبر البريد الإلكتروني.');
+        
+        // Redirect to streamers page
+        window.location.href = '/ar/streamers';
+        
+      } catch (error) {
+        console.error('Error submitting application:', error);
+        alert('حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى.');
+        
+        // Reset button
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script> 

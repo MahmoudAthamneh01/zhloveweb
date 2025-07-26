@@ -1,0 +1,416 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import ForumPost from '../../../../components/forum/ForumPost.tsx';
+import CommentList from '../../../../components/forum/CommentList.tsx';
+import { ArrowLeft, Share2, Bookmark, Flag, Edit } from 'lucide-react';
+
+// Get post ID from URL params
+const { id } = Astro.params;
+
+// Mock data for development
+const mockPost = {
+  id: parseInt(id || '1'),
+  title: 'أفضل استراتيجيات الصين في الخرائط الكبيرة',
+  content: `
+    <h2>مقدمة</h2>
+    <p>بعد خبرة طويلة في لعب الصين، أريد أن أشارككم بعض الاستراتيجيات الفعالة في الخرائط الكبيرة والتي ستساعدكم على تحقيق النصر.</p>
+    
+    <h3>1. البناء الاقتصادي المبكر</h3>
+    <p>الصين لديها أقوى اقتصاد في اللعبة، لذا من المهم التركيز على بناء الاقتصاد مبكراً:</p>
+    <ul>
+      <li>ابدأ ببناء مجمع الإمداد فوراً</li>
+      <li>اجعل عمالك يجمعون الإمدادات باستمرار</li>
+      <li>أنتج عمال إضافيين لتسريع النمو الاقتصادي</li>
+    </ul>
+    
+    <h3>2. التكتيكات الدفاعية</h3>
+    <p>الصين تتميز بالدفاع القوي، استغل هذه الميزة:</p>
+    <ul>
+      <li>استخدم الحصون والأبراج لحماية القاعدة</li>
+      <li>اجعل رشاشات الحصون تغطي المداخل الرئيسية</li>
+      <li>لا تنسى الألغام ضد الدروع</li>
+    </ul>
+    
+    <h3>3. الهجمات المضادة</h3>
+    <p>بعد بناء اقتصاد قوي، حان وقت الهجوم:</p>
+    <ul>
+      <li>استخدم الدبابات الثقيلة مع دعم المدفعية</li>
+      <li>لا تهمل الطيران، فهو مهم للسيطرة على الخريطة</li>
+      <li>استخدم قوة الأسلحة النووية في الهجمات الحاسمة</li>
+    </ul>
+    
+    <h3>خاتمة</h3>
+    <p>هذه الاستراتيجيات نجحت معي في معظم المباريات. جربوها وأخبروني بالنتائج!</p>
+  `,
+  excerpt: 'بعد خبرة طويلة في لعب الصين، أريد أن أشارككم بعض الاستراتيجيات الفعالة في الخرائط الكبيرة والتي ستساعدكم على تحقيق النصر.',
+  author: {
+    id: 1,
+    username: 'الجنرال_المحترف',
+    avatar: '/avatars/user1.png',
+    rank: 'Legend',
+    level: 45,
+    isOnline: true
+  },
+  category: { id: 2, name: 'الاستراتيجيات', slug: 'strategies', color: '#3b82f6' },
+  stats: { views: 1250, likes: 89, comments: 23, shares: 5 },
+  tags: ['الصين', 'استراتيجية', 'خرائط-كبيرة', 'تكتيك'],
+  isPinned: true,
+  isLocked: false,
+  isEdited: false,
+  isLiked: false,
+  createdAt: '2024-01-15T10:30:00Z',
+  updatedAt: '2024-01-15T10:30:00Z',
+  lastActivity: '2024-01-15T14:20:00Z',
+  lastCommentAuthor: { username: 'لاعب_مبتدئ', avatar: '/avatars/user2.png' }
+};
+
+const mockComments = [
+  {
+    id: 1,
+    content: 'شكراً على هذه النصائح الرائعة! جربت الاستراتيجية الاقتصادية وفعلاً نجحت معي.',
+    author: {
+      id: 2,
+      username: 'لاعب_مبتدئ',
+      avatar: '/avatars/user2.png',
+      rank: 'Beginner',
+      level: 8,
+      isOnline: true
+    },
+    stats: { likes: 12, replies: 2 },
+    isLiked: false,
+    isEdited: false,
+    createdAt: '2024-01-15T11:00:00Z',
+    updatedAt: '2024-01-15T11:00:00Z',
+    replies: [
+      {
+        id: 2,
+        content: 'أنا أيضاً جربتها ونجحت! شكراً للجنرال المحترف.',
+        author: {
+          id: 3,
+          username: 'محب_المنافسة',
+          avatar: '/avatars/user3.png',
+          rank: 'Advanced',
+          level: 28,
+          isOnline: false
+        },
+        stats: { likes: 5, replies: 0 },
+        parentId: 1,
+        isLiked: false,
+        isEdited: false,
+        createdAt: '2024-01-15T11:30:00Z',
+        updatedAt: '2024-01-15T11:30:00Z'
+      }
+    ]
+  },
+  {
+    id: 3,
+    content: 'هل يمكنك توضيح أكثر عن كيفية استخدام الطيران بفعالية؟',
+    author: {
+      id: 4,
+      username: 'الخبير_التقني',
+      avatar: '/avatars/user4.png',
+      rank: 'Expert',
+      level: 35,
+      isOnline: true
+    },
+    stats: { likes: 8, replies: 1 },
+    isLiked: true,
+    isEdited: false,
+    createdAt: '2024-01-15T12:00:00Z',
+    updatedAt: '2024-01-15T12:00:00Z',
+    replies: [
+      {
+        id: 4,
+        content: 'الطيران مهم للاستطلاع أولاً، ثم للهجوم على الأهداف المهمة كالمصانع والمولدات.',
+        author: {
+          id: 1,
+          username: 'الجنرال_المحترف',
+          avatar: '/avatars/user1.png',
+          rank: 'Legend',
+          level: 45,
+          isOnline: true
+        },
+        stats: { likes: 15, replies: 0 },
+        parentId: 3,
+        isLiked: false,
+        isEdited: false,
+        createdAt: '2024-01-15T12:30:00Z',
+        updatedAt: '2024-01-15T12:30:00Z'
+      }
+    ]
+  },
+  {
+    id: 5,
+    content: 'ممتاز! أنا أفضل الصين أيضاً. هل لديك نصائح للعب ضد الـ GLA؟',
+    author: {
+      id: 5,
+      username: 'قائد_العشيرة',
+      avatar: '/avatars/user5.png',
+      rank: 'Pro',
+      level: 42,
+      isOnline: false
+    },
+    stats: { likes: 6, replies: 0 },
+    isLiked: false,
+    isEdited: false,
+    createdAt: '2024-01-15T13:00:00Z',
+    updatedAt: '2024-01-15T13:00:00Z'
+  }
+];
+
+const relatedPosts = [
+  {
+    id: 2,
+    title: 'تكتيكات الدفاع المتقدمة للصين',
+    category: 'الاستراتيجيات',
+    author: 'خبير_الدفاع',
+    stats: { views: 890, comments: 15 },
+    createdAt: '2024-01-10T10:00:00Z'
+  },
+  {
+    id: 3,
+    title: 'مقارنة بين جيوش الصين وأمريكا',
+    category: 'تحليل',
+    author: 'المحلل_العسكري',
+    stats: { views: 1100, comments: 28 },
+    createdAt: '2024-01-12T15:00:00Z'
+  },
+  {
+    id: 4,
+    title: 'أسرار الاقتصاد في الجنرالات',
+    category: 'نصائح',
+    author: 'خبير_الاقتصاد',
+    stats: { views: 750, comments: 12 },
+    createdAt: '2024-01-08T09:00:00Z'
+  }
+];
+
+const title = `${mockPost.title} - المنتدى - زد اتش لوف`;
+const description = mockPost.excerpt;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/forum" class="hover:text-foreground transition-colors">المنتدى</a>
+        <span>/</span>
+        <a href={`/ar/forum/category/${mockPost.category.slug}`} class="hover:text-foreground transition-colors">
+          {mockPost.category.name}
+        </a>
+        <span>/</span>
+        <span class="text-foreground">{mockPost.title}</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/forum" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للمنتدى</span>
+      </a>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main Content -->
+      <div class="flex-1">
+        <!-- Post Content -->
+        <div class="mb-8">
+          <ForumPost 
+            post={mockPost}
+            showActions={true}
+            isPreview={false}
+            className="mb-6"
+            client:load
+          />
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between p-4 bg-muted border border-border rounded-lg mb-8">
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Share2 size={16} />
+              <span>مشاركة</span>
+            </button>
+            <button class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Bookmark size={16} />
+              <span>حفظ</span>
+            </button>
+            <button class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Flag size={16} />
+              <span>إبلاغ</span>
+            </button>
+          </div>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse">
+            <button class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Edit size={16} />
+              <span>تعديل</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="mb-8">
+          <CommentList 
+            comments={mockComments}
+            postId={mockPost.id}
+            client:load
+          />
+        </div>
+
+        <!-- Comment Form -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">اكتب تعليقاً</h3>
+          <form class="space-y-4">
+            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+              <img 
+                src="/avatars/current-user.png" 
+                alt="المستخدم الحالي" 
+                class="w-10 h-10 rounded-full object-cover border-2 border-border flex-shrink-0"
+              />
+              <div class="flex-1">
+                <textarea
+                  placeholder="شاركنا رأيك..."
+                  class="w-full p-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  rows="4"
+                ></textarea>
+                <div class="flex items-center justify-between mt-3">
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+                    <span>يدعم Markdown</span>
+                  </div>
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline btn-sm"
+                    >
+                      معاينة
+                    </button>
+                    <button 
+                      type="submit" 
+                      class="btn btn-primary btn-sm"
+                    >
+                      نشر التعليق
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="w-full lg:w-80 space-y-6">
+        <!-- Author Info -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">الكاتب</h3>
+          <div class="flex items-center space-x-3 rtl:space-x-reverse mb-4">
+            <img 
+              src={mockPost.author.avatar} 
+              alt={mockPost.author.username} 
+              class="w-12 h-12 rounded-full object-cover border-2 border-border"
+            />
+            <div>
+              <h4 class="font-semibold text-foreground">{mockPost.author.username}</h4>
+              <p class="text-sm text-muted-foreground">
+                {mockPost.author.rank} • Level {mockPost.author.level}
+              </p>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="text-center">
+              <div class="text-lg font-bold text-tactical-green">156</div>
+              <div class="text-muted-foreground">منشور</div>
+            </div>
+            <div class="text-center">
+              <div class="text-lg font-bold text-victory-gold">2.3K</div>
+              <div class="text-muted-foreground">إعجاب</div>
+            </div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <a href={`/ar/profile/${mockPost.author.username}`} class="btn btn-outline btn-sm w-full">
+              عرض الملف الشخصي
+            </a>
+            <button class="btn btn-primary btn-sm w-full">
+              إرسال رسالة
+            </button>
+          </div>
+        </div>
+
+        <!-- Post Stats -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">إحصائيات المنشور</h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">المشاهدات</span>
+              <span class="font-semibold text-foreground">{mockPost.stats.views}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">الإعجابات</span>
+              <span class="font-semibold text-foreground">{mockPost.stats.likes}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">التعليقات</span>
+              <span class="font-semibold text-foreground">{mockPost.stats.comments}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-muted-foreground">المشاركات</span>
+              <span class="font-semibold text-foreground">{mockPost.stats.shares}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Posts -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">مواضيع مشابهة</h3>
+          <div class="space-y-4">
+            {relatedPosts.map(post => (
+              <a 
+                href={`/ar/forum/post/${post.id}`}
+                class="block p-3 rounded-lg hover:bg-accent transition-colors group"
+              >
+                <h4 class="font-medium text-foreground group-hover:text-accent-foreground mb-2 line-clamp-2">
+                  {post.title}
+                </h4>
+                <div class="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{post.author}</span>
+                  <span>{post.stats.comments} تعليق</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-semibold text-foreground mb-4">الوسوم</h3>
+          <div class="flex flex-wrap gap-2">
+            {mockPost.tags.map(tag => (
+              <a 
+                href={`/ar/forum/tag/${tag}`}
+                class="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm hover:bg-primary/30 transition-colors"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

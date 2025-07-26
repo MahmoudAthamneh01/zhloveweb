@@ -1,0 +1,352 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { tournaments, getTournamentById } from '../../../../utils/tournamentsData.js';
+
+export async function getStaticPaths() {
+  return tournaments.map((tournament) => ({
+    params: { id: tournament.id.toString() }
+  }));
+}
+
+const { id } = Astro.params;
+const tournament = getTournamentById(id);
+
+if (!tournament) {
+  return Astro.redirect('/404');
+}
+---
+
+<BaseLayout 
+  title={`براكت ${tournament.name} - ZH-Love`}
+  description={`شاهد براكت ومباريات بطولة ${tournament.name}`}
+>
+  <div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <a href={`/ar/tournaments/${id}`} class="text-green-400 hover:text-green-300 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </a>
+          <h1 class="text-3xl font-bold text-white">{tournament.name}</h1>
+        </div>
+        <p class="text-gray-400">براكت البطولة والمباريات</p>
+      </div>
+
+      <!-- Tournament Info -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <div class="text-2xl font-bold text-green-400">{tournament.participants}</div>
+            <div class="text-gray-400">المشاركين</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-blue-400">{tournament.type === 'single_elimination' ? 'إقصاء مفرد' : tournament.type}</div>
+            <div class="text-gray-400">نوع البطولة</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-purple-400">{tournament.format}</div>
+            <div class="text-gray-400">نمط اللعب</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-yellow-400">${tournament.prizePool}</div>
+            <div class="text-gray-400">الجائزة الإجمالية</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bracket Controls -->
+      <div class="bg-card border border-border rounded-lg p-4 mb-8">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button id="btn-overview" class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium">
+              نظرة عامة
+            </button>
+            <button id="btn-rounds" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
+              عرض بالجولات
+            </button>
+            <button id="btn-full-bracket" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors">
+              البراكت الكامل
+            </button>
+          </div>
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button id="btn-zoom-in" class="p-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+            </button>
+            <button id="btn-zoom-out" class="p-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
+              </svg>
+            </button>
+            <button id="btn-refresh" class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bracket Content -->
+      <div id="bracket-content">
+        <!-- Overview Mode -->
+        <div id="overview-mode" class="space-y-8">
+          <!-- Current Round -->
+          <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-white mb-6">الجولة الحالية</h3>
+            
+            {tournament.status === 'registration_open' && (
+              <div class="text-center py-12">
+                <div class="text-6xl mb-4">⏳</div>
+                <h4 class="text-lg font-semibold text-white mb-2">البراكت قيد الإعداد</h4>
+                <p class="text-gray-400">سيتم إنشاء البراكت عند إغلاق التسجيل</p>
+              </div>
+            )}
+            
+            {tournament.status === 'in_progress' && (
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sample matches for demo -->
+                <div class="bg-gray-800 rounded-lg p-4">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-400">الدور نصف النهائي • المباراة 1</span>
+                    <span class="px-2 py-1 text-xs bg-red-600 text-white rounded">LIVE</span>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img src="/images/avatars/zh_master.jpg" alt="ZH Master" class="w-8 h-8 rounded-full">
+                        <span class="text-white font-medium">ZH Master</span>
+                      </div>
+                      <span class="text-green-400 font-bold">2</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img src="/images/avatars/generals_pro.jpg" alt="Generals Pro" class="w-8 h-8 rounded-full">
+                        <span class="text-white font-medium">Generals Pro</span>
+                      </div>
+                      <span class="text-gray-400 font-bold">1</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-center">
+                    <button class="text-green-400 hover:text-green-300 text-sm">مشاهدة مباشرة</button>
+                  </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-4">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-400">الدور نصف النهائي • المباراة 2</span>
+                    <span class="px-2 py-1 text-xs bg-orange-600 text-white rounded">قريباً</span>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img src="/images/avatars/tactical_gamer.jpg" alt="Tactical Gamer" class="w-8 h-8 rounded-full">
+                        <span class="text-white font-medium">Tactical Gamer</span>
+                      </div>
+                      <span class="text-gray-400 font-bold">vs</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2 bg-gray-700 rounded">
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <img src="/images/avatars/zh_legend.jpg" alt="ZH Legend" class="w-8 h-8 rounded-full">
+                        <span class="text-white font-medium">ZH Legend</span>
+                      </div>
+                      <span class="text-gray-400 font-bold">vs</span>
+                    </div>
+                  </div>
+                  <div class="mt-3 text-center">
+                    <span class="text-gray-400 text-sm">18:00 اليوم</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {tournament.status === 'completed' && (
+              <div class="text-center py-12">
+                <div class="text-6xl mb-4">🏆</div>
+                <h4 class="text-lg font-semibold text-white mb-2">البطولة مكتملة</h4>
+                <p class="text-gray-400 mb-6">تم الانتهاء من جميع المباريات</p>
+                <button class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                  عرض النتائج النهائية
+                </button>
+              </div>
+            )}
+          </div>
+
+          <!-- Upcoming Matches -->
+          {tournament.status === 'in_progress' && (
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h3 class="text-xl font-semibold text-white mb-6">المباريات القادمة</h3>
+              
+              <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                    <div class="text-center">
+                      <div class="text-sm text-gray-400">الدور الأول</div>
+                      <div class="text-xs text-gray-500">المباراة 3</div>
+                    </div>
+                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                      <span class="text-white">Desert Storm</span>
+                      <span class="text-gray-400">ضد</span>
+                      <span class="text-white">Air Commander</span>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-white font-medium">غداً 20:00</div>
+                    <div class="text-sm text-gray-400">Tournament Desert</div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                    <div class="text-center">
+                      <div class="text-sm text-gray-400">الدور الأول</div>
+                      <div class="text-xs text-gray-500">المباراة 4</div>
+                    </div>
+                    <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                      <span class="text-white">Tank Master</span>
+                      <span class="text-gray-400">ضد</span>
+                      <span class="text-white">Winner Match 1</span>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-white font-medium">غداً 21:00</div>
+                    <div class="text-sm text-gray-400">Tournament City</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <!-- Recent Results -->
+          <div class="bg-card border border-border rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-white mb-6">النتائج الأخيرة</h3>
+            
+            <div class="space-y-4">
+              {tournament.status === 'completed' && (
+                <>
+                  <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                      <div class="text-center">
+                        <div class="text-sm text-gray-400">النهائي</div>
+                        <div class="text-xs text-green-400">مكتمل</div>
+                      </div>
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <span class="text-green-400 font-bold">ZH Legend</span>
+                        <span class="text-gray-400">2-1</span>
+                        <span class="text-white">Air Commander</span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-white font-medium">أمس 22:00</div>
+                      <div class="text-sm text-gray-400">Tournament Arena</div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                      <div class="text-center">
+                        <div class="text-sm text-gray-400">نصف النهائي</div>
+                        <div class="text-xs text-green-400">مكتمل</div>
+                      </div>
+                      <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                        <span class="text-green-400 font-bold">ZH Legend</span>
+                        <span class="text-gray-400">2-0</span>
+                        <span class="text-white">Tank Master</span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-white font-medium">أمس 20:00</div>
+                      <div class="text-sm text-gray-400">Desert Combat</div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {tournament.status !== 'completed' && (
+                <div class="text-center py-8">
+                  <div class="text-4xl mb-4">📊</div>
+                  <p class="text-gray-400">لا توجد نتائج بعد</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <!-- Rounds Mode -->
+        <div id="rounds-mode" class="hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="text-center py-12">
+              <div class="text-6xl mb-4">🏗️</div>
+              <h3 class="text-xl font-semibold text-white mb-2">عرض الجولات</h3>
+              <p class="text-gray-400">سيتم عرض المباريات مقسمة حسب الجولات</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Bracket Mode -->
+        <div id="full-bracket-mode" class="hidden">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <div class="text-center py-12">
+              <div class="text-6xl mb-4">🌐</div>
+              <h3 class="text-xl font-semibold text-white mb-2">البراكت الكامل</h3>
+              <p class="text-gray-400">سيتم عرض البراكت بالكامل في عرض تفاعلي</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ tournament }}>
+    document.addEventListener('DOMContentLoaded', function() {
+      const buttons = {
+        overview: document.getElementById('btn-overview'),
+        rounds: document.getElementById('btn-rounds'),
+        fullBracket: document.getElementById('btn-full-bracket')
+      };
+
+      const modes = {
+        overview: document.getElementById('overview-mode'),
+        rounds: document.getElementById('rounds-mode'),
+        fullBracket: document.getElementById('full-bracket-mode')
+      };
+
+      // Mode switching
+      Object.keys(buttons).forEach(mode => {
+        buttons[mode].addEventListener('click', () => {
+          // Update button states
+          Object.values(buttons).forEach(btn => {
+            btn.classList.remove('bg-green-600');
+            btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+          });
+          buttons[mode].classList.remove('bg-gray-600', 'hover:bg-gray-700');
+          buttons[mode].classList.add('bg-green-600');
+
+          // Update mode visibility
+          Object.values(modes).forEach(modeDiv => {
+            modeDiv.classList.add('hidden');
+          });
+          modes[mode].classList.remove('hidden');
+        });
+      });
+
+      // Refresh button
+      document.getElementById('btn-refresh').addEventListener('click', () => {
+        location.reload();
+      });
+
+      // Zoom controls (placeholder)
+      document.getElementById('btn-zoom-in').addEventListener('click', () => {
+        console.log('Zoom In');
+      });
+
+      document.getElementById('btn-zoom-out').addEventListener('click', () => {
+        console.log('Zoom Out');
+      });
+    });
+  </script>
+</BaseLayout> 

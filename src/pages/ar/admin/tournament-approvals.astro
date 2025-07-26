@@ -1,0 +1,851 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout 
+  title="موافقة البطولات - لوحة الإدارة"
+  description="إدارة موافقات البطولات الجديدة وتمييز البطولات المميزة"
+>
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-orange-900 to-orange-800 py-8">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">موافقة البطولات</h1>
+            <p class="text-orange-200">إدارة البطولات المقدمة للموافقة وتمييز البطولات المميزة</p>
+          </div>
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <div class="bg-black bg-opacity-20 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-white" id="pending-count">8</div>
+              <div class="text-orange-200 text-sm">في الانتظار</div>
+            </div>
+            <div class="bg-black bg-opacity-20 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-white" id="approved-today">12</div>
+              <div class="text-orange-200 text-sm">موافق عليها اليوم</div>
+            </div>
+            <div class="bg-black bg-opacity-20 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div class="text-2xl font-bold text-white" id="featured-count">3</div>
+              <div class="text-orange-200 text-sm">مميزة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+      <!-- Action Bar -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <button id="bulk-approve" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center space-x-2 rtl:space-x-reverse">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span>الموافقة على المحدد</span>
+            </button>
+            <button id="bulk-reject" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center space-x-2 rtl:space-x-reverse">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <span>رفض المحدد</span>
+            </button>
+            <button id="bulk-feature" class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors flex items-center space-x-2 rtl:space-x-reverse">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+              <span>تمييز المحدد</span>
+            </button>
+          </div>
+          
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <select id="status-filter" class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">جميع الحالات</option>
+              <option value="pending">في الانتظار</option>
+              <option value="approved">موافق عليها</option>
+              <option value="rejected">مرفوضة</option>
+              <option value="featured">مميزة</option>
+            </select>
+            <input 
+              type="search" 
+              id="search-tournaments" 
+              placeholder="البحث في البطولات..."
+              class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Tournaments List -->
+      <div class="space-y-6" id="tournaments-list">
+        <!-- Loading State -->
+        <div class="text-center py-20">
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mb-4"></div>
+          <p class="text-gray-400">جاري تحميل البطولات...</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" class="flex justify-center mt-8 hidden">
+        <nav class="flex items-center space-x-2 rtl:space-x-reverse">
+          <button id="prev-page" class="px-4 py-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 hover:text-white transition-colors disabled:opacity-50">
+            السابق
+          </button>
+          <div id="page-numbers" class="flex space-x-2 rtl:space-x-reverse">
+            <!-- Page numbers will be inserted here -->
+          </div>
+          <button id="next-page" class="px-4 py-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+            التالي
+          </button>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tournament Details Modal -->
+  <div id="tournament-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 id="modal-title" class="text-2xl font-bold text-white">تفاصيل البطولة</h3>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="modal-content">
+          <!-- Tournament details will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval/Rejection Modal -->
+  <div id="action-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-card border border-border rounded-lg max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 id="action-modal-title" class="text-xl font-bold text-white">تأكيد الإجراء</h3>
+          <button id="close-action-modal" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="action-modal-content">
+          <!-- Action form will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mock data for pending tournaments
+      const pendingTournaments = [
+        {
+          id: 1,
+          name: 'بطولة الخليج الكبرى',
+          organizer: 'أحمد الخليجي',
+          organizerEmail: 'ahmed@example.com',
+          description: 'بطولة كبرى تجمع أفضل لاعبي الخليج في منافسة شرسة',
+          format: 'single_elimination',
+          gameFormat: '1v1',
+          maxParticipants: 64,
+          prizePool: 2000,
+          currency: 'USD',
+          startDate: '2024-03-20T18:00:00Z',
+          endDate: '2024-03-25T22:00:00Z',
+          status: 'pending',
+          submittedAt: '2024-02-20T10:30:00Z',
+          image: '/uploads/tournaments/gulf-championship.jpg',
+          contactInfo: {
+            discord: 'https://discord.gg/gulf-championship',
+            telegram: 'https://t.me/gulf_championship',
+            email: 'gulf@example.com'
+          },
+          rules: 'قوانين صارمة وعادلة للمنافسة',
+          maps: ['Desert Fury', 'Tournament Desert', 'Scorched Earth'],
+          featured: false,
+          priority: 'high'
+        },
+        {
+          id: 2,
+          name: 'تحدي الشباب العربي',
+          organizer: 'محمد الشاب',
+          organizerEmail: 'mohamed@example.com',
+          description: 'بطولة خاصة بالشباب العربي تحت 25 سنة',
+          format: 'double_elimination',
+          gameFormat: '2v2',
+          maxParticipants: 32,
+          prizePool: 500,
+          currency: 'USD',
+          startDate: '2024-03-15T19:00:00Z',
+          endDate: '2024-03-18T21:00:00Z',
+          status: 'pending',
+          submittedAt: '2024-02-18T14:20:00Z',
+          image: '/uploads/tournaments/youth-challenge.jpg',
+          contactInfo: {
+            discord: 'https://discord.gg/youth-challenge',
+            email: 'youth@example.com'
+          },
+          rules: 'للشباب تحت 25 سنة فقط',
+          maps: ['Green Pastures', 'Urban Combat'],
+          featured: false,
+          priority: 'medium'
+        },
+        {
+          id: 3,
+          name: 'بطولة الأساطير العربية',
+          organizer: 'عمر الأسطورة',
+          organizerEmail: 'legend@example.com',
+          description: 'بطولة تجمع أساطير اللعبة العربية في معركة ملحمية',
+          format: 'round_robin',
+          gameFormat: '1v1',
+          maxParticipants: 16,
+          prizePool: 1500,
+          currency: 'USD',
+          startDate: '2024-03-25T20:00:00Z',
+          endDate: '2024-03-30T22:00:00Z',
+          status: 'pending',
+          submittedAt: '2024-02-19T09:15:00Z',
+          image: '/uploads/tournaments/legends-championship.jpg',
+          contactInfo: {
+            discord: 'https://discord.gg/legends-championship',
+            telegram: 'https://t.me/legends_championship',
+            email: 'legends@example.com'
+          },
+          rules: 'للاعبين المحترفين فقط - مستوى 70+',
+          maps: ['Desert Fury', 'Winter Wolf', 'Tournament Desert', 'Scorched Earth'],
+          featured: true,
+          priority: 'high'
+        }
+      ];
+
+      let currentTournaments = [...pendingTournaments];
+      let selectedTournaments = new Set();
+      let currentPage = 1;
+      const itemsPerPage = 10;
+
+      // Initialize
+      loadTournaments();
+      setupEventListeners();
+      updateStats();
+
+      function loadTournaments() {
+        const searchTerm = document.getElementById('search-tournaments').value.toLowerCase();
+        const statusFilter = document.getElementById('status-filter').value;
+
+        // Filter tournaments
+        let filteredTournaments = pendingTournaments.filter(tournament => {
+          const matchesSearch = tournament.name.toLowerCase().includes(searchTerm) || 
+                               tournament.organizer.toLowerCase().includes(searchTerm) ||
+                               tournament.description.toLowerCase().includes(searchTerm);
+          const matchesStatus = !statusFilter || tournament.status === statusFilter;
+          
+          return matchesSearch && matchesStatus;
+        });
+
+        // Sort by priority and date
+        filteredTournaments.sort((a, b) => {
+          const priorityOrder = { high: 3, medium: 2, low: 1 };
+          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+          }
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+        });
+
+        displayTournaments(filteredTournaments);
+      }
+
+      function displayTournaments(tournaments) {
+        const container = document.getElementById('tournaments-list');
+        
+        if (tournaments.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-20">
+              <div class="text-6xl mb-4">🎉</div>
+              <h3 class="text-xl font-semibold text-white mb-2">لا توجد بطولات في الانتظار</h3>
+              <p class="text-gray-400">جميع البطولات تم النظر فيها</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = tournaments.map(tournament => `
+          <div class="tournament-approval-card bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-all duration-300 ${
+            tournament.featured ? 'ring-2 ring-yellow-500/30' : ''
+          }">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <label class="flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    class="tournament-checkbox w-5 h-5 text-orange-600 bg-gray-800 border-gray-600 rounded focus:ring-orange-500"
+                    data-tournament-id="${tournament.id}"
+                    ${selectedTournaments.has(tournament.id) ? 'checked' : ''}
+                  />
+                </label>
+                <div class="flex-1">
+                  <div class="flex items-center space-x-3 rtl:space-x-reverse mb-2">
+                    <h3 class="text-xl font-bold text-white">${tournament.name}</h3>
+                    ${tournament.featured ? `
+                      <span class="px-2 py-1 bg-yellow-600 text-white text-xs rounded-full flex items-center space-x-1 rtl:space-x-reverse">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        </svg>
+                        <span>مميزة</span>
+                      </span>
+                    ` : ''}
+                    <span class="px-2 py-1 text-xs rounded-full ${
+                      tournament.priority === 'high' ? 'bg-red-600 text-white' :
+                      tournament.priority === 'medium' ? 'bg-yellow-600 text-white' :
+                      'bg-gray-600 text-white'
+                    }">
+                      ${tournament.priority === 'high' ? 'أولوية عالية' : 
+                        tournament.priority === 'medium' ? 'أولوية متوسطة' : 'أولوية منخفضة'}
+                    </span>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p class="text-gray-400 text-sm mb-1">المنظم</p>
+                      <p class="text-white">${tournament.organizer}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm mb-1">تاريخ التقديم</p>
+                      <p class="text-white">${formatDate(tournament.submittedAt)}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm mb-1">النوع</p>
+                      <p class="text-white">${formatType(tournament.format)} - ${tournament.gameFormat}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400 text-sm mb-1">الجائزة</p>
+                      <p class="text-white">${tournament.prizePool > 0 ? `$${tournament.prizePool}` : 'بدون جائزة'}</p>
+                    </div>
+                  </div>
+                  
+                  <p class="text-gray-300 text-sm mb-4 line-clamp-2">${tournament.description}</p>
+                  
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    ${tournament.maps.map(map => `
+                      <span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">${map}</span>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <button 
+                  onclick="viewTournament(${tournament.id})"
+                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+                >
+                  عرض التفاصيل
+                </button>
+                <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                  <button 
+                    onclick="approveTournament(${tournament.id})"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
+                  >
+                    موافقة
+                  </button>
+                  <button 
+                    onclick="rejectTournament(${tournament.id})"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+                  >
+                    رفض
+                  </button>
+                  <button 
+                    onclick="featureTournament(${tournament.id})"
+                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors text-sm"
+                  >
+                    ${tournament.featured ? 'إلغاء التمييز' : 'تمييز'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Update checkboxes
+        updateCheckboxes();
+      }
+
+      function setupEventListeners() {
+        // Search and filter
+        document.getElementById('search-tournaments').addEventListener('input', loadTournaments);
+        document.getElementById('status-filter').addEventListener('change', loadTournaments);
+
+        // Bulk actions
+        document.getElementById('bulk-approve').addEventListener('click', bulkApprove);
+        document.getElementById('bulk-reject').addEventListener('click', bulkReject);
+        document.getElementById('bulk-feature').addEventListener('click', bulkFeature);
+
+        // Modal events
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+        document.getElementById('close-action-modal').addEventListener('click', closeActionModal);
+
+        // Tournament checkboxes
+        document.addEventListener('change', function(e) {
+          if (e.target.classList.contains('tournament-checkbox')) {
+            const tournamentId = parseInt(e.target.dataset.tournamentId);
+            if (e.target.checked) {
+              selectedTournaments.add(tournamentId);
+            } else {
+              selectedTournaments.delete(tournamentId);
+            }
+            updateBulkActions();
+          }
+        });
+      }
+
+      function updateCheckboxes() {
+        const checkboxes = document.querySelectorAll('.tournament-checkbox');
+        checkboxes.forEach(checkbox => {
+          const tournamentId = parseInt(checkbox.dataset.tournamentId);
+          checkbox.checked = selectedTournaments.has(tournamentId);
+        });
+      }
+
+      function updateBulkActions() {
+        const hasSelected = selectedTournaments.size > 0;
+        document.getElementById('bulk-approve').disabled = !hasSelected;
+        document.getElementById('bulk-reject').disabled = !hasSelected;
+        document.getElementById('bulk-feature').disabled = !hasSelected;
+      }
+
+      function updateStats() {
+        const pending = pendingTournaments.filter(t => t.status === 'pending').length;
+        const approved = pendingTournaments.filter(t => t.status === 'approved').length;
+        const featured = pendingTournaments.filter(t => t.featured).length;
+
+        document.getElementById('pending-count').textContent = pending;
+        document.getElementById('approved-today').textContent = approved;
+        document.getElementById('featured-count').textContent = featured;
+      }
+
+      function formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString('ar-SA', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      function formatType(type) {
+        const types = {
+          'single_elimination': 'إقصاء مباشر',
+          'double_elimination': 'إقصاء مزدوج',
+          'round_robin': 'دوري',
+          'swiss': 'سويسري'
+        };
+        return types[type] || type;
+      }
+
+      function closeModal() {
+        document.getElementById('tournament-modal').classList.add('hidden');
+      }
+
+      function closeActionModal() {
+        document.getElementById('action-modal').classList.add('hidden');
+      }
+
+      // Global functions
+      window.viewTournament = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        const modal = document.getElementById('tournament-modal');
+        const title = document.getElementById('modal-title');
+        const content = document.getElementById('modal-content');
+
+        title.textContent = tournament.name;
+        content.innerHTML = `
+          <div class="space-y-6">
+            <!-- Tournament Image -->
+            ${tournament.image ? `
+              <div class="relative h-48 rounded-lg overflow-hidden">
+                <img src="${tournament.image}" alt="${tournament.name}" class="w-full h-full object-cover">
+              </div>
+            ` : ''}
+            
+            <!-- Basic Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 class="text-lg font-semibold text-white mb-3">معلومات أساسية</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">المنظم:</span>
+                    <span class="text-white">${tournament.organizer}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">البريد الإلكتروني:</span>
+                    <span class="text-white">${tournament.organizerEmail}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">النوع:</span>
+                    <span class="text-white">${formatType(tournament.format)}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">الصيغة:</span>
+                    <span class="text-white">${tournament.gameFormat}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">المشاركين:</span>
+                    <span class="text-white">${tournament.maxParticipants}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">الجائزة:</span>
+                    <span class="text-white">${tournament.prizePool > 0 ? `$${tournament.prizePool}` : 'بدون جائزة'}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 class="text-lg font-semibold text-white mb-3">التوقيت</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">البداية:</span>
+                    <span class="text-white">${formatDate(tournament.startDate)}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">النهاية:</span>
+                    <span class="text-white">${formatDate(tournament.endDate)}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">تاريخ التقديم:</span>
+                    <span class="text-white">${formatDate(tournament.submittedAt)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Description -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">الوصف</h4>
+              <p class="text-gray-300 leading-relaxed">${tournament.description}</p>
+            </div>
+            
+            <!-- Rules -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">القوانين</h4>
+              <div class="bg-gray-800 rounded-lg p-4">
+                <pre class="text-gray-300 text-sm whitespace-pre-wrap">${tournament.rules}</pre>
+              </div>
+            </div>
+            
+            <!-- Maps -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">الخرائط</h4>
+              <div class="flex flex-wrap gap-2">
+                ${tournament.maps.map(map => `
+                  <span class="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded-full">${map}</span>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Contact Info -->
+            <div>
+              <h4 class="text-lg font-semibold text-white mb-3">معلومات التواصل</h4>
+              <div class="space-y-2">
+                ${tournament.contactInfo.discord ? `
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <span class="text-gray-400">Discord:</span>
+                    <a href="${tournament.contactInfo.discord}" target="_blank" class="text-blue-400 hover:text-blue-300">${tournament.contactInfo.discord}</a>
+                  </div>
+                ` : ''}
+                ${tournament.contactInfo.telegram ? `
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <span class="text-gray-400">Telegram:</span>
+                    <a href="${tournament.contactInfo.telegram}" target="_blank" class="text-blue-400 hover:text-blue-300">${tournament.contactInfo.telegram}</a>
+                  </div>
+                ` : ''}
+                ${tournament.contactInfo.email ? `
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <span class="text-gray-400">Email:</span>
+                    <a href="mailto:${tournament.contactInfo.email}" class="text-blue-400 hover:text-blue-300">${tournament.contactInfo.email}</a>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center justify-end space-x-4 rtl:space-x-reverse pt-6 border-t border-gray-700">
+              <button onclick="approveTournament(${tournament.id})" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                موافقة
+              </button>
+              <button onclick="rejectTournament(${tournament.id})" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                رفض
+              </button>
+              <button onclick="featureTournament(${tournament.id})" class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors">
+                ${tournament.featured ? 'إلغاء التمييز' : 'تمييز'}
+              </button>
+            </div>
+          </div>
+        `;
+
+        modal.classList.remove('hidden');
+      };
+
+      window.approveTournament = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        const modal = document.getElementById('action-modal');
+        const title = document.getElementById('action-modal-title');
+        const content = document.getElementById('action-modal-content');
+
+        title.textContent = 'الموافقة على البطولة';
+        content.innerHTML = `
+          <div class="space-y-4">
+            <p class="text-gray-300">هل أنت متأكد من الموافقة على بطولة "${tournament.name}"؟</p>
+            
+            <div class="space-y-3">
+              <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                <input type="checkbox" id="send-notification" class="w-4 h-4 text-green-600 bg-gray-800 border-gray-600 rounded focus:ring-green-500" checked>
+                <span class="text-gray-300">إرسال إشعار عام للمستخدمين</span>
+              </label>
+              
+              <label class="flex items-center space-x-2 rtl:space-x-reverse">
+                <input type="checkbox" id="make-featured" class="w-4 h-4 text-yellow-600 bg-gray-800 border-gray-600 rounded focus:ring-yellow-500">
+                <span class="text-gray-300">جعل البطولة مميزة</span>
+              </label>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">رسالة إضافية (اختياري)</label>
+              <textarea 
+                id="approval-message" 
+                rows="3" 
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="رسالة تهنئة أو تعليقات إضافية..."
+              ></textarea>
+            </div>
+            
+            <div class="flex items-center justify-end space-x-3 rtl:space-x-reverse pt-4">
+              <button onclick="closeActionModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                إلغاء
+              </button>
+              <button onclick="confirmApproval(${id})" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                موافقة
+              </button>
+            </div>
+          </div>
+        `;
+
+        modal.classList.remove('hidden');
+      };
+
+      window.rejectTournament = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        const modal = document.getElementById('action-modal');
+        const title = document.getElementById('action-modal-title');
+        const content = document.getElementById('action-modal-content');
+
+        title.textContent = 'رفض البطولة';
+        content.innerHTML = `
+          <div class="space-y-4">
+            <p class="text-gray-300">هل أنت متأكد من رفض بطولة "${tournament.name}"؟</p>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">سبب الرفض *</label>
+              <select id="rejection-reason" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                <option value="">اختر السبب</option>
+                <option value="incomplete_info">معلومات غير مكتملة</option>
+                <option value="inappropriate_content">محتوى غير مناسب</option>
+                <option value="duplicate">بطولة مكررة</option>
+                <option value="unrealistic_dates">تواريخ غير واقعية</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">تفاصيل إضافية</label>
+              <textarea 
+                id="rejection-details" 
+                rows="3" 
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                placeholder="اشرح السبب بالتفصيل..."
+              ></textarea>
+            </div>
+            
+            <div class="flex items-center justify-end space-x-3 rtl:space-x-reverse pt-4">
+              <button onclick="closeActionModal()" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                إلغاء
+              </button>
+              <button onclick="confirmRejection(${id})" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                رفض
+              </button>
+            </div>
+          </div>
+        `;
+
+        modal.classList.remove('hidden');
+      };
+
+      window.featureTournament = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        tournament.featured = !tournament.featured;
+        const action = tournament.featured ? 'تم تمييز البطولة' : 'تم إلغاء تمييز البطولة';
+        
+        showToast(action, 'success');
+        loadTournaments();
+        updateStats();
+      };
+
+      window.confirmApproval = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        const sendNotification = document.getElementById('send-notification').checked;
+        const makeFeatured = document.getElementById('make-featured').checked;
+        const message = document.getElementById('approval-message').value;
+
+        tournament.status = 'approved';
+        if (makeFeatured) tournament.featured = true;
+
+        showToast('تم الموافقة على البطولة بنجاح', 'success');
+        
+        if (sendNotification) {
+          showToast('تم إرسال إشعار عام للمستخدمين', 'info');
+        }
+
+        closeActionModal();
+        closeModal();
+        loadTournaments();
+        updateStats();
+      };
+
+      window.confirmRejection = function(id) {
+        const tournament = pendingTournaments.find(t => t.id === id);
+        if (!tournament) return;
+
+        const reason = document.getElementById('rejection-reason').value;
+        const details = document.getElementById('rejection-details').value;
+
+        if (!reason) {
+          showToast('يرجى اختيار سبب الرفض', 'error');
+          return;
+        }
+
+        tournament.status = 'rejected';
+        tournament.rejectionReason = reason;
+        tournament.rejectionDetails = details;
+
+        showToast('تم رفض البطولة', 'success');
+        
+        closeActionModal();
+        closeModal();
+        loadTournaments();
+        updateStats();
+      };
+
+      function bulkApprove() {
+        if (selectedTournaments.size === 0) {
+          showToast('يرجى اختيار بطولة واحدة على الأقل', 'error');
+          return;
+        }
+
+        if (confirm(`هل أنت متأكد من الموافقة على ${selectedTournaments.size} بطولة؟`)) {
+          selectedTournaments.forEach(id => {
+            const tournament = pendingTournaments.find(t => t.id === id);
+            if (tournament) {
+              tournament.status = 'approved';
+            }
+          });
+
+          showToast(`تم الموافقة على ${selectedTournaments.size} بطولة`, 'success');
+          selectedTournaments.clear();
+          loadTournaments();
+          updateStats();
+        }
+      }
+
+      function bulkReject() {
+        if (selectedTournaments.size === 0) {
+          showToast('يرجى اختيار بطولة واحدة على الأقل', 'error');
+          return;
+        }
+
+        if (confirm(`هل أنت متأكد من رفض ${selectedTournaments.size} بطولة؟`)) {
+          selectedTournaments.forEach(id => {
+            const tournament = pendingTournaments.find(t => t.id === id);
+            if (tournament) {
+              tournament.status = 'rejected';
+            }
+          });
+
+          showToast(`تم رفض ${selectedTournaments.size} بطولة`, 'success');
+          selectedTournaments.clear();
+          loadTournaments();
+          updateStats();
+        }
+      }
+
+      function bulkFeature() {
+        if (selectedTournaments.size === 0) {
+          showToast('يرجى اختيار بطولة واحدة على الأقل', 'error');
+          return;
+        }
+
+        if (confirm(`هل أنت متأكد من تمييز ${selectedTournaments.size} بطولة؟`)) {
+          selectedTournaments.forEach(id => {
+            const tournament = pendingTournaments.find(t => t.id === id);
+            if (tournament) {
+              tournament.featured = true;
+            }
+          });
+
+          showToast(`تم تمييز ${selectedTournaments.size} بطولة`, 'success');
+          selectedTournaments.clear();
+          loadTournaments();
+          updateStats();
+        }
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 
+          type === 'error' ? 'bg-red-600' : 
+          'bg-blue-600'
+        }`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tournament-approval-card {
+    transition: all 0.3s ease;
+  }
+
+  .tournament-approval-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+</style> 

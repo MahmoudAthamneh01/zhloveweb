@@ -1,0 +1,283 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noIndex?: boolean;
+  class?: string;
+}
+
+const {
+  title = 'ZH-Love - مجتمع جنرالز زيرو آور',
+  description = 'المنصة الرسمية للاعبي جنرالز زيرو آور مع البطولات والعشائر والمنتديات',
+  image = '/images/og-image.jpg',
+  noIndex = false,
+  class: className = '',
+} = Astro.props;
+
+import { getLanguageFromURL, getLocalizedPath } from '../utils/i18n';
+import SidebarWrapper from '../components/SidebarWrapper';
+import FooterWrapper from '../components/FooterWrapper';
+import '../styles/globals.css';
+
+const lang = getLanguageFromURL(Astro.url.pathname);
+const isRTL = lang === 'ar';
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang={lang} dir={isRTL ? 'rtl' : 'ltr'} class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content="ZH-Love" />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_SA' : 'en_US'} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
+    <meta name="author" content="ZH-Love Team" />
+    <meta name="theme-color" content="#0D0D0D" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Font Loading -->
+    <link href="https://fonts.googleapis.com/css2?family=Avenir:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Arabic Font -->
+    {isRTL && (
+      <link href="https://fonts.googleapis.com/css2?family=Bahij+TheSansArabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    )}
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={Astro.url} />
+    
+    <!-- Language Alternates -->
+    <link rel="alternate" hreflang="ar" href={`https://zh-love.com/ar${currentPath.replace('/en', '')}`} />
+    <link rel="alternate" hreflang="en" href={`https://zh-love.com/en${currentPath.replace('/ar', '')}`} />
+    <link rel="alternate" hreflang="x-default" href={`https://zh-love.com${currentPath}`} />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ZH-Love",
+        "description": "مجتمع جنرالز زيرو آور - Community platform for Generals Zero Hour players",
+        "url": "https://zh-love.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://zh-love.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        "inLanguage": ["ar", "en"],
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Gamers, Command & Conquer fans"
+        }
+      }
+    </script>
+  </head>
+  
+  <body class={`min-h-screen bg-background text-foreground font-sans antialiased ${isRTL ? 'rtl arabic-text' : 'ltr'} ${className}`}>
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 bg-military-pattern opacity-10 pointer-events-none"></div>
+    
+    <!-- Sidebar -->
+    <SidebarWrapper currentPath={currentPath} language={lang} client:load />
+    
+    <!-- Main App Container -->
+    <div class="relative min-h-screen flex">
+      <!-- Skip to content link for accessibility -->
+      <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 z-100 bg-primary text-white px-4 py-2 rounded-md" style={isRTL ? 'right: 1rem;' : 'left: 1rem;'}>
+        {isRTL ? 'انتقل إلى المحتوى الرئيسي' : 'Skip to main content'}
+      </a>
+      
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col lg:ml-64 rtl:lg:ml-0 rtl:lg:mr-64 transition-all duration-300" id="main-layout">
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 relative">
+          <slot />
+        </main>
+        
+        <!-- Footer -->
+        <FooterWrapper language={lang} client:load />
+      </div>
+    </div>
+    
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed top-4 z-100 space-y-2" style={isRTL ? 'left: 1rem;' : 'right: 1rem;'}></div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-100 hidden">
+      <div class="flex items-center justify-center h-full">
+        <div class="spinner w-8 h-8"></div>
+      </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+      // Theme detection and setup
+      const theme = 'dark'; // ZH-Love uses dark theme by default
+      document.documentElement.className = 'dark';
+      
+      // RTL/LTR handling
+      const isRTL = document.documentElement.dir === 'rtl';
+      if (isRTL) {
+        document.body.classList.add('rtl');
+      }
+      
+      // Global loading state
+      window.showLoading = () => {
+        document.getElementById('loading-indicator')?.classList.remove('hidden');
+      };
+      
+      window.hideLoading = () => {
+        document.getElementById('loading-indicator')?.classList.add('hidden');
+      };
+      
+      // Global toast notification system
+      window.showToast = (message, type = 'info') => {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast bg-card border border-border rounded-lg p-4 shadow-lg animate-fade-in-down max-w-sm ${
+          type === 'error' ? 'border-destructive' : 
+          type === 'success' ? 'border-primary' : 
+          'border-border'
+        }`;
+        
+        toast.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="flex-1 text-sm">${message}</div>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-muted-foreground hover:text-foreground">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          toast.remove();
+        }, 5000);
+      };
+      
+      // Smooth scrolling for anchor links
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href^="#"]');
+        if (link) {
+          e.preventDefault();
+          const target = document.querySelector(link.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+      
+      // Service Worker Registration (if available)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Service worker not available
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Additional styles for specific layout needs */
+  .toast {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* RTL specific adjustments */
+  [dir="rtl"] .toast {
+    animation: slideInLeft 0.3s ease-out;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Sidebar layout adjustments */
+  #main-layout {
+    transition: margin 0.3s ease;
+  }
+  
+  /* Mobile adjustments */
+  @media (max-width: 1023px) {
+    #main-layout {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+  
+  /* Scrollbar styling for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: theme('colors.muted.DEFAULT');
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.border');
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.neutral-silver.DEFAULT');
+  }
+</style> 

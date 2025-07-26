@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Flow Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .step { padding: 10px; margin: 10px 0; border-radius: 5px; background: #2a2a2a; }
+        .success { background: #2d5a2d; }
+        .error { background: #5a2d2d; }
+        button { padding: 10px 20px; margin: 5px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Login Flow Test</h1>
+    
+    <div class="step">
+        <h3>Step 1: Clear Storage</h3>
+        <button onclick="clearStorage()">Clear All Storage</button>
+        <div id="clearResult"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 2: Test Login</h3>
+        <button onclick="testLogin()">Login with master@zh-love.com</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 3: Check Token Storage</h3>
+        <button onclick="checkStorage()">Check Storage</button>
+        <div id="storageResult"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 4: Test Clan API</h3>
+        <button onclick="testClanAPI()">Test Clan API</button>
+        <div id="clanResult"></div>
+    </div>
+    
+    <div class="step">
+        <h3>Step 5: Navigate</h3>
+        <button onclick="goToMyClan()">Go to My Clan Page</button>
+        <button onclick="goToLogin()">Go to Login Page</button>
+    </div>
+
+    <script>
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            document.getElementById('clearResult').innerHTML = '<div class="success">✅ Storage cleared</div>';
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = 'Testing login...';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'master@zh-love.com',
+                        password: 'password'
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                if (data.success && data.token) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('zh_love_user', JSON.stringify(data.user));
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Login successful!</div>
+                        <div>User: ${data.user.username}</div>
+                        <div>Email: ${data.user.email}</div>
+                        <div>Token saved as 'authToken'</div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Login failed: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function checkStorage() {
+            const resultDiv = document.getElementById('storageResult');
+            const authToken = localStorage.getItem('authToken');
+            const zhLoveToken = localStorage.getItem('zh_love_token');
+            const userData = localStorage.getItem('zh_love_user');
+            
+            let html = '';
+            if (authToken) {
+                html += `<div class="success">✅ authToken found: ${authToken.substring(0, 50)}...</div>`;
+            } else {
+                html += `<div class="error">❌ authToken not found</div>`;
+            }
+            
+            if (zhLoveToken) {
+                html += `<div class="success">✅ zh_love_token found: ${zhLoveToken.substring(0, 50)}...</div>`;
+            } else {
+                html += `<div class="error">❌ zh_love_token not found</div>`;
+            }
+            
+            if (userData) {
+                html += `<div class="success">✅ User data found: ${userData}</div>`;
+            } else {
+                html += `<div class="error">❌ User data not found</div>`;
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+
+        async function testClanAPI() {
+            const resultDiv = document.getElementById('clanResult');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                resultDiv.innerHTML = '<div class="error">❌ No authToken found. Please login first.</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing Clan API...';
+            
+            try {
+                const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('Clan API response:', data);
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Clan API successful!</div>
+                        <div>Response: ${JSON.stringify(data, null, 2)}</div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Clan API failed: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function goToMyClan() {
+            window.location.href = 'http://localhost:4321/ar/my-clan';
+        }
+
+        function goToLogin() {
+            window.location.href = 'http://localhost:4321/ar/login';
+        }
+
+        // Auto-check storage on load
+        window.onload = function() {
+            checkStorage();
+        }
+    </script>
+</body>
+</html>

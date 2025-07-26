@@ -1,0 +1,1440 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClanMessaging from '../../components/clans/ClanMessaging.tsx';
+import ClanMessageManager from '../../components/clans/ClanMessageManager.tsx';
+import ClanMembers from '../../components/clans/ClanMembers.tsx';
+import ClanStats from '../../components/clans/ClanStats.tsx';
+import { Shield, Users, MessageCircle, BarChart3, Settings, Crown, ArrowLeft, Swords } from 'lucide-react';
+
+const title = "عشيرتي - زد اتش لوف";
+const description = "إدارة عشيرتك والتواصل مع الأعضاء";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <span class="text-foreground">عشيرتي</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/clans" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للعشائر</span>
+      </a>
+    </div>
+
+    <!-- Check if user is in a clan -->
+    <div id="clan-content">
+      <!-- Loading State -->
+      <div id="loading-state" class="text-center py-12">
+        <div class="animate-spin w-12 h-12 border-4 border-tactical-green border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p class="text-muted-foreground">جاري التحقق من عضوية العشيرة...</p>
+      </div>
+
+      <!-- No Clan State -->
+      <div id="no-clan-state" class="hidden text-center py-12">
+        <Shield size={64} class="mx-auto text-muted-foreground mb-4 opacity-50" />
+        <h2 class="text-2xl font-bold text-foreground mb-2">لست عضواً في أي عشيرة</h2>
+        <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+          انضم إلى إحدى العشائر الموجودة أو أنشئ عشيرتك الخاصة لتبدأ رحلتك
+        </p>
+        <div class="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+          <a href="/ar/clans" class="btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+            <Users size={18} />
+            <span>تصفح العشائر</span>
+          </a>
+          <a href="/ar/clans/create" class="btn-outline flex items-center space-x-2 rtl:space-x-reverse">
+            <Shield size={18} />
+            <span>إنشاء عشيرة</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Pending Application State -->
+      <div id="pending-application-state" class="hidden text-center py-12">
+        <div class="military-card p-8 max-w-2xl mx-auto">
+          <div class="w-20 h-20 bg-tactical-green/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Shield size={40} class="text-tactical-green" />
+          </div>
+          <h2 class="text-2xl font-bold text-foreground mb-4">طلب إنشاء العشيرة قيد المراجعة</h2>
+          <div id="application-details" class="text-right mb-6">
+            <!-- Application details will be inserted here -->
+          </div>
+          <p class="text-muted-foreground mb-6">
+            تم تقديم طلبك بنجاح! سيتم مراجعته من قبل فريق الإدارة خلال 24-48 ساعة.
+            ستحصل على إشعار عند الموافقة على طلبك.
+          </p>
+          <div class="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+            <a href="/ar/clans" class="btn-outline">
+              تصفح العشائر الأخرى
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clan Content -->
+      <div id="clan-main-content" class="hidden">
+        <!-- Clan Header -->
+        <div id="clan-header" class="relative mb-8">
+          <!-- Dynamic content will be loaded here -->
+        </div>
+
+        <!-- Quick Stats -->
+        <div id="clan-stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <!-- Dynamic content will be loaded here -->
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-8">
+          <div class="border-b border-border">
+            <nav class="flex space-x-8 rtl:space-x-reverse">
+              <button 
+                class="py-3 px-1 border-b-2 border-primary text-primary font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+                onclick="showTab('chat')"
+              >
+                <MessageCircle size={16} />
+                <span>الدردشة</span>
+              </button>
+              <button 
+                class="py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+                onclick="showTab('wars')"
+              >
+                <Swords size={16} />
+                <span>الحروب</span>
+              </button>
+              <button 
+                class="py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+                onclick="showTab('members')"
+              >
+                <Users size={16} />
+                <span>الأعضاء</span>
+              </button>
+              <button 
+                id="manage-tab-btn"
+                class="hidden py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+                onclick="showTab('manage')"
+              >
+                <Settings size={16} />
+                <span>الإدارة</span>
+              </button>
+              <button 
+                id="settings-tab-btn"
+                class="hidden py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+                onclick="showTab('settings')"
+              >
+                <Crown size={16} />
+                <span>إعدادات العشيرة</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="chat-tab" class="tab-content">
+          <div class="military-card p-6">
+            <h3 class="text-xl font-bold text-foreground mb-6">دردشة العشيرة</h3>
+            
+            <!-- Messages Container -->
+            <div id="chat-messages" class="bg-muted/30 rounded-lg p-4 h-80 overflow-y-auto mb-4">
+              <div id="messages-list" class="space-y-3">
+                <!-- Messages will be loaded here -->
+                <div class="text-center text-muted-foreground">
+                  <p>جاري تحميل الرسائل...</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Message Input -->
+            <div class="flex space-x-2 rtl:space-x-reverse">
+              <input 
+                type="text" 
+                id="messageInput"
+                placeholder="اكتب رسالتك هنا..."
+                class="flex-1 px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                onkeypress="if(event.key==='Enter') sendMessage()"
+              />
+              <button 
+                onclick="sendMessage()"
+                class="btn btn-primary px-4"
+              >
+                إرسال
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="wars-tab" class="tab-content hidden">
+          <div class="space-y-6">
+            <!-- War Declaration -->
+            <div class="military-card p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-foreground">حروب العشيرة</h2>
+                <a href="/ar/my-clan/declare-war" class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  <span>إعلان الحرب</span>
+                </a>
+              </div>
+              
+              <!-- Active Wars -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-foreground mb-3">الحروب النشطة</h3>
+                <div id="active-wars-list" class="space-y-3">
+                  <!-- Active wars will be loaded here -->
+                </div>
+              </div>
+
+              <!-- War Requests -->
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-foreground mb-3">طلبات الحرب</h3>
+                <div id="war-requests-list" class="space-y-3">
+                  <!-- War requests will be loaded here -->
+                </div>
+              </div>
+
+              <!-- War History -->
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-3">تاريخ الحروب</h3>
+                <div id="war-history-list" class="space-y-3">
+                  <!-- War history will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+                  <div class="border border-border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h4 class="font-medium text-foreground">[STORM] عاصفة الصحراء</h4>
+                        <p class="text-sm text-muted-foreground">تحدي للحرب - موعد مقترح: غداً 8:00 مساءً</p>
+                        <p class="text-xs text-muted-foreground mt-1">مدة الحرب: 48 ساعة</p>
+                      </div>
+                      <div class="flex space-x-2 rtl:space-x-reverse">
+                        <button class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white">قبول</button>
+                        <button class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white">رفض</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="border border-border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h4 class="font-medium text-foreground">[LORDS] أسياد الحرب</h4>
+                        <p class="text-sm text-muted-foreground">تحدي للحرب - موعد مقترح: الجمعة 7:00 مساءً</p>
+                        <p class="text-xs text-muted-foreground mt-1">مدة الحرب: 72 ساعة</p>
+                      </div>
+                      <div class="flex space-x-2 rtl:space-x-reverse">
+                        <button class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white">قبول</button>
+                        <button class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white">رفض</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- War History -->
+              <div>
+                <h3 class="text-lg font-semibold text-foreground mb-3">تاريخ الحروب</h3>
+                <div class="space-y-3">
+                  <div class="border border-border rounded-lg p-4 bg-tactical-green/10">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h4 class="font-medium text-tactical-green">[GOLD] النسور الذهبية</h4>
+                        <p class="text-sm text-muted-foreground">فوز - النتيجة: 15-8</p>
+                      </div>
+                      <div class="text-xs text-muted-foreground">
+                        منذ أسبوع
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="border border-border rounded-lg p-4 bg-alert-red/10">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h4 class="font-medium text-alert-red">[EAST] فرسان الشرق</h4>
+                        <p class="text-sm text-muted-foreground">هزيمة - النتيجة: 12-18</p>
+                      </div>
+                      <div class="text-xs text-muted-foreground">
+                        منذ أسبوعين
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="overview-tab" class="tab-content">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Statistics -->
+            <div>
+              <h3 class="text-lg font-semibold text-foreground mb-3">الإحصائيات العامة</h3>
+              <div class="grid grid-cols-2 gap-4" id="clan-stats">
+                <!-- سيتم تحميل الإحصائيات من قاعدة البيانات -->
+              </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div>
+              <h3 class="text-lg font-semibold text-foreground mb-3">آخر الأنشطة</h3>
+              <div class="space-y-3" id="recent-activities">
+                <!-- سيتم تحميل الأنشطة من قاعدة البيانات -->
+                <div class="text-center py-8 text-muted-foreground">
+                  <p>لا توجد أنشطة حديثة</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- War History -->
+          <div class="mt-6">
+            <h3 class="text-lg font-semibold text-foreground mb-3">تاريخ الحروب</h3>
+            <div class="space-y-3" id="war-history">
+              <!-- سيتم تحميل تاريخ الحروب من قاعدة البيانات -->
+              <div class="text-center py-8 text-muted-foreground">
+                <p>لا توجد حروب سابقة</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="members-tab" class="tab-content hidden">
+          <div class="military-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-bold text-foreground">أعضاء العشيرة</h2>
+              <button 
+                onclick="openInviteModal()" 
+                class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span>دعوة عضو</span>
+              </button>
+            </div>
+            <div class="space-y-3" id="members-list">
+              <!-- سيتم تحميل قائمة الأعضاء من قاعدة البيانات -->
+            </div>
+          </div>
+        </div>
+
+        <div id="manage-tab" class="tab-content hidden">
+          <div class="military-card p-6">
+            <h3 class="text-xl font-bold text-foreground mb-6">إدارة العشيرة</h3>
+            
+            <div class="space-y-6">
+              <!-- Clan Applications -->
+              <div>
+                <h4 class="text-lg font-semibold text-foreground mb-4">طلبات الانضمام</h4>
+                <div id="clan-applications" class="space-y-3">
+                  <!-- Applications will be loaded here -->
+                  <div class="text-center py-4 text-muted-foreground">
+                    <p>لا توجد طلبات انضمام حالياً</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Member Management -->
+              <div>
+                <h4 class="text-lg font-semibold text-foreground mb-4">إدارة الأعضاء</h4>
+                <div id="member-management" class="space-y-3">
+                  <!-- Member management options will be loaded here -->
+                  <div class="text-center py-4 text-muted-foreground">
+                    <p>جاري تحميل خيارات إدارة الأعضاء...</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Clan Announcements -->
+              <div>
+                <h4 class="text-lg font-semibold text-foreground mb-4">إعلانات العشيرة</h4>
+                <div class="space-y-3">
+                  <textarea 
+                    id="announcementText"
+                    placeholder="اكتب إعلاناً جديداً..."
+                    rows="3"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  ></textarea>
+                  <button 
+                    onclick="sendAnnouncement()"
+                    class="btn btn-primary"
+                  >
+                    نشر الإعلان
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Tab (Only for Clan Leader) -->
+        <div id="settings-tab" class="tab-content hidden">
+          <div class="space-y-8">
+            
+            <!-- Quick Settings Link -->
+            <div class="military-card p-6 bg-gradient-to-r from-tactical-green/10 to-tactical-green/5 border border-tactical-green/20">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-bold text-foreground mb-2">⚙️ الإعدادات المتقدمة</h3>
+                  <p class="text-muted-foreground text-sm">
+                    قم بتخصيص شعار العشيرة، الخلفية، وجميع الإعدادات المتقدمة
+                  </p>
+                </div>
+                <a 
+                  href="/ar/my-clan/settings"
+                  class="px-6 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors font-medium inline-flex items-center space-x-2 rtl:space-x-reverse"
+                >
+                  <Settings size={16} />
+                  <span>فتح الإعدادات</span>
+                </a>
+              </div>
+            </div>
+            
+            <!-- Clan Information -->
+            <div class="military-card p-6">
+              <h3 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+                <Settings size={20} />
+                <span>معلومات العشيرة</span>
+              </h3>
+              
+              <form id="clanInfoForm" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">اسم العشيرة</label>
+                  <input 
+                    type="text" 
+                    id="clanName"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="اسم العشيرة"
+                  />
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">وصف العشيرة</label>
+                  <textarea 
+                    id="clanDescription"
+                    rows="4"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                    placeholder="وصف العشيرة..."
+                  ></textarea>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">نوع التجنيد</label>
+                  <select 
+                    id="recruitmentType"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="open">مفتوحة للجميع</option>
+                    <option value="invite_only">بالدعوة فقط</option>
+                    <option value="closed">مغلقة</option>
+                  </select>
+                </div>
+                
+                <button 
+                  type="submit" 
+                  class="btn btn-primary"
+                >
+                  حفظ التغييرات
+                </button>
+              </form>
+            </div>
+            
+            <!-- Clan Images -->
+            <div class="military-card p-6">
+              <h3 class="text-xl font-bold text-foreground mb-6">صور العشيرة</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Logo Upload -->
+                <div>
+                  <h4 class="font-medium text-foreground mb-3">شعار العشيرة</h4>
+                  <div class="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <div id="logoPreview" class="mb-4">
+                      <div class="w-24 h-24 bg-muted rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <span class="text-muted-foreground">شعار</span>
+                      </div>
+                    </div>
+                    <input 
+                      type="file" 
+                      id="logoUpload" 
+                      accept="image/*" 
+                      class="hidden"
+                      onchange="uploadClanImage('logo')"
+                    />
+                    <button 
+                      type="button" 
+                      onclick="document.getElementById('logoUpload').click()"
+                      class="btn btn-outline btn-sm"
+                    >
+                      رفع شعار
+                    </button>
+                    <p class="text-xs text-muted-foreground mt-2">JPG, PNG أو GIF - حد أقصى 2MB</p>
+                  </div>
+                </div>
+                
+                <!-- Banner Upload -->
+                <div>
+                  <h4 class="font-medium text-foreground mb-3">خلفية العشيرة</h4>
+                  <div class="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                    <div id="bannerPreview" class="mb-4">
+                      <div class="w-full h-24 bg-muted rounded-lg mb-2 flex items-center justify-center">
+                        <span class="text-muted-foreground">خلفية</span>
+                      </div>
+                    </div>
+                    <input 
+                      type="file" 
+                      id="bannerUpload" 
+                      accept="image/*" 
+                      class="hidden"
+                      onchange="uploadClanImage('banner')"
+                    />
+                    <button 
+                      type="button" 
+                      onclick="document.getElementById('bannerUpload').click()"
+                      class="btn btn-outline btn-sm"
+                    >
+                      رفع خلفية
+                    </button>
+                    <p class="text-xs text-muted-foreground mt-2">JPG, PNG أو GIF - حد أقصى 2MB</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Leadership Transfer -->
+            <div class="military-card p-6">
+              <h3 class="text-xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+                <Crown size={20} />
+                <span>نقل قيادة العشيرة</span>
+              </h3>
+              
+              <div class="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 mb-4">
+                <p class="text-orange-400 text-sm">
+                  ⚠️ تحذير: نقل القيادة عملية لا يمكن التراجع عنها. تأكد من اختيارك للعضو المناسب.
+                </p>
+              </div>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">اختر القائد الجديد</label>
+                  <select 
+                    id="newLeaderSelect"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">اختر عضو...</option>
+                    <!-- سيتم ملؤها ديناميكياً -->
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-foreground mb-2">سبب النقل (اختياري)</label>
+                  <textarea 
+                    id="transferReason"
+                    rows="3"
+                    class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                    placeholder="سبب نقل القيادة..."
+                  ></textarea>
+                </div>
+                
+                <button 
+                  type="button" 
+                  onclick="transferLeadership()"
+                  class="btn bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  نقل القيادة
+                </button>
+              </div>
+            </div>
+            
+            <!-- Danger Zone -->
+            <div class="military-card p-6 border-red-500/20">
+              <h3 class="text-xl font-bold text-red-400 mb-6">المنطقة الخطرة</h3>
+              
+              <div class="space-y-4">
+                <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                  <h4 class="font-medium text-red-400 mb-2">حل العشيرة</h4>
+                  <p class="text-sm text-muted-foreground mb-3">
+                    حل العشيرة نهائياً وطرد جميع الأعضاء. هذا الإجراء لا يمكن التراجع عنه.
+                  </p>
+                  <button 
+                    type="button" 
+                    onclick="disbandClan()"
+                    class="btn bg-red-600 hover:bg-red-700 text-white btn-sm"
+                  >
+                    حل العشيرة
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invite Member Modal -->
+  <div id="inviteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="military-card p-6 w-full max-w-md">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-foreground">دعوة عضو جديد</h3>
+          <button onclick="closeInviteModal()" class="text-muted-foreground hover:text-foreground">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="inviteForm" onsubmit="sendInvite(event)">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">اسم المستخدم أو الإيميل</label>
+              <input 
+                type="text" 
+                id="inviteUserInput"
+                placeholder="أدخل اسم المستخدم أو الإيميل"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-foreground mb-2">رسالة الدعوة (اختيارية)</label>
+              <textarea 
+                id="inviteMessage"
+                placeholder="اكتب رسالة شخصية للدعوة..."
+                rows="3"
+                class="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              ></textarea>
+            </div>
+            
+            <div class="flex space-x-3 rtl:space-x-reverse">
+              <button type="button" onclick="closeInviteModal()" class="flex-1 btn btn-outline">
+                إلغاء
+              </button>
+              <button type="submit" class="flex-1 btn btn-primary">
+                إرسال الدعوة
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <div id="inviteResult" class="mt-4 p-3 rounded-lg hidden">
+          <p id="inviteResultText"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // استخدام قاعدة البيانات الحقيقية فقط - لا localStorage
+    checkUserClan();
+  });
+
+  async function checkUserClan() {
+    try {
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('zh_love_token');
+      
+      console.log('Token found:', token ? 'Yes' : 'No');
+      
+      if (!token) {
+        console.log('No token found, redirecting to login...');
+        window.location.href = '/ar/login';
+        return;
+      }
+
+      console.log('Making API call to clan_api.php...');
+      
+      // Get user's clan from API
+      const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error('فشل في الحصول على بيانات العشيرة');
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+
+      if (data.success && data.status === 'pending_application') {
+        showPendingApplicationState(data.application);
+      } else if (data.success && data.status === 'clan_member' && data.clan) {
+        showClanContent(data.clan, data.user_role);
+      } else {
+        showNoClanState(data.message || 'لست عضواً في أي عشيرة. انضم إلى إحدى العشائر أو أنشئ عشيرتك الخاصة.');
+      }
+      
+    } catch (error) {
+      console.error('Error checking clan:', error);
+      
+      // Fallback: Check if user has a valid token but API is down
+      const token = localStorage.getItem('zh_love_token');
+      if (token) {
+        showNoClanState('خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+      } else {
+        showNoClanState('يجب تسجيل الدخول أولاً للوصول إلى عشيرتك');
+      }
+    }
+  }
+
+  function showNoClanState(message = null) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('clan-main-content').classList.add('hidden');
+    document.getElementById('no-clan-state').classList.remove('hidden');
+    
+    if (message) {
+      const p = document.querySelector('#no-clan-state p');
+      p.textContent = message;
+    }
+  }
+
+  function showClanContent(clan, userRole) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('no-clan-state').classList.add('hidden');
+    document.getElementById('pending-application-state').classList.add('hidden');
+    document.getElementById('clan-main-content').classList.remove('hidden');
+
+    // Update clan header with real data
+    updateClanHeader(clan);
+    
+    // Update clan stats with real data
+    updateClanStats(clan);
+
+    // Load and display real members list
+    updateMembersList(clan.members || []);
+
+    // Load real chat messages
+    loadClanMessages();
+    
+    // Load real wars data
+    loadClanWars();
+
+    // Show manage tab for leaders and officers
+    if (userRole === 'leader' || userRole === 'officer') {
+      const manageTabBtn = document.getElementById('manage-tab-btn');
+      if (manageTabBtn) {
+        manageTabBtn.classList.remove('hidden');
+      }
+    }
+
+    // Show settings tab only for leaders
+    if (userRole === 'leader') {
+      const settingsTabBtn = document.getElementById('settings-tab-btn');
+      if (settingsTabBtn) {
+        settingsTabBtn.classList.remove('hidden');
+      }
+      
+      // Populate clan settings form
+      // Update settings form if elements exist
+      const clanNameEl = document.getElementById('clanName');
+      const clanDescEl = document.getElementById('clanDescription');
+      const recruitmentTypeEl = document.getElementById('recruitmentType');
+      
+      if (clanNameEl) clanNameEl.value = clan.name || '';
+      if (clanDescEl) clanDescEl.value = clan.description || '';
+      if (recruitmentTypeEl) recruitmentTypeEl.value = clan.recruitment_type || 'open';
+      
+      // Populate member list for leadership transfer
+      const newLeaderSelect = document.getElementById('newLeaderSelect');
+      if (newLeaderSelect && clan.members) {
+        newLeaderSelect.innerHTML = '<option value="">اختر عضو...</option>';
+        clan.members.forEach(member => {
+          if (member.user_id != clan.owner_id) { // Don't include current leader
+            const option = document.createElement('option');
+            option.value = member.user_id;
+            option.textContent = `${member.username} (${getRoleDisplayName(member.role)})`;
+            newLeaderSelect.appendChild(option);
+          }
+        });
+      }
+      
+      // Update image previews if they exist
+      if (clan.logo_url) {
+        const logoPreview = document.getElementById('logoPreview');
+        if (logoPreview) {
+          logoPreview.innerHTML = `<img src="${getImageUrl(clan.logo_url)}" class="w-24 h-24 rounded-lg mx-auto" alt="شعار العشيرة" />`;
+        }
+      }
+      
+      if (clan.banner_url) {
+        const bannerPreview = document.getElementById('bannerPreview');
+        if (bannerPreview) {
+          bannerPreview.innerHTML = `<img src="${getImageUrl(clan.banner_url)}" class="w-full h-24 rounded-lg" alt="خلفية العشيرة" />`;
+        }
+      }
+    }
+
+    // Update page title with real clan name
+    document.title = `[${clan.tag || clan.name}] ${clan.name} - عشيرتي - زد اتش لوف`;
+  }
+
+  function showPendingApplicationState(application) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('clan-main-content').classList.add('hidden');
+    document.getElementById('no-clan-state').classList.add('hidden');
+    document.getElementById('pending-application-state').classList.remove('hidden');
+    
+    // Update application details with real data
+    const details = document.getElementById('application-details');
+    details.innerHTML = `
+      <div class="bg-background/50 p-4 rounded-lg">
+        <h3 class="font-bold text-lg mb-2">تفاصيل الطلب:</h3>
+        <div class="space-y-2 text-sm">
+          <div><strong>اسم العشيرة:</strong> ${application.clan_name}</div>
+          <div><strong>رمز العشيرة:</strong> ${application.clan_tag || 'غير محدد'}</div>
+          <div><strong>الوصف:</strong> ${application.description}</div>
+          <div><strong>المنطقة:</strong> ${application.region || 'غير محدد'}</div>
+          <div><strong>تاريخ التقديم:</strong> ${new Date(application.submitted_at).toLocaleDateString('ar-SA')}</div>
+          <div><strong>الحالة:</strong> <span class="text-tactical-green">قيد المراجعة</span></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function getImageUrl(url) {
+    console.log('getImageUrl called with:', url);
+    if (!url) {
+      console.log('URL is null/empty, returning null');
+      return null;
+    }
+    // Always use backend server URL for images
+    let fullUrl;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      fullUrl = url;
+    } else if (url.startsWith('/uploads/')) {
+      fullUrl = 'http://localhost:8080' + url;
+    } else if (url.startsWith('/')) {
+      fullUrl = 'http://localhost:8080' + url;
+    } else {
+      fullUrl = 'http://localhost:8080/uploads/clans/' + url;
+    }
+    console.log('Final image URL:', fullUrl);
+    return fullUrl;
+  }
+
+  function updateClanHeader(clan) {
+    const header = document.getElementById('clan-header');
+    if (!header) {
+      console.error('clan-header element not found');
+      return;
+    }
+    
+    console.log('Updating clan header with data:', clan);
+    console.log('Logo URL:', clan.logo_url);
+    console.log('Banner URL:', clan.banner_url);
+    
+    // Build banner background style
+    const bannerUrl = getImageUrl(clan.banner_url);
+    const bannerStyle = bannerUrl 
+      ? `background-image: url('${bannerUrl}'); background-size: cover; background-position: center;`
+      : 'background: linear-gradient(to right, var(--tactical-green), var(--command-blue));';
+    
+    console.log('Processed banner URL:', bannerUrl);
+    console.log('Banner style:', bannerStyle);
+    
+    header.innerHTML = `
+      <div class="relative h-48 rounded-lg overflow-hidden mb-6" style="${bannerStyle}">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <div class="absolute bottom-4 left-4 right-4 text-white">
+          <div class="flex items-center space-x-4 rtl:space-x-reverse">
+            <div class="w-16 h-16 bg-white/20 rounded-lg border-4 border-white flex items-center justify-center overflow-hidden">
+              ${clan.logo_url 
+                ? `<img src="${getImageUrl(clan.logo_url)}" alt="شعار العشيرة" class="w-full h-full object-cover" />`
+                : `<span class="text-2xl font-bold">${clan.tag || clan.name.substring(0, 3).toUpperCase()}</span>`
+              }
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold">[${clan.tag || clan.name.substring(0, 3).toUpperCase()}] ${clan.name}</h1>
+              <p class="opacity-90">${clan.description || 'لا يوجد وصف'}</p>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+                <span class="text-sm bg-white/20 px-2 py-1 rounded">المستوى ${clan.level || 1}</span>
+                ${clan.is_approved ? '<span class="text-sm bg-victory-gold/20 px-2 py-1 rounded">✅ معتمدة</span>' : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function updateClanStats(clan) {
+    const stats = document.getElementById('clan-stats');
+    if (!stats) {
+      console.error('clan-stats element not found');
+      return;
+    }
+    stats.innerHTML = `
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">${clan.total_members || 1}/${clan.max_members || 50}</div>
+        <div class="text-sm text-muted-foreground">الأعضاء</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">${(clan.total_trophies || 0).toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">الكؤوس</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">${clan.win_rate || 0}%</div>
+        <div class="text-sm text-muted-foreground">معدل الفوز</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">${clan.war_win_rate || 0}%</div>
+        <div class="text-sm text-muted-foreground">فوز الحروب</div>
+      </div>
+    `;
+  }
+
+  function updateMembersList(members) {
+    const membersList = document.getElementById('members-list');
+    if (!membersList) {
+      console.error('members-list element not found');
+      return;
+    }
+    
+    if (!members || members.length === 0) {
+      membersList.innerHTML = '<div class="text-center py-8 text-muted-foreground"><p>لا توجد بيانات أعضاء</p></div>';
+      return;
+    }
+
+    membersList.innerHTML = members.map(member => `
+      <div class="flex items-center justify-between p-4 border border-border rounded-lg">
+        <div class="flex items-center space-x-3 rtl:space-x-reverse">
+          <div class="w-12 h-12 bg-tactical-green/20 rounded-full flex items-center justify-center">
+            <span class="text-lg font-bold text-tactical-green">${member.username ? member.username.charAt(0).toUpperCase() : 'M'}</span>
+          </div>
+          <div>
+            <h4 class="font-medium text-foreground">${member.username || 'عضو'}</h4>
+            <p class="text-sm text-muted-foreground">${member.first_name || ''} ${member.last_name || ''}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm font-medium text-foreground">${getRoleDisplayName(member.role)}</div>
+          <div class="text-xs text-muted-foreground">المستوى ${member.level || 1}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function getRoleDisplayName(role) {
+    const roleNames = {
+      'leader': 'قائد العشيرة',
+      'officer': 'ضابط',
+      'member': 'عضو'
+    };
+    return roleNames[role] || 'عضو';
+  }
+
+  function showTab(tabName) {
+    // Hide all tab contents
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.add('hidden'));
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+    
+    // Update tab buttons
+    const buttons = document.querySelectorAll('nav button');
+    buttons.forEach(button => {
+      button.classList.remove('border-primary', 'text-primary');
+      button.classList.add('border-transparent', 'text-muted-foreground');
+    });
+    
+    // Activate selected button
+    event.target.classList.remove('border-transparent', 'text-muted-foreground');
+    event.target.classList.add('border-primary', 'text-primary');
+  }
+
+  // Global function for tab switching
+  window.showTab = showTab;
+
+  // Global functions for invite modal
+  window.openInviteModal = function() {
+    document.getElementById('inviteModal').classList.remove('hidden');
+    document.getElementById('inviteUserInput').focus();
+  };
+
+  window.closeInviteModal = function() {
+    document.getElementById('inviteModal').classList.add('hidden');
+    document.getElementById('inviteForm').reset();
+    document.getElementById('inviteResult').classList.add('hidden');
+  };
+
+  // Chat functions
+  window.sendMessage = async function() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+    
+    if (!message) return;
+    
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=send_clan_message', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: message,
+          message_type: 'text'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        messageInput.value = '';
+        loadClanMessages(); // Reload messages
+      } else {
+        alert(data.error || 'فشل في إرسال الرسالة');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('حدث خطأ في إرسال الرسالة');
+    }
+  };
+
+  // Load clan messages
+  async function loadClanMessages() {
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) return;
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=get_clan_messages', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.messages) {
+        const messagesList = document.getElementById('messages-list');
+        
+        if (data.messages.length === 0) {
+          messagesList.innerHTML = '<div class="text-center text-muted-foreground"><p>لا توجد رسائل بعد</p></div>';
+          return;
+        }
+        
+        messagesList.innerHTML = data.messages.map(msg => `
+          <div class="flex space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-tactical-green/20 rounded-full flex items-center justify-center">
+              <span class="text-xs font-bold text-tactical-green">${msg.username.charAt(0).toUpperCase()}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mb-1">
+                <span class="font-medium text-foreground">${msg.username}</span>
+                <span class="text-xs text-muted-foreground">${new Date(msg.created_at).toLocaleTimeString('ar-SA')}</span>
+                ${msg.message_type === 'announcement' ? '<span class="bg-tactical-green text-white text-xs px-2 py-0.5 rounded">إعلان</span>' : ''}
+              </div>
+              <p class="text-sm text-foreground">${msg.message}</p>
+            </div>
+          </div>
+        `).join('');
+        
+        // Scroll to bottom
+        const chatContainer = document.getElementById('chat-messages');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  }
+
+  // Load clan wars
+  async function loadClanWars() {
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) return;
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=get_clan_wars', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.wars) {
+        const activeWars = data.wars.filter(war => war.status === 'active');
+        const pendingWars = data.wars.filter(war => war.status === 'pending');
+        const completedWars = data.wars.filter(war => ['completed', 'rejected'].includes(war.status));
+        
+        // Active wars
+        const activeWarsList = document.getElementById('active-wars-list');
+        if (activeWars.length === 0) {
+          activeWarsList.innerHTML = '<div class="border border-border rounded-lg p-4 bg-muted/30"><p class="text-center text-muted-foreground">لا توجد حروب نشطة حالياً</p></div>';
+        } else {
+          activeWarsList.innerHTML = activeWars.map(war => `
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-foreground">${war.challenger_name} [${war.challenger_tag}] ضد ${war.challenged_name} [${war.challenged_tag}]</h4>
+                  <p class="text-sm text-muted-foreground">${war.challenge_message}</p>
+                  <p class="text-xs text-muted-foreground mt-1">المدة: ${war.duration} ساعة</p>
+                </div>
+                <div class="text-sm font-medium text-tactical-green">نشطة</div>
+              </div>
+            </div>
+          `).join('');
+        }
+        
+        // War requests
+        const warRequestsList = document.getElementById('war-requests-list');
+        if (pendingWars.length === 0) {
+          warRequestsList.innerHTML = '<div class="border border-border rounded-lg p-4 bg-muted/30"><p class="text-center text-muted-foreground">لا توجد طلبات حرب</p></div>';
+        } else {
+          warRequestsList.innerHTML = pendingWars.map(war => `
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-foreground">${war.challenger_name} [${war.challenger_tag}]</h4>
+                  <p class="text-sm text-muted-foreground">${war.challenge_message}</p>
+                  <p class="text-xs text-muted-foreground mt-1">الموعد المقترح: ${new Date(war.scheduled_at).toLocaleString('ar-SA')}</p>
+                  <p class="text-xs text-muted-foreground">المدة: ${war.duration} ساعة</p>
+                </div>
+                <div class="flex space-x-2 rtl:space-x-reverse">
+                  <button onclick="respondToWar(${war.id}, 'accept')" class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white">قبول</button>
+                  <button onclick="respondToWar(${war.id}, 'reject')" class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white">رفض</button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+        
+        // War history
+        const warHistoryList = document.getElementById('war-history-list');
+        if (completedWars.length === 0) {
+          warHistoryList.innerHTML = '<div class="border border-border rounded-lg p-4 bg-muted/30"><p class="text-center text-muted-foreground">لا توجد حروب سابقة</p></div>';
+        } else {
+          warHistoryList.innerHTML = completedWars.map(war => `
+            <div class="border border-border rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-foreground">${war.challenger_name} [${war.challenger_tag}] ضد ${war.challenged_name} [${war.challenged_tag}]</h4>
+                  <p class="text-sm text-muted-foreground">${war.challenge_message}</p>
+                  <p class="text-xs text-muted-foreground mt-1">تاريخ الانتهاء: ${war.completed_at ? new Date(war.completed_at).toLocaleString('ar-SA') : 'غير محدد'}</p>
+                </div>
+                <div class="text-sm font-medium ${war.status === 'completed' ? 'text-tactical-green' : 'text-alert-red'}">
+                  ${war.status === 'completed' ? 'مكتملة' : 'مرفوضة'}
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading wars:', error);
+    }
+  }
+
+  // Respond to war
+  window.respondToWar = async function(warId, response) {
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    try {
+      const apiResponse = await fetch('http://localhost:8080/clan_api.php?action=respond_to_war', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          war_id: warId,
+          response: response
+        })
+      });
+      
+      const data = await apiResponse.json();
+      
+      if (data.success) {
+        alert(data.message);
+        loadClanWars(); // Reload wars
+      } else {
+        alert(data.error || 'فشل في الرد على الحرب');
+      }
+    } catch (error) {
+      console.error('Error responding to war:', error);
+      alert('حدث خطأ في الرد على الحرب');
+    }
+  };
+
+  // Send announcement
+  window.sendAnnouncement = async function() {
+    const announcementText = document.getElementById('announcementText');
+    const message = announcementText.value.trim();
+    
+    if (!message) {
+      alert('يجب كتابة نص الإعلان');
+      return;
+    }
+    
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=send_clan_message', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: message,
+          message_type: 'announcement'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        announcementText.value = '';
+        alert('تم نشر الإعلان بنجاح');
+        loadClanMessages(); // Reload messages if chat tab is visible
+      } else {
+        alert(data.error || 'فشل في نشر الإعلان');
+      }
+    } catch (error) {
+      console.error('Error sending announcement:', error);
+      alert('حدث خطأ في نشر الإعلان');
+    }
+  };
+
+  window.sendInvite = async function(event) {
+    event.preventDefault();
+    
+    const userInput = document.getElementById('inviteUserInput').value.trim();
+    const message = document.getElementById('inviteMessage').value.trim();
+    
+    if (!userInput) {
+      showInviteResult('يرجى إدخال اسم المستخدم أو الإيميل', 'error');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('zh_love_token');
+      
+      if (!token) {
+        showInviteResult('يجب تسجيل الدخول أولاً', 'error');
+        return;
+      }
+
+      showInviteResult('جاري إرسال الدعوة...', 'info');
+
+      const response = await fetch('http://localhost:8080/clan_api.php?action=invite_member', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_identifier: userInput,
+          message: message
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showInviteResult(data.message || 'تم إرسال الدعوة بنجاح!', 'success');
+        setTimeout(() => {
+          closeInviteModal();
+        }, 2000);
+      } else {
+        showInviteResult(data.error || data.message || 'فشل في إرسال الدعوة', 'error');
+      }
+
+    } catch (error) {
+      console.error('Error sending invite:', error);
+      showInviteResult('حدث خطأ في إرسال الدعوة', 'error');
+    }
+  };
+
+  function showInviteResult(text, type) {
+    const resultDiv = document.getElementById('inviteResult');
+    const resultText = document.getElementById('inviteResultText');
+    
+    resultText.textContent = text;
+    resultDiv.classList.remove('hidden', 'bg-red-500/20', 'text-red-500', 'bg-green-500/20', 'text-green-500', 'bg-blue-500/20', 'text-blue-500');
+    
+    if (type === 'error') {
+      resultDiv.classList.add('bg-red-500/20', 'text-red-500');
+    } else if (type === 'success') {
+      resultDiv.classList.add('bg-green-500/20', 'text-green-500');
+    } else {
+      resultDiv.classList.add('bg-blue-500/20', 'text-blue-500');
+    }
+  }
+
+  // Clan Settings Functions
+  window.uploadClanImage = async function(imageType) {
+    const fileInput = document.getElementById(imageType + 'Upload');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+    
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('image_type', imageType);
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=upload_clan_image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(data.message);
+        // Update preview
+        const preview = document.getElementById(imageType + 'Preview');
+        const img = document.createElement('img');
+        img.src = 'http://localhost:8080' + data.image_url;
+        img.className = imageType === 'logo' ? 'w-24 h-24 rounded-lg mx-auto' : 'w-full h-24 rounded-lg';
+        preview.innerHTML = '';
+        preview.appendChild(img);
+        
+        // Refresh clan data
+        location.reload();
+      } else {
+        alert(data.error || 'فشل في رفع الصورة');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('حدث خطأ في رفع الصورة');
+    }
+  };
+
+  window.transferLeadership = async function() {
+    const newLeaderId = document.getElementById('newLeaderSelect').value;
+    const reason = document.getElementById('transferReason').value;
+    
+    if (!newLeaderId) {
+      alert('يجب اختيار القائد الجديد');
+      return;
+    }
+    
+    if (!confirm('هل أنت متأكد من نقل قيادة العشيرة؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+      return;
+    }
+    
+    const token = localStorage.getItem('zh_love_token');
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
+    try {
+      const response = await fetch('http://localhost:8080/clan_api.php?action=transfer_leadership', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          new_leader_id: parseInt(newLeaderId),
+          reason: reason
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(data.message);
+        location.reload();
+      } else {
+        alert(data.error || 'فشل في نقل القيادة');
+      }
+    } catch (error) {
+      console.error('Error transferring leadership:', error);
+      alert('حدث خطأ في نقل القيادة');
+    }
+  };
+
+  // Handle clan info form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const clanInfoForm = document.getElementById('clanInfoForm');
+    if (clanInfoForm) {
+      clanInfoForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const token = localStorage.getItem('zh_love_token');
+        if (!token) {
+          alert('يجب تسجيل الدخول أولاً');
+          return;
+        }
+        
+        const formData = {
+          name: document.getElementById('clanName').value,
+          description: document.getElementById('clanDescription').value,
+          recruitment_type: document.getElementById('recruitmentType').value
+        };
+        
+        try {
+          const response = await fetch('http://localhost:8080/clan_api.php?action=update_clan_info', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            alert(data.message);
+            location.reload();
+          } else {
+            alert(data.error || 'فشل في تحديث معلومات العشيرة');
+          }
+        } catch (error) {
+          console.error('Error updating clan info:', error);
+          alert('حدث خطأ في تحديث معلومات العشيرة');
+        }
+      });
+    }
+  });
+</script>

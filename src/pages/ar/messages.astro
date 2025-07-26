@@ -1,0 +1,637 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClanMessaging from '../../components/clans/ClanMessaging.tsx';
+import { 
+  MessageCircle, 
+  Users, 
+  Send, 
+  Search, 
+  Filter, 
+  Plus,
+  Star,
+  Pin,
+  Archive,
+  Trash2,
+  Settings,
+  Bell,
+  Shield,
+  Crown,
+  Swords,
+  X
+} from 'lucide-react';
+
+const title = "الرسائل - زد اتش لوف";
+const description = "تواصل مع أعضاء المجتمع وعشيرتك";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <MessageCircle size={32} class="text-tactical-green" />
+          <span>الرسائل</span>
+        </h1>
+        <p class="text-muted-foreground">تواصل مع أعضاء المجتمع وعشيرتك</p>
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <a href="/ar/clan-messages" class="btn btn-outline flex items-center space-x-2 rtl:space-x-reverse">
+          <Shield size={20} />
+          <span>رسائل العشيرة</span>
+        </a>
+        <button class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+          <Plus size={20} />
+          <span>رسالة جديدة</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Message Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">15</div>
+        <div class="text-sm text-muted-foreground">رسائل غير مقروءة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">48</div>
+        <div class="text-sm text-muted-foreground">محادثات نشطة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">3</div>
+        <div class="text-sm text-muted-foreground">رسائل مهمة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-neutral-silver mb-1">156</div>
+        <div class="text-sm text-muted-foreground">إجمالي الرسائل</div>
+      </div>
+    </div>
+
+    <!-- Message Tabs -->
+    <div class="mb-8">
+      <div class="border-b border-border">
+        <nav class="flex space-x-8 rtl:space-x-reverse">
+          <button 
+            class="py-3 px-1 border-b-2 border-primary text-primary font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+            onclick="showTab('personal')"
+          >
+            <MessageCircle size={16} />
+            <span>الرسائل الشخصية</span>
+            <span class="bg-primary text-primary-foreground rounded-full px-2 py-1 text-xs">15</span>
+          </button>
+          <button 
+            class="py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+            onclick="showTab('clan')"
+          >
+            <Shield size={16} />
+            <span>رسائل العشيرة</span>
+            <span class="bg-muted text-muted-foreground rounded-full px-2 py-1 text-xs">8</span>
+          </button>
+          <button 
+            class="py-3 px-1 border-b-2 border-transparent text-muted-foreground hover:text-foreground font-medium text-sm flex items-center space-x-2 rtl:space-x-reverse"
+            onclick="showTab('notifications')"
+          >
+            <Bell size={16} />
+            <span>الإشعارات</span>
+            <span class="bg-muted text-muted-foreground rounded-full px-2 py-1 text-xs">3</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Personal Messages Tab -->
+    <div id="personal-tab" class="tab-content">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Conversations List -->
+        <div class="lg:col-span-1">
+          <div class="military-card p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="font-semibold text-foreground">المحادثات</h2>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <button class="p-1 hover:bg-accent rounded text-muted-foreground">
+                  <Search size={16} />
+                </button>
+                <button class="p-1 hover:bg-accent rounded text-muted-foreground">
+                  <Filter size={16} />
+                </button>
+                <button class="p-1 hover:bg-accent rounded text-muted-foreground">
+                  <Settings size={16} />
+                </button>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="relative mb-4">
+              <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+              <input
+                type="text"
+                placeholder="البحث في المحادثات..."
+                class="w-full pl-9 rtl:pr-9 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            <!-- Conversations -->
+            <div class="space-y-2">
+              <!-- Conversation Item -->
+              <div class="p-3 hover:bg-accent rounded-lg cursor-pointer border-l-2 border-tactical-green">
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <div class="relative">
+                    <img src="/avatars/user1.png" alt="User" class="w-12 h-12 rounded-full" />
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-tactical-green rounded-full border-2 border-background"></div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-medium text-foreground truncate">قائد النصر</h3>
+                      <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                        <Crown size={12} class="text-victory-gold" />
+                        <span class="text-xs text-muted-foreground">15:30</span>
+                      </div>
+                    </div>
+                    <p class="text-sm text-muted-foreground truncate">هل أنت مستعد للحرب غداً؟</p>
+                    <div class="flex items-center justify-between mt-1">
+                      <span class="text-xs text-muted-foreground">منذ دقيقتين</span>
+                      <span class="bg-tactical-green text-white rounded-full px-2 py-1 text-xs">3</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- More conversation items -->
+              <div class="p-3 hover:bg-accent rounded-lg cursor-pointer">
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <div class="relative">
+                    <img src="/avatars/user2.png" alt="User" class="w-12 h-12 rounded-full" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-medium text-foreground truncate">محارب الصحراء</h3>
+                      <span class="text-xs text-muted-foreground">14:45</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground truncate">شكراً على النصائح الرائعة!</p>
+                    <span class="text-xs text-muted-foreground">منذ ساعة</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 hover:bg-accent rounded-lg cursor-pointer">
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <div class="relative">
+                    <img src="/avatars/user3.png" alt="User" class="w-12 h-12 rounded-full" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-medium text-foreground truncate">أسطورة الشرق</h3>
+                      <span class="text-xs text-muted-foreground">أمس</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground truncate">متى البطولة القادمة؟</p>
+                    <span class="text-xs text-muted-foreground">أمس</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="lg:col-span-2">
+          <div class="military-card h-[600px] flex flex-col">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-border">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                  <img src="/avatars/user1.png" alt="User" class="w-10 h-10 rounded-full" />
+                  <div>
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                      <h3 class="font-semibold text-foreground">قائد النصر</h3>
+                      <Crown size={14} class="text-victory-gold" />
+                    </div>
+                    <span class="text-sm text-tactical-green">متصل الآن</span>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <button class="p-2 hover:bg-accent rounded text-muted-foreground">
+                    <Star size={16} />
+                  </button>
+                  <button class="p-2 hover:bg-accent rounded text-muted-foreground">
+                    <Pin size={16} />
+                  </button>
+                  <button class="p-2 hover:bg-accent rounded text-muted-foreground">
+                    <Archive size={16} />
+                  </button>
+                  <button class="p-2 hover:bg-accent rounded text-alert-red">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+              <!-- Received Message -->
+              <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                <img src="/avatars/user1.png" alt="User" class="w-8 h-8 rounded-full" />
+                <div class="flex-1">
+                  <div class="bg-muted rounded-lg p-3 max-w-xs">
+                    <p class="text-foreground">مرحباً! كيف حالك؟</p>
+                  </div>
+                  <span class="text-xs text-muted-foreground mt-1">15:28</span>
+                </div>
+              </div>
+
+              <!-- Sent Message -->
+              <div class="flex items-start space-x-3 rtl:space-x-reverse justify-end">
+                <div class="flex-1 flex justify-end">
+                  <div class="bg-primary text-primary-foreground rounded-lg p-3 max-w-xs">
+                    <p>مرحباً! بخير والحمد لله. كيف الاستعداد للحرب؟</p>
+                  </div>
+                </div>
+                <img src="/avatars/current_user.png" alt="You" class="w-8 h-8 rounded-full" />
+              </div>
+
+              <!-- Received Message -->
+              <div class="flex items-start space-x-3 rtl:space-x-reverse">
+                <img src="/avatars/user1.png" alt="User" class="w-8 h-8 rounded-full" />
+                <div class="flex-1">
+                  <div class="bg-muted rounded-lg p-3 max-w-xs">
+                    <p class="text-foreground">ممتاز! كل شيء جاهز. هل أنت مستعد للحرب غداً؟</p>
+                  </div>
+                  <span class="text-xs text-muted-foreground mt-1">15:30</span>
+                </div>
+              </div>
+
+              <!-- Typing Indicator -->
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/avatars/current_user.png" alt="You" class="w-8 h-8 rounded-full" />
+                <div class="bg-muted rounded-lg p-3">
+                  <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="p-4 border-t border-border">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <input
+                  type="text"
+                  placeholder="اكتب رسالتك..."
+                  class="flex-1 px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button class="btn btn-primary">
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Card for Clan Access -->
+    <div class="military-card p-4 mb-8" id="clan-help-card">
+      <div class="flex items-start space-x-3 rtl:space-x-reverse">
+        <div class="w-10 h-10 bg-tactical-green/20 rounded-lg flex items-center justify-center flex-shrink-0">
+          <Shield class="text-tactical-green" size={20} />
+        </div>
+        <div class="flex-1">
+          <h3 class="font-semibold text-foreground mb-1">الوصول لعشيرتك</h3>
+          <p class="text-sm text-muted-foreground mb-3">
+            يمكنك الوصول لدردشة عشيرتك وإدارتها بسهولة عبر الروابط التالية:
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <a href="/ar/my-clan" class="btn btn-sm btn-primary">
+              <Swords size={14} />
+              <span>عشيرتي</span>
+            </a>
+            <a href="/ar/clans" class="btn btn-sm btn-outline">
+              <Users size={14} />
+              <span>تصفح العشائر</span>
+            </a>
+            <button onclick="showTab('clan')" class="btn btn-sm btn-outline">
+              <MessageCircle size={14} />
+              <span>رسائل العشيرة</span>
+            </button>
+          </div>
+        </div>
+        <button onclick="document.getElementById('clan-help-card').style.display='none'" class="text-muted-foreground hover:text-foreground">
+          <X size={16} />
+        </button>
+      </div>
+    </div>
+
+    <!-- Clan Messages Tab -->
+    <div id="clan-tab" class="tab-content hidden">
+      <div id="clan-messages-loading" class="mb-6">
+        <div class="military-card p-4">
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <div class="animate-spin w-6 h-6 border-2 border-tactical-green border-t-transparent rounded-full"></div>
+            <div>
+              <h2 class="text-lg font-semibold text-foreground">جاري التحقق من عضوية العشيرة...</h2>
+              <p class="text-sm text-muted-foreground">يرجى الانتظار</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="clan-messages-no-clan" class="hidden mb-6">
+        <div class="military-card p-6 text-center">
+          <Shield class="mx-auto text-muted-foreground mb-4 opacity-50" size={48} />
+          <h2 class="text-lg font-semibold text-foreground mb-2">لست عضواً في أي عشيرة</h2>
+          <p class="text-sm text-muted-foreground mb-4">
+            انضم إلى إحدى العشائر لتتمكن من استخدام نظام رسائل العشيرة
+          </p>
+          <div class="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+            <a href="/ar/clans" class="btn btn-primary">تصفح العشائر</a>
+            <a href="/ar/clans/create" class="btn btn-outline">إنشاء عشيرة</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="clan-messages-content" class="hidden">
+        <div class="mb-6">
+          <div class="military-card p-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <Shield class="text-tactical-green" size={24} />
+              <div>
+                <h2 id="clan-name" class="text-lg font-semibold text-foreground">رسائل العشيرة</h2>
+                <p class="text-sm text-muted-foreground">تواصل مع أعضاء عشيرتك وتابع آخر الأخبار</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clan Messaging Component -->
+        <div id="clan-messaging-container">
+          <!-- Component will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Tab -->
+    <div id="notifications-tab" class="tab-content hidden">
+      <div class="military-card p-6">
+        <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Bell size={20} />
+          <span>الإشعارات</span>
+        </h2>
+
+        <div class="space-y-4">
+          <!-- Notification Item -->
+          <div class="flex items-start space-x-3 rtl:space-x-reverse p-4 bg-muted/50 rounded-lg">
+            <div class="w-10 h-10 bg-tactical-green/20 rounded-full flex items-center justify-center">
+              <Shield class="text-tactical-green" size={20} />
+            </div>
+            <div class="flex-1">
+              <h3 class="font-medium text-foreground">دعوة انضمام للعشيرة</h3>
+              <p class="text-sm text-muted-foreground mt-1">
+                تمت دعوتك للانضمام إلى عشيرة "أسياد الحرب" من قبل قائد النصر
+              </p>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mt-3">
+                <button class="btn btn-primary btn-sm">قبول</button>
+                <button class="btn btn-outline btn-sm">رفض</button>
+                <span class="text-xs text-muted-foreground">منذ ساعتين</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tournament Notification -->
+          <div class="flex items-start space-x-3 rtl:space-x-reverse p-4 bg-muted/50 rounded-lg">
+            <div class="w-10 h-10 bg-victory-gold/20 rounded-full flex items-center justify-center">
+              <Crown class="text-victory-gold" size={20} />
+            </div>
+            <div class="flex-1">
+              <h3 class="font-medium text-foreground">بطولة جديدة</h3>
+              <p class="text-sm text-muted-foreground mt-1">
+                تم فتح التسجيل في بطولة "كأس الشرق الأوسط" - التسجيل متاح حتى 25 يناير
+              </p>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mt-3">
+                <button class="btn btn-primary btn-sm">عرض التفاصيل</button>
+                <span class="text-xs text-muted-foreground">منذ 6 ساعات</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- General Notification -->
+          <div class="flex items-start space-x-3 rtl:space-x-reverse p-4 bg-muted/50 rounded-lg">
+            <div class="w-10 h-10 bg-command-blue/20 rounded-full flex items-center justify-center">
+              <Bell class="text-command-blue" size={20} />
+            </div>
+            <div class="flex-1">
+              <h3 class="font-medium text-foreground">تحديث الموقع</h3>
+              <p class="text-sm text-muted-foreground mt-1">
+                تم إضافة ميزات جديدة لنظام العشائر والرسائل - اكتشف المزيد
+              </p>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse mt-3">
+                <button class="btn btn-outline btn-sm">اكتشف الميزات</button>
+                <span class="text-xs text-muted-foreground">أمس</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function showTab(tabName) {
+    // Hide all tab contents
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.classList.add('hidden'));
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+    
+    // Update tab buttons
+    const buttons = document.querySelectorAll('nav button');
+    buttons.forEach(button => {
+      button.classList.remove('border-primary', 'text-primary');
+      button.classList.add('border-transparent', 'text-muted-foreground');
+    });
+    
+    // Activate selected button
+    event.target.classList.remove('border-transparent', 'text-muted-foreground');
+    event.target.classList.add('border-primary', 'text-primary');
+
+    // Special handling for clan tab
+    if (tabName === 'clan') {
+      initializeClanMessages();
+    }
+  }
+
+  function initializeClanMessages() {
+    try {
+      // Get current user
+      let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      // Create temporary user if none exists
+      if (!currentUser.id) {
+        currentUser = {
+          id: 1,
+          username: 'test_user',
+          email: 'test@example.com',
+          name: 'مستخدم تجريبي'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log('تم إنشاء مستخدم تجريبي:', currentUser);
+      }
+
+      // Check for existing clans
+      let approvedClans = JSON.parse(localStorage.getItem('approvedClans') || '[]');
+      
+      // Create mock clan if none exists
+      if (approvedClans.length === 0) {
+        const mockClan = {
+          id: 1,
+          name: 'نسور الشرق',
+          tag: 'EAST',
+          description: 'عشيرة نخبة للاعبين المحترفين في الشرق الأوسط',
+          ownerId: currentUser.id,
+          members: [
+            {
+              id: currentUser.id,
+              username: currentUser.username || 'مستخدم تجريبي',
+              role: 'leader',
+              joinedAt: new Date().toISOString()
+            }
+          ],
+          level: 45,
+          totalMembers: 1,
+          createdAt: new Date().toISOString()
+        };
+        
+        approvedClans.push(mockClan);
+        localStorage.setItem('approvedClans', JSON.stringify(approvedClans));
+        console.log('تم إنشاء عشيرة تجريبية:', mockClan);
+      }
+
+      // Find user's clan
+      const userClan = approvedClans.find(clan => 
+        clan.members && clan.members.some(member => member.id === currentUser.id)
+      );
+
+      // Update clan messages content
+      const clanTab = document.getElementById('clan-tab');
+      if (clanTab && userClan) {
+        clanTab.innerHTML = `
+          <div class="mb-6">
+            <div class="military-card p-4">
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <div class="w-12 h-12 bg-tactical-green/20 rounded-lg flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-tactical-green">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="text-lg font-semibold text-foreground">رسائل عشيرة "[${userClan.tag}] ${userClan.name}"</h2>
+                  <p class="text-sm text-muted-foreground">تواصل مع أعضاء عشيرتك وتابع آخر الأخبار</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="military-card p-6">
+            <div class="text-center py-8">
+              <div class="w-16 h-16 bg-tactical-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-tactical-green">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-foreground mb-2">نظام رسائل العشيرة جاهز!</h3>
+              <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+                يمكنك الآن التواصل مع أعضاء عشيرتك "${userClan.name}" ومتابعة آخر الأخبار والقرارات المهمة.
+              </p>
+              
+              <div class="bg-muted rounded-lg p-4 mb-6">
+                <h4 class="font-semibold text-foreground mb-3">معلومات العشيرة</h4>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span class="text-muted-foreground">اسم العشيرة:</span>
+                    <span class="font-medium ml-2">[${userClan.tag}] ${userClan.name}</span>
+                  </div>
+                  <div>
+                    <span class="text-muted-foreground">عدد الأعضاء:</span>
+                    <span class="font-medium ml-2">${userClan.members?.length || 0}</span>
+                  </div>
+                  <div>
+                    <span class="text-muted-foreground">دورك:</span>
+                    <span class="font-medium ml-2">${getRoleText(userClan.members?.find(m => m.id === currentUser.id)?.role || 'member')}</span>
+                  </div>
+                  <div>
+                    <span class="text-muted-foreground">تاريخ الانضمام:</span>
+                    <span class="font-medium ml-2">اليوم</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="p-3 bg-primary/10 rounded-lg">
+                  <p class="text-sm text-primary">
+                    💬 نظام الرسائل: متاح للاستخدام
+                  </p>
+                </div>
+                <div class="p-3 bg-tactical-green/10 rounded-lg">
+                  <p class="text-sm text-tactical-green">
+                    🛡️ صلاحيات الإدارة: ${userClan.members?.find(m => m.id === currentUser.id)?.role === 'leader' ? 'متاحة (قائد)' : 'محدودة (عضو)'}
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <a href="/ar/clan-messages" class="btn btn-primary mr-2">
+                  الانتقال لصفحة رسائل العشيرة
+                </a>
+                <a href="/ar/clans/${userClan.id}" class="btn btn-outline">
+                  عرض صفحة العشيرة
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        // Show no clan message
+        clanTab.innerHTML = `
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 opacity-50">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-foreground mb-2">لست عضواً في أي عشيرة</h3>
+            <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+              انضم إلى إحدى العشائر الموجودة أو أنشئ عشيرتك الخاصة للوصول إلى نظام رسائل العشيرة
+            </p>
+            <div class="space-x-4 rtl:space-x-reverse">
+              <a href="/ar/clans" class="btn btn-primary">تصفح العشائر</a>
+              <a href="/ar/clans/create" class="btn btn-outline">إنشاء عشيرة</a>
+            </div>
+          </div>
+        `;
+      }
+
+    } catch (error) {
+      console.error('Error initializing clan messages:', error);
+    }
+  }
+
+  function getRoleText(role) {
+    switch (role) {
+      case 'leader': return 'قائد العشيرة';
+      case 'officer': return 'ضابط';
+      case 'member': return 'عضو';
+      default: return 'عضو';
+    }
+  }
+
+  // Initialize clan messages when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if clan tab is already active
+    const clanTab = document.getElementById('clan-tab');
+    if (clanTab && !clanTab.classList.contains('hidden')) {
+      initializeClanMessages();
+    }
+  });
+</script> 

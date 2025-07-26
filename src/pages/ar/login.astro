@@ -1,0 +1,349 @@
+---
+// Login Page for ZH-Love Gaming Community
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="تسجيل الدخول - ZH-Love Gaming Community">
+  <div class="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <div class="mx-auto h-16 w-16 bg-gradient-to-r from-green-600 to-green-700 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-2xl">ZH</span>
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+          تسجيل الدخول إلى حسابك
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-400">
+          أو
+          <a href="/ar/register" class="font-medium text-green-600 hover:text-green-500">
+            إنشاء حساب جديد
+          </a>
+        </p>
+        <p class="mt-1 text-center text-xs text-gray-500">
+          للاختبار: يمكنك الدخول بأي بريد إلكتروني موجود في النظام
+        </p>
+      </div>
+      
+      <!-- Login Form -->
+      <form id="loginForm" class="mt-8 space-y-6">
+        <div class="space-y-4">
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+              البريد الإلكتروني
+            </label>
+            <div class="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="ادخل بريدك الإلكتروني"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+              كلمة المرور
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="ادخل كلمة المرور (اختياري للتطوير)"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">للتطوير: يمكن ترك كلمة المرور فارغة</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button
+            type="submit"
+            id="loginButton"
+            class="group relative w-full flex justify-center py-3 px-4 border border-transparent 
+              text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+              transition-colors duration-200"
+          >
+            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+              <svg class="h-5 w-5 text-green-500 group-hover:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+              </svg>
+            </span>
+            تسجيل الدخول
+          </button>
+        </div>
+      </form>
+
+      <!-- Quick Login Section -->
+      <div class="mt-8 border-t border-gray-600 pt-6">
+        <h3 class="text-sm font-medium text-gray-300 mb-4 text-center">تسجيل دخول سريع (للتطوير)</h3>
+        
+        <div class="space-y-3">
+          <button
+            onclick="quickLogin('admin@zh-love.com')"
+            class="w-full text-left bg-orange-600/80 hover:bg-orange-600 text-white p-3 rounded-lg transition-colors"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold">مدير الموقع</div>
+                <div class="text-sm opacity-90">admin@zh-love.com</div>
+              </div>
+              <div class="text-xs bg-orange-700 px-2 py-1 rounded">مدير</div>
+            </div>
+          </button>
+          
+          <button
+            onclick="quickLogin('mah.athamnh@gmail.com')"
+            class="w-full text-left bg-purple-600/80 hover:bg-purple-600 text-white p-3 rounded-lg transition-colors"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold">أسيل عثامنة</div>
+                <div class="text-sm opacity-90">mah.athamnh@gmail.com</div>
+              </div>
+              <div class="text-xs bg-purple-700 px-2 py-1 rounded">لاعب</div>
+            </div>
+          </button>
+          
+          <button
+            onclick="quickLogin('master@zh-love.com')"
+            class="w-full text-left bg-blue-600/80 hover:bg-blue-600 text-white p-3 rounded-lg transition-colors"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-semibold">أحمد المحترف</div>
+                <div class="text-sm opacity-90">master@zh-love.com</div>
+              </div>
+              <div class="text-xs bg-blue-700 px-2 py-1 rounded">لاعب</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error/Success Messages -->
+      <div id="messageContainer" class="mt-4 hidden">
+        <div id="messageContent" class="p-3 rounded-lg text-sm"></div>
+      </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+              كلمة المرور
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="ادخل كلمة المرور"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute left-3 top-3.5 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <svg id="eyeClosed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me -->
+          <div class="flex items-center justify-between">
+            <label class="flex items-center">
+              <input
+                id="rememberMe"
+                name="rememberMe"
+                type="checkbox"
+                class="rounded border-gray-600 text-green-600 focus:ring-green-500 
+                  focus:ring-offset-0 bg-gray-700"
+              />
+              <span class="mr-2 text-sm text-gray-300">تذكرني</span>
+            </label>
+            <a href="/ar/forgot-password" class="text-sm text-green-400 hover:text-green-300 transition-colors">
+              نسيت كلمة المرور؟
+            </a>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden p-3 bg-red-900/50 border border-red-500 rounded-lg">
+          <p class="text-red-300 text-sm"></p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="submitBtn"
+          class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 
+            hover:to-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all 
+            duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed 
+            disabled:transform-none shadow-lg hover:shadow-xl"
+        >
+          <div class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013 3v1"></path>
+            </svg>
+            تسجيل الدخول
+          </div>
+        </button>
+
+        <!-- Quick Login Buttons -->
+        <div class="pt-6 border-t border-gray-700">
+          <p class="text-center text-sm text-gray-400 mb-4">تسجيل دخول سريع للتجربة:</p>
+          <div class="space-y-2">
+            <button
+              type="button"
+              id="adminLogin"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 
+                rounded-lg transition-colors duration-200"
+            >
+              دخول كمدير (Admin)
+            </button>
+            <button
+              type="button"
+              id="userLogin"
+              class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 
+                rounded-lg transition-colors duration-200"
+            >
+              دخول كمستخدم (User)
+            </button>
+          </div>
+        </div>
+
+        <!-- Switch to Register -->
+        <div class="text-center">
+          <p class="text-gray-400">
+            لا تملك حساب؟{' '}
+            <a href="/ar/register" class="text-green-400 hover:text-green-300 font-medium transition-colors">
+              إنشاء حساب جديد
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('loginButton');
+    const messageContainer = document.getElementById('messageContainer');
+    const messageContent = document.getElementById('messageContent');
+
+    // Show message function
+    function showMessage(message, isError = false) {
+      messageContainer.classList.remove('hidden');
+      messageContent.textContent = message;
+      messageContent.className = `p-3 rounded-lg text-sm ${
+        isError 
+          ? 'bg-red-900/50 border border-red-600 text-red-300' 
+          : 'bg-green-900/50 border border-green-600 text-green-300'
+      }`;
+    }
+
+    // Hide message function
+    function hideMessage() {
+      messageContainer.classList.add('hidden');
+    }
+
+    // Quick login function
+    window.quickLogin = function(email) {
+      emailInput.value = email;
+      passwordInput.value = '';
+      form.dispatchEvent(new Event('submit'));
+    };
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      hideMessage();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!email) {
+        showMessage('يرجى إدخال البريد الإلكتروني', true);
+        return;
+      }
+
+      // Show loading state
+      const originalText = loginButton.textContent;
+      loginButton.textContent = 'جاري تسجيل الدخول...';
+      loginButton.disabled = true;
+
+      try {
+        const response = await fetch('http://localhost:8000/forum_api.php?action=login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Store token and user data
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+          
+          showMessage('تم تسجيل الدخول بنجاح! جاري التحويل...');
+          
+          // Redirect to profile page
+          setTimeout(() => {
+            window.location.href = '/ar/profile';
+          }, 1500);
+        } else {
+          showMessage(data.error || 'فشل في تسجيل الدخول', true);
+        }
+
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage('حدث خطأ أثناء الاتصال بالخادم', true);
+      } finally {
+        // Restore button state
+        loginButton.textContent = originalText;
+        loginButton.disabled = false;
+      }
+    });
+
+    // Clear messages when user starts typing
+    emailInput.addEventListener('input', hideMessage);
+    passwordInput.addEventListener('input', hideMessage);
+  });
+</script> 

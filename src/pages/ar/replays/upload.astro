@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ReplayUpload from '../../../components/replays/ReplayUpload.tsx';
+import { Upload, ArrowLeft, AlertCircle, CheckCircle, Info } from 'lucide-react';
+
+const title = "رفع ريبلاي جديد - زد اتش لوف";
+const description = "شارك أفضل مبارياتك مع المجتمع ودع الآخرين يتعلمون من استراتيجياتك";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/replays" class="hover:text-foreground transition-colors">الريبلايز</a>
+        <span>/</span>
+        <span class="text-foreground">رفع ريبلاي</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/replays" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للريبلايز</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center justify-center space-x-3 rtl:space-x-reverse">
+        <Upload size={32} class="text-tactical-green" />
+        <span>رفع ريبلاي جديد</span>
+      </h1>
+      <p class="text-muted-foreground max-w-2xl mx-auto">
+        شارك أفضل مبارياتك مع المجتمع ودع الآخرين يتعلمون من استراتيجياتك وتكتيكاتك في الجنرالات زيرو آور
+      </p>
+    </div>
+
+    <!-- Upload Guidelines -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="military-card p-4">
+        <div class="flex items-center space-x-2 rtl:space-x-reverse mb-3">
+          <div class="w-8 h-8 bg-tactical-green/20 text-tactical-green rounded-full flex items-center justify-center">
+            <CheckCircle size={16} />
+          </div>
+          <h3 class="font-semibold text-foreground">الملفات المدعومة</h3>
+        </div>
+        <ul class="text-sm text-muted-foreground space-y-1">
+          <li>• ملفات .rep (الأصلية)</li>
+          <li>• ملفات .replay (محولة)</li>
+          <li>• حد أقصى 50 MB</li>
+          <li>• إصدار 1.04 أو أحدث</li>
+        </ul>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center space-x-2 rtl:space-x-reverse mb-3">
+          <div class="w-8 h-8 bg-command-blue/20 text-command-blue rounded-full flex items-center justify-center">
+            <Info size={16} />
+          </div>
+          <h3 class="font-semibold text-foreground">قوانين الرفع</h3>
+        </div>
+        <ul class="text-sm text-muted-foreground space-y-1">
+          <li>• محتوى مناسب فقط</li>
+          <li>• لا للغش أو الهاك</li>
+          <li>• وصف واضح ومفيد</li>
+          <li>• تاقات صحيحة</li>
+        </ul>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center space-x-2 rtl:space-x-reverse mb-3">
+          <div class="w-8 h-8 bg-victory-gold/20 text-victory-gold rounded-full flex items-center justify-center">
+            <AlertCircle size={16} />
+          </div>
+          <h3 class="font-semibold text-foreground">عملية المراجعة</h3>
+        </div>
+        <ul class="text-sm text-muted-foreground space-y-1">
+          <li>• مراجعة خلال 24 ساعة</li>
+          <li>• إشعار بالقبول/الرفض</li>
+          <li>• إمكانية الطعن</li>
+          <li>• نشر فوري للموثقين</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Upload Component -->
+    <div class="max-w-4xl mx-auto">
+      <ReplayUpload 
+        onUpload={(data) => {
+          console.log('Upload data:', data);
+          // Handle upload logic here
+          alert('تم رفع الريبلاي بنجاح! سيتم مراجعته وإظهاره قريباً.');
+        }}
+        onCancel={() => window.location.href = '/ar/replays'}
+        maxFileSize={50}
+        client:load
+      />
+    </div>
+
+    <!-- Community Tips -->
+    <div class="max-w-4xl mx-auto mt-12">
+      <div class="military-card p-6">
+        <h2 class="text-xl font-bold text-foreground mb-4">نصائح لرفع ريبلايز عالية الجودة</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-tactical-green/20 text-tactical-green rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold">📝</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-foreground mb-1">اكتب عنوان واضح</h3>
+                <p class="text-sm text-muted-foreground">استخدم عنوان يوضح نوع المباراة والتكتيكات المستخدمة</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-victory-gold/20 text-victory-gold rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold">🏷️</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-foreground mb-1">استخدم التاقات المناسبة</h3>
+                <p class="text-sm text-muted-foreground">أضف تاقات تساعد الآخرين في العثور على ريبلايك</p>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-command-blue/20 text-command-blue rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold">📊</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-foreground mb-1">أضف تفاصيل اللاعبين</h3>
+                <p class="text-sm text-muted-foreground">املأ معلومات اللاعبين والفصائل لتسهيل التصفح</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-3 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-neutral-silver/20 text-neutral-silver rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-sm font-bold">💬</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-foreground mb-1">اكتب وصف مفيد</h3>
+                <p class="text-sm text-muted-foreground">اشرح النقاط المهمة والتكتيكات المستخدمة</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Tags -->
+    <div class="max-w-4xl mx-auto mt-8">
+      <div class="military-card p-6">
+        <h2 class="text-lg font-semibold text-foreground mb-4">التاقات الشائعة</h2>
+        <div class="flex flex-wrap gap-2">
+          {[
+            'tournament', 'pro', 'strategy', 'tutorial', 'epic', 'usa', 'china', 'gla',
+            'tanks', 'air', 'naval', 'rush', 'defense', 'economy', 'micro', 'macro',
+            'teamwork', 'solo', 'desert', 'urban', 'winter', 'forest'
+          ].map((tag) => (
+            <span 
+              key={tag}
+              class="bg-muted text-muted-foreground px-2 py-1 rounded-full text-sm cursor-pointer hover:bg-primary/20 hover:text-primary transition-colors"
+              onclick={`
+                const tagInput = document.querySelector('input[placeholder="إضافة تاق..."]');
+                if (tagInput) {
+                  tagInput.value = '${tag}';
+                  tagInput.focus();
+                }
+              `}
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

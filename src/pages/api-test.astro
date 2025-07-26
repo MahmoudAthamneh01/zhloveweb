@@ -1,0 +1,55 @@
+---
+const title = "اختبار API - زد اتش لوف";
+---
+
+<html>
+<head>
+    <title>{title}</title>
+</head>
+<body>
+    <h1>اختبار API</h1>
+    <div id="result">جاري التحميل...</div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                console.log('بدء اختبار API...');
+                
+                const response = await fetch('http://localhost:8000/forum_api.php?action=get_user_info', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer test_token_123',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('حالة الاستجابة:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('بيانات الاستجابة:', data);
+                
+                resultDiv.innerHTML = `
+                    <h2>نتيجة API:</h2>
+                    <pre style="background: #f0f0f0; padding: 10px; direction: ltr;">${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('خطأ:', error);
+                resultDiv.innerHTML = `
+                    <h2>خطأ:</h2>
+                    <p style="color: red">${error.message}</p>
+                `;
+            }
+        }
+        
+        // تشغيل الاختبار عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', testAPI);
+    </script>
+</body>
+</html>

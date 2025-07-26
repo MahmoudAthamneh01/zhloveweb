@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="اختبار الـ Sidebar - ZH-Love">
+  <div class="min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-4xl font-bold text-center mb-8 text-gradient">
+        اختبار الـ Sidebar الجديد
+      </h1>
+      
+      <div class="military-card p-8 mb-8">
+        <h2 class="text-2xl font-bold mb-4">مرحباً بك في الـ Sidebar الجديد!</h2>
+        <p class="text-muted-foreground mb-6">
+          يجب أن ترى الآن sidebar جديد على الجانب مع الميزات التالية:
+        </p>
+        
+        <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>دعم كامل للعربية (RTL) والإنجليزية (LTR)</li>
+          <li>زر تحويل اللغة</li>
+          <li>زر الإغلاق والفتح</li>
+          <li>جميع روابط الموقع</li>
+          <li>معلومات المستخدم المسجل دخوله</li>
+          <li>أزرار تسجيل الدخول/الخروج</li>
+          <li>تصميم متجاوب للموبايل</li>
+          <li>انتقالات سلسة وأنيقة</li>
+        </ul>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="military-card p-6">
+          <h3 class="text-xl font-bold mb-3">ميزات الـ Desktop</h3>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li>• Sidebar ثابت على الجانب</li>
+            <li>• إمكانية الطي والتوسيع</li>
+            <li>• زر تحويل اللغة مدمج</li>
+            <li>• عرض كامل للنصوص والأيقونات</li>
+          </ul>
+        </div>
+
+        <div class="military-card p-6">
+          <h3 class="text-xl font-bold mb-3">ميزات الـ Mobile</h3>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li>• Sidebar منبثق overlay</li>
+            <li>• زر هامبرجر لفتح/إغلاق</li>
+            <li>• تغطية كاملة للشاشة</li>
+            <li>• إغلاق تلقائي عند النقر خارجه</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <a href="/ar" class="btn btn-primary">العودة للصفحة الرئيسية</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

@@ -1,0 +1,557 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Shield, ArrowLeft, Search, Filter, Users, CheckCircle, XCircle, Clock, Star, Crown, Swords } from 'lucide-react';
+
+const title = "إدارة العشائر - لوحة الأدمن - زد اتش لوف";
+const description = "مراجعة والموافقة على طلبات إنشاء العشائر";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/admin" class="hover:text-foreground transition-colors">لوحة الأدمن</a>
+        <span>/</span>
+        <span class="text-foreground">إدارة العشائر</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/admin" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للوحة الأدمن</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Swords size={32} class="text-purple-500" />
+          <span>إدارة العشائر</span>
+        </h1>
+        <p class="text-muted-foreground">مراجعة والموافقة على طلبات إنشاء العشائر</p>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1" id="pending-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات معلقة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1" id="approved-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات موافق عليها</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-alert-red mb-1" id="rejected-count">0</div>
+        <div class="text-sm text-muted-foreground">طلبات مرفوضة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1" id="active-clans">0</div>
+        <div class="text-sm text-muted-foreground">عشائر نشطة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-neutral-silver mb-1" id="total-count">0</div>
+        <div class="text-sm text-muted-foreground">إجمالي الطلبات</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="military-card p-4 mb-6">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="البحث في طلبات العشائر..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <Filter size={20} class="text-muted-foreground" />
+          <select id="statusFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع الحالات</option>
+            <option value="pending">معلق</option>
+            <option value="approved">موافق عليه</option>
+            <option value="rejected">مرفوض</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <span class="text-sm text-muted-foreground">المنطقة:</span>
+          <select id="regionFilter" class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="all">جميع المناطق</option>
+            <option value="middle-east">الشرق الأوسط</option>
+            <option value="gulf">الخليج العربي</option>
+            <option value="levant">بلاد الشام</option>
+            <option value="north-africa">شمال أفريقيا</option>
+            <option value="international">دولية</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applications List -->
+    <div class="space-y-6" id="applicationsList">
+      <!-- Applications will be loaded here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-12">
+      <Swords class="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
+      <h3 class="text-lg font-medium text-foreground mb-2">لا توجد طلبات</h3>
+      <p class="text-muted-foreground">لم يتم العثور على طلبات بناءً على الفلاتر المحددة</p>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div id="applicationModal" class="fixed inset-0 bg-black/50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-background border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6" id="modalContent">
+          <!-- Modal content will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let applications = [];
+    let filteredApplications = [];
+    
+    // Load applications from localStorage
+    loadApplications();
+    
+    // Set up event listeners
+    document.getElementById('searchInput').addEventListener('input', filterApplications);
+    document.getElementById('statusFilter').addEventListener('change', filterApplications);
+    document.getElementById('regionFilter').addEventListener('change', filterApplications);
+    
+    // Close modal when clicking outside
+    document.getElementById('applicationModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+    
+    function loadApplications() {
+      // Load applications from API instead of localStorage
+      fetch('http://localhost:8080/quick_clan_fix.php?action=list_applications')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            applications = data.applications.map(app => ({
+              id: app.id,
+              clanName: app.clan_name,
+              clanTag: app.clan_tag,
+              description: app.description,
+              organizerName: app.organizer_name,
+              organizerEmail: app.organizer_email,
+              organizerPhone: app.organizer_phone,
+              organizerCountry: app.organizer_country,
+              organizerExperience: app.organizer_experience,
+              organizerId: app.organizer_id,
+              region: app.region,
+              language: app.language,
+              clanIcon: app.clan_icon,
+              membershipType: app.membership_type,
+              minLevel: app.min_level,
+              minWinRate: app.min_win_rate,
+              maxMembers: app.max_members,
+              rules: app.rules,
+              participationRequirements: app.participation_requirements ? JSON.parse(app.participation_requirements) : [],
+              status: app.status,
+              createdAt: app.submitted_at,
+              organizerUsername: app.organizer_username
+            }));
+            filteredApplications = [...applications];
+            updateStatistics();
+            renderApplications();
+          } else {
+            console.error('Failed to load applications:', data.error);
+            applications = [];
+            filteredApplications = [];
+            updateStatistics();
+            renderApplications();
+          }
+        })
+        .catch(error => {
+          console.error('Error loading applications:', error);
+          applications = [];
+          filteredApplications = [];
+          updateStatistics();
+          renderApplications();
+        });
+    }
+    
+    function updateStatistics() {
+      const pending = applications.filter(app => app.status === 'pending').length;
+      const approved = applications.filter(app => app.status === 'approved').length;
+      const rejected = applications.filter(app => app.status === 'rejected').length;
+      const activeClans = JSON.parse(localStorage.getItem('approvedClans') || '[]').length;
+      const total = applications.length;
+      
+      document.getElementById('pending-count').textContent = pending;
+      document.getElementById('approved-count').textContent = approved;
+      document.getElementById('rejected-count').textContent = rejected;
+      document.getElementById('active-clans').textContent = activeClans;
+      document.getElementById('total-count').textContent = total;
+    }
+    
+    function filterApplications() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const regionFilter = document.getElementById('regionFilter').value;
+      
+      filteredApplications = applications.filter(app => {
+        const matchesSearch = !searchTerm || 
+          app.clanName.toLowerCase().includes(searchTerm) ||
+          app.clanTag.toLowerCase().includes(searchTerm) ||
+          app.organizerName.toLowerCase().includes(searchTerm) ||
+          app.organizerEmail.toLowerCase().includes(searchTerm);
+          
+        const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
+        const matchesRegion = regionFilter === 'all' || app.region === regionFilter;
+        
+        return matchesSearch && matchesStatus && matchesRegion;
+      });
+      
+      renderApplications();
+    }
+    
+    function renderApplications() {
+      const container = document.getElementById('applicationsList');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (filteredApplications.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      
+      container.innerHTML = filteredApplications.map(app => `
+        <div class="military-card p-6">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start space-x-4 rtl:space-x-reverse flex-1">
+              <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-command-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                ${app.clanTag}
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center space-x-2 rtl:space-x-reverse mb-2">
+                  <h3 class="text-lg font-bold text-foreground">[${app.clanTag}] ${app.clanName}</h3>
+                  <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(app.status)}">
+                    ${getStatusText(app.status)}
+                  </span>
+                  <span class="px-2 py-1 bg-muted text-muted-foreground rounded-full text-xs">
+                    ${getRegionText(app.region)}
+                  </span>
+                </div>
+                
+                <p class="text-sm text-muted-foreground mb-2">المنظم: ${app.organizerName} • ${app.organizerEmail}</p>
+                <p class="text-sm text-foreground mb-3 line-clamp-2">${app.description}</p>
+                
+                <div class="flex items-center space-x-4 rtl:space-x-reverse text-sm">
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="text-muted-foreground">نوع العضوية:</span>
+                    <span>${getMembershipTypeText(app.membershipType)}</span>
+                  </div>
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="text-muted-foreground">الحد الأقصى:</span>
+                    <span>${app.maxMembers} عضو</span>
+                  </div>
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="text-muted-foreground">تاريخ التقديم:</span>
+                    <span>${new Date(app.submittedAt).toLocaleDateString('ar-SA')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <button 
+                onclick="viewApplication('${app.id}')"
+                class="btn btn-outline btn-sm"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                عرض
+              </button>
+              
+              ${app.status === 'pending' ? `
+                <button 
+                  onclick="approveApplication('${app.id}')"
+                  class="btn btn-sm bg-tactical-green hover:bg-tactical-green/90 text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20,6 9,17 4,12"/>
+                  </svg>
+                  موافقة
+                </button>
+                <button 
+                  onclick="rejectApplication('${app.id}')"
+                  class="btn btn-sm bg-alert-red hover:bg-alert-red/90 text-white"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  رفض
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function getStatusColor(status) {
+      switch (status) {
+        case 'pending':
+          return 'bg-orange-500/20 text-orange-500';
+        case 'approved':
+          return 'bg-tactical-green/20 text-tactical-green';
+        case 'rejected':
+          return 'bg-alert-red/20 text-alert-red';
+        default:
+          return 'bg-muted text-muted-foreground';
+      }
+    }
+    
+    function getStatusText(status) {
+      switch (status) {
+        case 'pending':
+          return 'معلق';
+        case 'approved':
+          return 'موافق عليه';
+        case 'rejected':
+          return 'مرفوض';
+        default:
+          return status;
+      }
+    }
+    
+    function getRegionText(region) {
+      switch (region) {
+        case 'middle-east':
+          return 'الشرق الأوسط';
+        case 'gulf':
+          return 'الخليج العربي';
+        case 'levant':
+          return 'بلاد الشام';
+        case 'north-africa':
+          return 'شمال أفريقيا';
+        case 'international':
+          return 'دولية';
+        default:
+          return region;
+      }
+    }
+    
+    function getMembershipTypeText(type) {
+      switch (type) {
+        case 'public':
+          return 'مفتوحة للجميع';
+        case 'invite-only':
+          return 'بدعوة فقط';
+        case 'application':
+          return 'تتطلب طلب انضمام';
+        default:
+          return type;
+      }
+    }
+    
+    window.viewApplication = function(id) {
+      const app = applications.find(a => a.id == id);
+      if (!app) return;
+      
+      const modal = document.getElementById('applicationModal');
+      const content = document.getElementById('modalContent');
+      
+      content.innerHTML = `
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-foreground">تفاصيل طلب إنشاء العشيرة</h2>
+          <button onclick="closeModal()" class="text-muted-foreground hover:text-foreground">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">معلومات العشيرة</h3>
+              <div class="space-y-2 text-sm">
+                <div><span class="text-muted-foreground">اسم العشيرة:</span> ${app.clanName}</div>
+                <div><span class="text-muted-foreground">رمز العشيرة:</span> [${app.clanTag}]</div>
+                <div><span class="text-muted-foreground">المنطقة:</span> ${getRegionText(app.region)}</div>
+                <div><span class="text-muted-foreground">اللغة:</span> ${app.language}</div>
+                <div><span class="text-muted-foreground">أيقونة العشيرة:</span> ${app.clanIcon || 'غير محددة'}</div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">معلومات المنظم</h3>
+              <div class="space-y-2 text-sm">
+                <div><span class="text-muted-foreground">الاسم:</span> ${app.organizerName}</div>
+                <div><span class="text-muted-foreground">البريد الإلكتروني:</span> ${app.organizerEmail}</div>
+                <div><span class="text-muted-foreground">رقم الهاتف:</span> ${app.organizerPhone || 'غير محدد'}</div>
+                <div><span class="text-muted-foreground">البلد:</span> ${app.organizerCountry}</div>
+                <div><span class="text-muted-foreground">الخبرة:</span> ${app.organizerExperience}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-foreground mb-3">إعدادات العضوية</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div><span class="text-muted-foreground">نوع العضوية:</span> ${getMembershipTypeText(app.membershipType)}</div>
+              <div><span class="text-muted-foreground">الحد الأدنى للمستوى:</span> ${app.minLevel}</div>
+              <div><span class="text-muted-foreground">معدل الفوز المطلوب:</span> ${app.minWinRate}%</div>
+              <div><span class="text-muted-foreground">الحد الأقصى للأعضاء:</span> ${app.maxMembers}</div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-foreground mb-3">الوصف والأهداف</h3>
+            <p class="p-3 bg-muted rounded-lg text-sm">${app.description}</p>
+          </div>
+          
+          ${app.rules ? `
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">قوانين العشيرة</h3>
+              <p class="p-3 bg-muted rounded-lg text-sm whitespace-pre-wrap">${app.rules}</p>
+            </div>
+          ` : ''}
+          
+          ${app.participationRequirements && app.participationRequirements.length > 0 ? `
+            <div>
+              <h3 class="font-semibold text-foreground mb-3">متطلبات المشاركة</h3>
+              <ul class="list-disc list-inside space-y-1 text-sm">
+                ${app.participationRequirements.map(req => `<li>${getParticipationRequirementText(req)}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+          
+          <div class="border-t border-border pt-4">
+            <div class="text-sm text-muted-foreground">
+              <div>تاريخ التقديم: ${new Date(app.submittedAt).toLocaleString('ar-SA')}</div>
+              ${app.reviewedAt ? `<div>تاريخ المراجعة: ${new Date(app.reviewedAt).toLocaleString('ar-SA')}</div>` : ''}
+              ${app.reviewedBy ? `<div>تمت المراجعة بواسطة: ${app.reviewedBy}</div>` : ''}
+              ${app.notes ? `<div>ملاحظات: ${app.notes}</div>` : ''}
+            </div>
+          </div>
+          
+          ${app.status === 'pending' ? `
+            <div class="border-t border-border pt-6">
+              <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                <button 
+                  onclick="approveApplication('${app.id}')"
+                  class="btn btn-primary"
+                >
+                  موافقة على إنشاء العشيرة
+                </button>
+                <button 
+                  onclick="rejectApplication('${app.id}')"
+                  class="btn btn-outline text-alert-red hover:bg-alert-red hover:text-white"
+                >
+                  رفض الطلب
+                </button>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      modal.classList.remove('hidden');
+    };
+    
+    function getParticipationRequirementText(req) {
+      switch (req) {
+        case 'clan-wars':
+          return 'المشاركة في حروب العشيرة إجبارية';
+        case 'daily-activity':
+          return 'النشاط اليومي مطلوب';
+        case 'chat-participation':
+          return 'المشاركة في الدردشة مطلوبة';
+        case 'arabic-only':
+          return 'اللعب باللغة العربية فقط';
+        default:
+          return req;
+      }
+    }
+    
+    window.approveApplication = function(id) {
+      const reason = prompt('أدخل ملاحظة (اختياري):') || '';
+      
+      if (confirm('هل أنت متأكد من الموافقة على إنشاء هذه العشيرة؟')) {
+        processApplication(id, 'approved');
+      }
+    };
+    
+    window.rejectApplication = function(id) {
+      const reason = prompt('أدخل سبب الرفض:');
+      
+      if (!reason) {
+        alert('يجب إدخال سبب الرفض');
+        return;
+      }
+      
+      if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+        processApplication(id, 'rejected');
+      }
+    };
+    
+    window.closeModal = function() {
+      document.getElementById('applicationModal').classList.add('hidden');
+    };
+    
+    async function processApplication(applicationId, status) {
+      try {
+        const endpoint = status === 'approved' ? 'approve' : 'reject';
+        const response = await fetch(`http://localhost:8080/quick_clan_fix.php?action=${endpoint}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            application_id: applicationId
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Reload applications to get updated data
+          loadApplications();
+          closeModal();
+          alert(status === 'approved' ? 'تم قبول الطلب وإنشاء العشيرة بنجاح!' : 'تم رفض الطلب!');
+        } else {
+          alert('حدث خطأ: ' + (result.error || 'خطأ غير معروف'));
+        }
+      } catch (error) {
+        console.error('Error processing application:', error);
+        alert('حدث خطأ في الاتصال بالخادم');
+      }
+    }
+  });
+</script> 

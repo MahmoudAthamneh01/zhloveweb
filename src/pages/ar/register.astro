@@ -1,0 +1,446 @@
+---
+// Register Page for ZH-Love Gaming Community
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="إنشاء حساب جديد - ZH-Love Gaming Community">
+  <div class="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full space-y-8">
+      <div>
+        <div class="mx-auto h-16 w-16 bg-gradient-to-r from-green-600 to-green-700 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-2xl">ZH</span>
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
+          إنشاء حساب جديد
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-400">
+          انضم إلى مجتمع ZH-Love Gaming أو
+          <a href="/ar/login" class="font-medium text-green-600 hover:text-green-500">
+            سجل دخولك إذا كان لديك حساب
+          </a>
+        </p>
+      </div>
+      
+      <!-- Register Form -->
+      <form id="registerForm" class="mt-8 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Username Field -->
+          <div class="md:col-span-2">
+            <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+              اسم المستخدم *
+            </label>
+            <div class="relative">
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="اختر اسم المستخدم"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="md:col-span-2">
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+              البريد الإلكتروني *
+            </label>
+            <div class="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="ادخل بريدك الإلكتروني"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- First Name -->
+          <div>
+            <label for="firstName" class="block text-sm font-medium text-gray-300 mb-2">
+              الاسم الأول *
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              required
+              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                focus:border-transparent"
+              placeholder="الاسم الأول"
+            />
+          </div>
+
+          <!-- Last Name -->
+          <div>
+            <label for="lastName" class="block text-sm font-medium text-gray-300 mb-2">
+              الاسم الأخير *
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              required
+              class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                focus:border-transparent"
+              placeholder="الاسم الأخير"
+            />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+              كلمة المرور *
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="كلمة المرور"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute left-3 top-3.5 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <svg id="eyeClosed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-300 mb-2">
+              تأكيد كلمة المرور *
+            </label>
+            <div class="relative">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="تأكيد كلمة المرور"
+              />
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+              <button
+                type="button"
+                id="toggleConfirmPassword"
+                class="absolute left-3 top-3.5 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg id="eyeOpenConfirm" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                <svg id="eyeClosedConfirm" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+              </button>
+            </div>
+            <div id="passwordMatch" class="mt-1 text-sm hidden"></div>
+          </div>
+
+          <!-- Country -->
+          <div>
+            <label for="country" class="block text-sm font-medium text-gray-300 mb-2">
+              البلد
+            </label>
+            <div class="relative">
+              <select
+                id="country"
+                name="country"
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent pr-10"
+              >
+                <option value="">اختر البلد</option>
+                <option value="السعودية">السعودية</option>
+                <option value="الإمارات">الإمارات</option>
+                <option value="الكويت">الكويت</option>
+                <option value="قطر">قطر</option>
+                <option value="البحرين">البحرين</option>
+                <option value="عمان">عمان</option>
+                <option value="مصر">مصر</option>
+                <option value="الأردن">الأردن</option>
+                <option value="لبنان">لبنان</option>
+                <option value="سوريا">سوريا</option>
+                <option value="العراق">العراق</option>
+                <option value="فلسطين">فلسطين</option>
+                <option value="المغرب">المغرب</option>
+                <option value="الجزائر">الجزائر</option>
+                <option value="تونس">تونس</option>
+                <option value="ليبيا">ليبيا</option>
+                <option value="السودان">السودان</option>
+                <option value="اليمن">اليمن</option>
+              </select>
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Bio -->
+          <div class="md:col-span-2">
+            <label for="bio" class="block text-sm font-medium text-gray-300 mb-2">
+              نبذة شخصية
+            </label>
+            <div class="relative">
+              <textarea
+                id="bio"
+                name="bio"
+                rows="3"
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white 
+                  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 
+                  focus:border-transparent pr-10"
+                placeholder="أخبرنا عن نفسك وأسلوب لعبك..."
+              ></textarea>
+              <svg class="absolute right-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="md:col-span-2">
+            <div class="flex items-center">
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                required
+                class="rounded border-gray-600 text-green-600 focus:ring-green-500 
+                  focus:ring-offset-0 bg-gray-700"
+              />
+              <label for="acceptTerms" class="mr-2 text-sm text-gray-300">
+                أوافق على
+                <a href="#" class="text-green-400 hover:text-green-300">شروط الاستخدام</a>
+                و
+                <a href="#" class="text-green-400 hover:text-green-300">سياسة الخصوصية</a>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden p-3 bg-red-900/50 border border-red-500 rounded-lg">
+          <p class="text-red-300 text-sm"></p>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden p-3 bg-green-900/50 border border-green-500 rounded-lg">
+          <p class="text-green-300 text-sm"></p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="submitBtn"
+          class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 
+            hover:to-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all 
+            duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed 
+            disabled:transform-none shadow-lg hover:shadow-xl"
+        >
+          <div class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+            إنشاء الحساب
+          </div>
+        </button>
+
+        <!-- Switch to Login -->
+        <div class="text-center">
+          <p class="text-gray-400">
+            لديك حساب بالفعل؟
+            <a href="/ar/login" class="text-green-400 hover:text-green-300 font-medium transition-colors">
+              تسجيل الدخول
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordMatch = document.getElementById('passwordMatch');
+    
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      togglePasswordVisibility('password', 'eyeOpen', 'eyeClosed');
+    });
+    
+    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+      togglePasswordVisibility('confirmPassword', 'eyeOpenConfirm', 'eyeClosedConfirm');
+    });
+    
+    function togglePasswordVisibility(inputId, eyeOpenId, eyeClosedId) {
+      const input = document.getElementById(inputId);
+      const eyeOpen = document.getElementById(eyeOpenId);
+      const eyeClosed = document.getElementById(eyeClosedId);
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        eyeOpen.classList.add('hidden');
+        eyeClosed.classList.remove('hidden');
+      } else {
+        input.type = 'password';
+        eyeOpen.classList.remove('hidden');
+        eyeClosed.classList.add('hidden');
+      }
+    }
+
+    // Password confirmation check
+    function checkPasswordMatch() {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        passwordMatch.textContent = 'كلمات المرور غير متطابقة';
+        passwordMatch.className = 'mt-1 text-sm text-red-400';
+        passwordMatch.classList.remove('hidden');
+        return false;
+      } else if (confirmPassword && password === confirmPassword) {
+        passwordMatch.textContent = 'كلمات المرور متطابقة';
+        passwordMatch.className = 'mt-1 text-sm text-green-400';
+        passwordMatch.classList.remove('hidden');
+        return true;
+      } else {
+        passwordMatch.classList.add('hidden');
+        return true;
+      }
+    }
+
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    passwordInput.addEventListener('input', checkPasswordMatch);
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const data = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        country: formData.get('country') || undefined,
+        bio: formData.get('bio') || undefined,
+      };
+
+      // Validation
+      if (!data.username || !data.email || !data.password || !data.firstName || !data.lastName) {
+        showError('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+
+      if (data.password !== formData.get('confirmPassword')) {
+        showError('كلمات المرور غير متطابقة');
+        return;
+      }
+
+      if (data.password.length < 8) {
+        showError('كلمة المرور يجب أن تكون على الأقل 8 أحرف');
+        return;
+      }
+
+      if (!formData.get('acceptTerms')) {
+        showError('يجب الموافقة على شروط الاستخدام');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<div class="flex items-center justify-center"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>جاري إنشاء الحساب...</div>';
+        
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccess('تم إنشاء الحساب بنجاح! جاري تحويلك...');
+          localStorage.setItem('zh_love_token', result.data.token);
+          localStorage.setItem('zh_love_user', JSON.stringify(result.data.user));
+          
+          setTimeout(() => {
+            window.location.href = '/ar';
+          }, 2000);
+        } else {
+          showError(result.error || 'فشل في إنشاء الحساب');
+        }
+      } catch (error) {
+        showError('حدث خطأ في الاتصال');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<div class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>إنشاء الحساب</div>';
+      }
+    });
+
+    function showError(message) {
+      errorMessage.classList.remove('hidden');
+      successMessage.classList.add('hidden');
+      errorMessage.querySelector('p').textContent = message;
+      setTimeout(() => {
+        errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    function showSuccess(message) {
+      successMessage.classList.remove('hidden');
+      errorMessage.classList.add('hidden');
+      successMessage.querySelector('p').textContent = message;
+    }
+
+    // Check if already logged in
+    const token = localStorage.getItem('zh_love_token');
+    if (token) {
+      window.location.href = '/ar';
+    }
+  });
+</script> 

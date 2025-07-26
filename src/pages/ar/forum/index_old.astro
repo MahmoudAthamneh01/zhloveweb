@@ -1,0 +1,788 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ForumPost from '../../../components/forum/ForumPost.tsx';
+import { 
+  MessageCircle, 
+  Plus, 
+  Search, 
+  Filter, 
+  Pin, 
+  Star, 
+  TrendingUp, 
+  Clock, 
+  Eye, 
+  Users, 
+  Award,
+  Flame,
+  Target,
+  Calendar,
+  BookOpen,
+  HelpCircle,
+  Gamepad2,
+  Trophy,
+  Zap,
+  Compass
+} from 'lucide-react';
+
+const title = "المنتدى - زد اتش لوف";
+const description = "انضم لمجتمع لاعبي الجنرالات زيرو آور وشارك في النقاشات";
+
+// Mock forum data
+const forumStats = {
+  totalPosts: 12450,
+  totalTopics: 3820,
+  totalMembers: 8960,
+  onlineMembers: 156,
+  todaysPosts: 89
+};
+
+const categories = [
+  {
+    id: 1,
+    name: "النقاشات العامة",
+    slug: "general",
+    description: "نقاشات عامة حول اللعبة والمجتمع",
+    color: "#4F9CF9",
+    icon: "💬",
+    topicsCount: 850,
+    postsCount: 4200,
+    lastPost: {
+      title: "أفضل استراتيجيات للمبتدئين",
+      author: "جنرال الصحراء",
+      timestamp: "2024-02-17T20:30:00Z"
+    }
+  },
+  {
+    id: 2,
+    name: "الاستراتيجيات والتكتيكات",
+    slug: "strategies",
+    description: "شارك استراتيجياتك وتعلم من الخبراء",
+    color: "#06D6A0",
+    icon: "🎯",
+    topicsCount: 920,
+    postsCount: 5680,
+    lastPost: {
+      title: "تكتيكات جديدة مع الـ GLA",
+      author: "سيد الحرب",
+      timestamp: "2024-02-17T19:15:00Z"
+    }
+  },
+  {
+    id: 3,
+    name: "البطولات والتحديات",
+    slug: "tournaments",
+    description: "أخبار البطولات والمنافسات",
+    color: "#FFD166",
+    icon: "🏆",
+    topicsCount: 320,
+    postsCount: 1890,
+    lastPost: {
+      title: "بطولة الشرق الأوسط - التسجيل مفتوح",
+      author: "إدارة البطولات",
+      timestamp: "2024-02-17T18:45:00Z"
+    }
+  },
+  {
+    id: 4,
+    name: "المودز والخرائط",
+    slug: "mods-maps",
+    description: "تحميل ومشاركة المودز والخرائط",
+    color: "#F72585",
+    icon: "🗺️",
+    topicsCount: 450,
+    postsCount: 2300,
+    lastPost: {
+      title: "خريطة جديدة: الصحراء المحرقة",
+      author: "صانع الخرائط",
+      timestamp: "2024-02-17T17:20:00Z"
+    }
+  },
+  {
+    id: 5,
+    name: "الدعم التقني",
+    slug: "support",
+    description: "مساعدة في حل المشاكل التقنية",
+    color: "#FF6B6B",
+    icon: "🔧",
+    topicsCount: 680,
+    postsCount: 3200,
+    lastPost: {
+      title: "مشكلة في الاتصال المتعدد",
+      author: "لاعب جديد",
+      timestamp: "2024-02-17T16:30:00Z"
+    }
+  }
+];
+
+const featuredPosts = [
+  {
+    id: 1,
+    title: "الدليل الشامل للعب مع الولايات المتحدة في 2024",
+    content: "دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة...",
+    excerpt: "دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة للوصول لأعلى المستويات التنافسية",
+    author: {
+      id: 1,
+      username: "usa_master",
+      displayName: "سيد أمريكا",
+      avatar: "/avatars/usa_master.png",
+      badge: "expert",
+      level: 45,
+      reputation: 2850,
+      verified: true,
+      isOnline: true,
+      postCount: 1250,
+      joinedAt: "2023-01-15T00:00:00Z"
+    },
+    category: {
+      id: 2,
+      name: "الاستراتيجيات والتكتيكات",
+      slug: "strategies",
+      color: "#06D6A0"
+    },
+    tags: [
+      { id: 1, name: "أمريكا", color: "#4F9CF9" },
+      { id: 2, name: "استراتيجية", color: "#06D6A0" },
+      { id: 3, name: "متقدم", color: "#FFD166" }
+    ],
+    createdAt: "2024-02-17T14:30:00Z",
+    updatedAt: "2024-02-17T14:30:00Z",
+    stats: {
+      views: 3420,
+      likes: 189,
+      dislikes: 12,
+      comments: 67,
+      shares: 34,
+      bookmarks: 156
+    },
+    status: "published",
+    type: "guide",
+    priority: "featured",
+    difficulty: "advanced",
+    gameRelated: {
+      faction: "usa",
+      gameMode: "1v1"
+    },
+    hasAnswered: false,
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  },
+  {
+    id: 2,
+    title: "بطولة الشرق الأوسط الكبرى - جميع التفاصيل والجوائز",
+    content: "إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار...",
+    excerpt: "إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار والتسجيل مفتوح الآن",
+    author: {
+      id: 2,
+      username: "tournament_admin",
+      displayName: "إدارة البطولات",
+      avatar: "/avatars/tournament_admin.png",
+      badge: "moderator",
+      level: 50,
+      reputation: 5000,
+      verified: true,
+      isOnline: false,
+      postCount: 890,
+      joinedAt: "2023-01-01T00:00:00Z"
+    },
+    category: {
+      id: 3,
+      name: "البطولات والتحديات",
+      slug: "tournaments",
+      color: "#FFD166"
+    },
+    tags: [
+      { id: 4, name: "بطولة", color: "#FFD166" },
+      { id: 5, name: "جوائز", color: "#F72585" },
+      { id: 6, name: "تسجيل", color: "#06D6A0" }
+    ],
+    createdAt: "2024-02-17T12:00:00Z",
+    updatedAt: "2024-02-17T12:00:00Z",
+    stats: {
+      views: 5680,
+      likes: 267,
+      dislikes: 8,
+      comments: 134,
+      shares: 89,
+      bookmarks: 234
+    },
+    status: "published",
+    type: "news",
+    priority: "pinned",
+    hasAnswered: false,
+    isLiked: true,
+    isBookmarked: true,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  }
+];
+
+const recentPosts = [
+  {
+    id: 3,
+    title: "كيف أتعامل مع هجمات الطائرات المبكرة؟",
+    content: "أواجه صعوبة في التعامل مع الهجمات الجوية المبكرة، خاصة مع أمريكا...",
+    excerpt: "أواجه صعوبة في التعامل مع الهجمات الجوية المبكرة، خاصة مع أمريكا. ما هي أفضل الطرق للدفاع؟",
+    author: {
+      id: 3,
+      username: "newbie_general",
+      displayName: "جنرال مبتدئ",
+      avatar: "/avatars/newbie_general.png",
+      level: 8,
+      reputation: 120,
+      verified: false,
+      isOnline: true,
+      postCount: 45,
+      joinedAt: "2024-01-20T00:00:00Z"
+    },
+    category: {
+      id: 2,
+      name: "الاستراتيجيات والتكتيكات",
+      slug: "strategies",
+      color: "#06D6A0"
+    },
+    tags: [
+      { id: 7, name: "مبتدئ", color: "#06D6A0" },
+      { id: 8, name: "دفاع", color: "#4F9CF9" },
+      { id: 9, name: "طيران", color: "#FFD166" }
+    ],
+    createdAt: "2024-02-17T20:15:00Z",
+    updatedAt: "2024-02-17T20:15:00Z",
+    stats: {
+      views: 89,
+      likes: 12,
+      dislikes: 1,
+      comments: 8,
+      shares: 2,
+      bookmarks: 5
+    },
+    status: "published",
+    type: "question",
+    priority: "normal",
+    difficulty: "beginner",
+    gameRelated: {
+      faction: "usa",
+      gameMode: "1v1"
+    },
+    hasAnswered: false,
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  },
+  {
+    id: 4,
+    title: "مشاكل في الاتصال المتعدد - حلول مقترحة",
+    content: "جمعت هنا أهم الحلول لمشاكل الاتصال الشائعة في اللعب المتعدد...",
+    excerpt: "جمعت هنا أهم الحلول لمشاكل الاتصال الشائعة في اللعب المتعدد بناءً على تجربتي الطويلة",
+    author: {
+      id: 4,
+      username: "tech_support",
+      displayName: "الدعم التقني",
+      avatar: "/avatars/tech_support.png",
+      badge: "expert",
+      level: 38,
+      reputation: 1890,
+      verified: true,
+      isOnline: false,
+      postCount: 567,
+      joinedAt: "2023-03-10T00:00:00Z"
+    },
+    category: {
+      id: 5,
+      name: "الدعم التقني",
+      slug: "support",
+      color: "#FF6B6B"
+    },
+    tags: [
+      { id: 10, name: "اتصال", color: "#FF6B6B" },
+      { id: 11, name: "حلول", color: "#06D6A0" },
+      { id: 12, name: "متعدد", color: "#4F9CF9" }
+    ],
+    createdAt: "2024-02-17T19:45:00Z",
+    updatedAt: "2024-02-17T19:45:00Z",
+    stats: {
+      views: 234,
+      likes: 45,
+      dislikes: 3,
+      comments: 23,
+      shares: 12,
+      bookmarks: 34
+    },
+    status: "published",
+    type: "guide",
+    priority: "normal",
+    difficulty: "intermediate",
+    hasAnswered: true,
+    bestAnswer: {
+      commentId: 15,
+      authorId: 4
+    },
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  }
+];
+
+const quickActions = [
+  { id: "new-post", name: "منشور جديد", icon: Plus, color: "bg-tactical-green" },
+  { id: "ask-question", name: "اسأل سؤال", icon: HelpCircle, color: "bg-command-blue" },
+  { id: "share-strategy", name: "شارك استراتيجية", icon: Target, color: "bg-victory-gold" },
+  { id: "upload-replay", name: "ارفع ريبلاي", icon: Gamepad2, color: "bg-purple-500" }
+];
+
+const topContributors = [
+  {
+    id: 1,
+    username: "master_strategist",
+    displayName: "سيد الاستراتيجية",
+    avatar: "/avatars/master_strategist.png",
+    badge: "expert",
+    postsThisWeek: 23,
+    reputation: 4500,
+    verified: true
+  },
+  {
+    id: 2,
+    username: "tournament_king",
+    displayName: "ملك البطولات",
+    avatar: "/avatars/tournament_king.png",
+    badge: "vip",
+    postsThisWeek: 18,
+    reputation: 3890,
+    verified: true
+  },
+  {
+    id: 3,
+    username: "helpful_guide",
+    displayName: "المرشد المفيد",
+    avatar: "/avatars/helpful_guide.png",
+    badge: "veteran",
+    postsThisWeek: 15,
+    reputation: 3200,
+    verified: false
+  }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <MessageCircle size={32} class="text-command-blue" />
+          <span>المنتدى</span>
+        </h1>
+        <p class="text-muted-foreground">انضم لمجتمع لاعبي الجنرالات زيرو آور وشارك في النقاشات</p>
+      </div>
+      <a href="/ar/forum/new" class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+        <Plus size={20} />
+        <span>منشور جديد</span>
+      </a>
+    </div>
+
+    <!-- Forum Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">{forumStats.totalPosts.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">إجمالي المنشورات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">{forumStats.totalTopics.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">الموضوعات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">{forumStats.totalMembers.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">الأعضاء</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">{forumStats.onlineMembers}</div>
+        <div class="text-sm text-muted-foreground">متصل الآن</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-purple-500 mb-1">{forumStats.todaysPosts}</div>
+        <div class="text-sm text-muted-foreground">منشورات اليوم</div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="ابحث في المنتدى..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <Filter size={20} class="text-muted-foreground" />
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الفئات</option>
+            {categories.map(cat => (
+              <option value={cat.slug}>{cat.name}</option>
+            ))}
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأنواع</option>
+            <option value="discussion">مناقشة</option>
+            <option value="question">سؤال</option>
+            <option value="guide">دليل</option>
+            <option value="news">أخبار</option>
+            <option value="poll">استطلاع</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="recent">الأحدث</option>
+            <option value="popular">الأكثر شعبية</option>
+            <option value="trending">الأكثر تفاعلاً</option>
+            <option value="answered">تم الرد عليها</option>
+            <option value="unanswered">بدون رد</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {quickActions.map((action) => (
+        <a 
+          key={action.id}
+          href={`/ar/forum/new?type=${action.id}`} 
+          class="military-card p-4 text-center hover:shadow-lg transition-all duration-300 group"
+        >
+          <div class={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+            <action.icon size={24} class="text-white" />
+          </div>
+          <div class="font-medium text-foreground text-sm">{action.name}</div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Forum Content -->
+      <div class="lg:col-span-3 space-y-8">
+        <!-- Categories Overview -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Compass size={24} class="text-primary" />
+            <span>فئات المنتدى</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {categories.map(category => (
+              <a 
+                key={category.id}
+                href={`/ar/forum/category/${category.slug}`}
+                class="military-card p-6 hover:shadow-lg transition-all duration-300 group"
+              >
+                <div class="flex items-start space-x-4 rtl:space-x-reverse">
+                  <div 
+                    class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"
+                    style={`background-color: ${category.color}20`}
+                  >
+                    {category.icon}
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-foreground group-hover:text-primary transition-colors mb-1">
+                      {category.name}
+                    </h3>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {category.description}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-xs text-muted-foreground">
+                      <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <span>{category.topicsCount} موضوع</span>
+                        <span>{category.postsCount} منشور</span>
+                      </div>
+                      
+                      {category.lastPost && (
+                        <div class="text-right rtl:text-left">
+                          <div class="font-medium text-foreground text-sm truncate max-w-24">
+                            {category.lastPost.title}
+                          </div>
+                          <div class="text-xs">
+                            بواسطة {category.lastPost.author}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- Featured Posts -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Star size={24} class="text-victory-gold" />
+            <span>المنشورات المميزة</span>
+          </h2>
+          
+          <div class="space-y-6">
+            {featuredPosts.map(post => (
+              <ForumPost 
+                key={post.id}
+                post={post}
+                onLike={(id) => console.log('Like post:', id)}
+                onComment={(id) => window.location.href = `/ar/forum/post/${id}#comments`}
+                onShare={(id) => console.log('Share post:', id)}
+                onBookmark={(id) => console.log('Bookmark post:', id)}
+                onReport={(id) => console.log('Report post:', id)}
+                onView={(id) => window.location.href = `/ar/forum/post/${id}`}
+                showActions={true}
+                isCompact={false}
+                currentUserId={1}
+                client:load
+              />
+            ))}
+          </div>
+        </section>
+
+        <!-- Recent Posts -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Clock size={24} class="text-tactical-green" />
+            <span>أحدث المنشورات</span>
+          </h2>
+          
+          <div class="space-y-4">
+            {recentPosts.map(post => (
+              <ForumPost 
+                key={post.id}
+                post={post}
+                onLike={(id) => console.log('Like post:', id)}
+                onComment={(id) => window.location.href = `/ar/forum/post/${id}#comments`}
+                onShare={(id) => console.log('Share post:', id)}
+                onBookmark={(id) => console.log('Bookmark post:', id)}
+                onReport={(id) => console.log('Report post:', id)}
+                onView={(id) => window.location.href = `/ar/forum/post/${id}`}
+                showActions={true}
+                isCompact={true}
+                currentUserId={1}
+                client:load
+              />
+            ))}
+          </div>
+          
+          <div class="text-center mt-6">
+            <a href="/ar/forum/recent" class="btn btn-outline">
+              عرض المزيد من المنشورات
+            </a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Top Contributors -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Award size={20} class="text-victory-gold" />
+            <span>أفضل المساهمين</span>
+          </h3>
+          
+          <div class="space-y-4">
+            {topContributors.map((contributor, index) => (
+              <div key={contributor.id} class="flex items-center space-x-3 rtl:space-x-reverse">
+                <div class="relative">
+                  <img 
+                    src={contributor.avatar} 
+                    alt={contributor.displayName}
+                    class="w-10 h-10 rounded-full"
+                  />
+                  <div class={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                    index === 0 ? 'bg-victory-gold' : 
+                    index === 1 ? 'bg-neutral-silver' : 
+                    'bg-amber-600'
+                  }`}>
+                    {index + 1}
+                  </div>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="font-medium text-foreground text-sm truncate">
+                      {contributor.displayName}
+                    </span>
+                    {contributor.verified && (
+                      <Star size={12} class="text-tactical-green" />
+                    )}
+                  </div>
+                  <div class="text-xs text-muted-foreground">
+                    {contributor.postsThisWeek} منشور • {contributor.reputation} نقطة
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Trending Topics -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <TrendingUp size={20} class="text-orange-500" />
+            <span>الموضوعات الرائجة</span>
+          </h3>
+          
+          <div class="space-y-3">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Flame size={16} class="text-orange-500" />
+              <a href="/ar/forum/topic/hot" class="text-sm text-foreground hover:text-primary transition-colors">
+                أفضل تحديث للعبة هذا العام
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Zap size={16} class="text-victory-gold" />
+              <a href="/ar/forum/topic/trending" class="text-sm text-foreground hover:text-primary transition-colors">
+                استراتيجيات الصين الجديدة
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Trophy size={16} class="text-tactical-green" />
+              <a href="/ar/forum/topic/tournament" class="text-sm text-foreground hover:text-primary transition-colors">
+                بطولة الشرق الأوسط 2024
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Target size={16} class="text-command-blue" />
+              <a href="/ar/forum/topic/strategy" class="text-sm text-foreground hover:text-primary transition-colors">
+                تكتيكات الدفاع المتقدمة
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forum Rules -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <BookOpen size={20} class="text-command-blue" />
+            <span>قوانين المنتدى</span>
+          </h3>
+          
+          <div class="space-y-2 text-sm text-muted-foreground">
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>احترم الأعضاء الآخرين</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>لا تنشر محتوى مسيء</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>استخدم الفئات المناسبة</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>لا تنشر إعلانات غير مرخصة</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>تأكد من دقة المعلومات</span>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <a href="/ar/forum/rules" class="text-sm text-primary hover:underline">
+              اقرأ القوانين الكاملة
+            </a>
+          </div>
+        </div>
+
+        <!-- Online Members -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Users size={20} class="text-tactical-green" />
+            <span>متصل الآن ({forumStats.onlineMembers})</span>
+          </h3>
+          
+          <div class="flex flex-wrap gap-2">
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">سيد الاستراتيجية</span>
+            </div>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">جنرال الصحراء</span>
+            </div>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">ملك البطولات</span>
+            </div>
+            <span class="text-xs text-muted-foreground">و {forumStats.onlineMembers - 3} آخرين</span>
+          </div>
+        </div>
+
+        <!-- Latest Activity -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Clock size={20} class="text-orange-500" />
+            <span>آخر الأنشطة</span>
+          </h3>
+          
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">أحمد</span> رد على 
+                <span class="text-primary">استراتيجيات الدفاع</span>
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-command-blue rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">سارة</span> أنشأت موضوع 
+                <span class="text-primary">مودز جديدة</span>
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-victory-gold rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">محمد</span> أعجب بـ 
+                <span class="text-primary">دليل المبتدئين</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 

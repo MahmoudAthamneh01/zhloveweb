@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClanMessaging from '../../components/clans/ClanMessaging.tsx';
+import { Shield, MessageCircle, ArrowLeft } from 'lucide-react';
+
+const title = "رسائل العشيرة - زد اتش لوف";
+const description = "تواصل مع أعضاء عشيرتك";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Navigation -->
+    <div class="mb-6">
+      <nav class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+        <a href="/ar" class="hover:text-foreground transition-colors">الرئيسية</a>
+        <span>/</span>
+        <a href="/ar/messages" class="hover:text-foreground transition-colors">الرسائل</a>
+        <span>/</span>
+        <span class="text-foreground">رسائل العشيرة</span>
+      </nav>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a 
+        href="/ar/messages" 
+        class="inline-flex items-center space-x-2 rtl:space-x-reverse text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft size={20} class="rtl:rotate-180" />
+        <span>العودة للرسائل</span>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+        <Shield size={32} class="text-tactical-green" />
+        <span>رسائل العشيرة</span>
+      </h1>
+      <p class="text-muted-foreground">تواصل مع أعضاء عشيرتك وتابع آخر الأخبار</p>
+    </div>
+
+    <!-- Clan Status Check -->
+    <div id="clan-status-check">
+      <!-- Loading State -->
+      <div id="loading-state" class="text-center py-12">
+        <div class="animate-spin w-12 h-12 border-4 border-tactical-green border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p class="text-muted-foreground">جاري التحقق من عضوية العشيرة...</p>
+      </div>
+
+      <!-- No Clan State -->
+      <div id="no-clan-state" class="hidden text-center py-12">
+        <Shield size={64} class="mx-auto text-muted-foreground mb-4 opacity-50" />
+        <h2 class="text-2xl font-bold text-foreground mb-2">لست عضواً في أي عشيرة</h2>
+        <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+          انضم إلى إحدى العشائر للوصول إلى نظام رسائل العشيرة
+        </p>
+        <div class="flex items-center justify-center space-x-4 rtl:space-x-reverse">
+          <a href="/ar/clans" class="btn btn-primary">تصفح العشائر</a>
+          <a href="/ar/clans/create" class="btn btn-outline">إنشاء عشيرة</a>
+        </div>
+      </div>
+
+      <!-- Clan Messages Content -->
+      <div id="clan-messages-content" class="hidden">
+        <!-- Clan Info Header -->
+        <div id="clan-info" class="military-card p-4 mb-6">
+          <!-- Will be populated dynamically -->
+        </div>
+
+        <!-- Messaging Component -->
+        <ClanMessaging 
+          clanId={1}
+          currentUserId={1}
+          currentUserRole="member"
+          client:load
+        />
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    checkUserClanMembership();
+  });
+
+  function checkUserClanMembership() {
+    try {
+      // Get current user
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      if (!currentUser.id) {
+        // Create temporary user for development
+        const tempUser = {
+          id: 1,
+          username: 'test_user',
+          email: 'test@example.com',
+          name: 'مستخدم تجريبي'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(tempUser));
+        currentUser.id = tempUser.id;
+        currentUser.username = tempUser.username;
+      }
+
+      // Check for existing clans
+      let approvedClans = JSON.parse(localStorage.getItem('approvedClans') || '[]');
+      
+      // Create mock clan if none exists
+      if (approvedClans.length === 0) {
+        const mockClan = {
+          id: 1,
+          name: 'نسور الشرق',
+          tag: 'EAST',
+          description: 'عشيرة نخبة للاعبين المحترفين في الشرق الأوسط',
+          ownerId: currentUser.id,
+          members: [
+            {
+              id: currentUser.id,
+              username: currentUser.username || 'مستخدم تجريبي',
+              role: 'leader',
+              joinedAt: new Date().toISOString()
+            }
+          ],
+          level: 45,
+          totalMembers: 1,
+          createdAt: new Date().toISOString()
+        };
+        
+        approvedClans.push(mockClan);
+        localStorage.setItem('approvedClans', JSON.stringify(approvedClans));
+        
+        showClanMessages(mockClan, 'leader');
+        return;
+      }
+
+      // Find user's clan
+      const userClan = approvedClans.find(clan => 
+        clan.members && clan.members.some(member => member.id === currentUser.id)
+      );
+
+      if (userClan) {
+        const userMember = userClan.members.find(member => member.id === currentUser.id);
+        showClanMessages(userClan, userMember.role || 'member');
+      } else {
+        showNoClan();
+      }
+      
+    } catch (error) {
+      console.error('Error checking clan membership:', error);
+      showNoClan('حدث خطأ في التحقق من العشيرة');
+    }
+  }
+
+  function showClanMessages(clan, userRole) {
+    // Hide loading and no-clan states
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('no-clan-state').classList.add('hidden');
+    
+    // Show clan messages content
+    document.getElementById('clan-messages-content').classList.remove('hidden');
+    
+    // Update clan info
+    const clanInfo = document.getElementById('clan-info');
+    clanInfo.innerHTML = `
+      <div class="flex items-center space-x-4 rtl:space-x-reverse">
+        <div class="w-12 h-12 bg-tactical-green/20 rounded-lg flex items-center justify-center">
+          <Shield class="text-tactical-green" size={24} />
+        </div>
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-foreground">[${clan.tag}] ${clan.name}</h3>
+          <p class="text-sm text-muted-foreground">${clan.description}</p>
+          <div class="flex items-center space-x-2 rtl:space-x-reverse mt-2">
+            <span class="text-xs bg-tactical-green/20 text-tactical-green px-2 py-1 rounded">دورك: ${getRoleText(userRole)}</span>
+            <span class="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">الأعضاء: ${clan.members?.length || 0}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Update page title
+    document.title = `رسائل [${clan.tag}] ${clan.name} - زد اتش لوف`;
+  }
+
+  function showNoClan(message = null) {
+    document.getElementById('loading-state').classList.add('hidden');
+    document.getElementById('clan-messages-content').classList.add('hidden');
+    document.getElementById('no-clan-state').classList.remove('hidden');
+    
+    if (message) {
+      const p = document.querySelector('#no-clan-state p');
+      if (p) p.textContent = message;
+    }
+  }
+
+  function getRoleText(role) {
+    switch (role) {
+      case 'leader': return 'قائد';
+      case 'officer': return 'ضابط';
+      case 'member': return 'عضو';
+      default: return role;
+    }
+  }
+</script> 

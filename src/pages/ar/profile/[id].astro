@@ -1,0 +1,299 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ProfileStats from '../../../components/profile/ProfileStats';
+import ChallengeModal from '../../../components/profile/ChallengeModal';
+---
+
+<BaseLayout 
+  title="الملف الشخصي - ZH-Love"
+  description="ملف شخصي للاعب في مجتمع ZH-Love"
+>
+  <div class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Profile Header -->
+      <div class="bg-card border border-border rounded-lg p-8 mb-8">
+        <div class="flex flex-col lg:flex-row items-center lg:items-start space-y-6 lg:space-y-0 lg:space-x-8 rtl:lg:space-x-reverse">
+          <!-- Avatar -->
+          <div class="relative">
+            <div id="profile-avatar" class="w-32 h-32 bg-gradient-to-r from-green-600 to-green-700 rounded-full flex items-center justify-center">
+              <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            <!-- Online Status -->
+            <div class="absolute -bottom-2 -right-2">
+              <div id="online-status" class="w-8 h-8 bg-green-500 rounded-full border-4 border-card flex items-center justify-center">
+                <div class="w-3 h-3 bg-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Info -->
+          <div class="flex-1 text-center lg:text-right">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+              <div>
+                <h1 id="profile-username" class="text-3xl font-bold text-white mb-2">جاري التحميل...</h1>
+                <p id="profile-email" class="text-gray-400 mb-2">جاري التحميل...</p>
+                <div class="flex items-center justify-center lg:justify-start space-x-4 rtl:space-x-reverse">
+                  <span id="profile-level" class="px-3 py-1 bg-yellow-600 text-white text-sm rounded-full">
+                    المستوى: --
+                  </span>
+                  <span id="profile-rank" class="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">
+                    الرتبة: --
+                  </span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div id="profile-actions" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 rtl:sm:space-x-reverse mt-4 lg:mt-0">
+                <!-- Challenge Button -->
+                <button 
+                  id="challenge-btn"
+                  class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 rtl:space-x-reverse"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                  <span>تحدي</span>
+                </button>
+
+                <!-- Message Button -->
+                <button 
+                  id="message-btn"
+                  class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 rtl:space-x-reverse"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                  </svg>
+                  <span>رسالة</span>
+                </button>
+
+                <!-- Add Friend Button -->
+                <button 
+                  id="add-friend-btn"
+                  class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 rtl:space-x-reverse"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                  </svg>
+                  <span>إضافة صديق</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="bg-gray-800 rounded-lg p-4 mb-4">
+              <h3 class="text-lg font-semibold text-white mb-2">نبذة شخصية</h3>
+              <p id="profile-bio" class="text-gray-300 leading-relaxed">
+                جاري التحميل...
+              </p>
+            </div>
+
+            <!-- Join Date & Activity -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-400">
+              <p>
+                انضم في: <span id="join-date" class="text-white">--</span>
+              </p>
+              <p>
+                آخر نشاط: <span id="last-activity" class="text-white">--</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Stats -->
+      <ProfileStats client:load />
+
+      <!-- Recent Activity -->
+      <div class="bg-card border border-border rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-white mb-6">النشاط الأخير</h2>
+        <div id="recent-activity" class="space-y-4">
+          <div class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Challenge Modal -->
+  <ChallengeModal client:load />
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileId = window.location.pathname.split('/').pop();
+      let currentUser = null;
+      let profileUser = null;
+
+      // Get current user
+      const userData = localStorage.getItem('zh_love_user');
+      if (userData) {
+        currentUser = JSON.parse(userData);
+      }
+
+      // Load profile data
+      loadProfile(profileId);
+
+      async function loadProfile(userId) {
+        try {
+          const token = localStorage.getItem('zh_love_token');
+          const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            profileUser = data.user;
+            displayProfile(profileUser);
+            loadRecentActivity(userId);
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error);
+        }
+      }
+
+      function displayProfile(user) {
+        document.getElementById('profile-username').textContent = user.username;
+        document.getElementById('profile-email').textContent = user.email;
+        document.getElementById('profile-level').textContent = `المستوى: ${user.level || 1}`;
+        document.getElementById('profile-rank').textContent = `الرتبة: ${user.rank || 'مبتدئ'}`;
+        document.getElementById('profile-bio').textContent = user.bio || 'لم يضف المستخدم نبذة شخصية بعد.';
+        document.getElementById('join-date').textContent = new Date(user.createdAt).toLocaleDateString('ar-SA');
+        document.getElementById('last-activity').textContent = user.lastActivity ? 
+          formatRelativeTime(user.lastActivity) : 'غير متاح';
+
+        // Set avatar if available
+        if (user.avatar) {
+          document.getElementById('profile-avatar').innerHTML = 
+            `<img src="${user.avatar}" alt="${user.username}" class="w-32 h-32 rounded-full object-cover">`;
+        }
+
+        // Set online status
+        const onlineStatus = document.getElementById('online-status');
+        if (user.isOnline) {
+          onlineStatus.className = 'absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-card';
+        } else {
+          onlineStatus.className = 'absolute -bottom-2 -right-2 w-8 h-8 bg-gray-500 rounded-full border-4 border-card';
+        }
+
+        // Hide action buttons if viewing own profile
+        if (currentUser && currentUser.id === user.id) {
+          document.getElementById('profile-actions').style.display = 'none';
+        }
+      }
+
+      async function loadRecentActivity(userId) {
+        try {
+          const token = localStorage.getItem('zh_love_token');
+          const response = await fetch(`http://localhost:8080/api/users/${userId}/activity`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            displayRecentActivity(data.activities || []);
+          }
+        } catch (error) {
+          console.error('Error loading recent activity:', error);
+          displayRecentActivity([]);
+        }
+      }
+
+      function displayRecentActivity(activities) {
+        const container = document.getElementById('recent-activity');
+        
+        if (activities.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-8">
+              <p class="text-gray-400">لا توجد أنشطة حديثة</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = activities.map(activity => `
+          <div class="flex items-start space-x-4 rtl:space-x-reverse p-4 bg-gray-800 rounded-lg">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <p class="text-white font-medium">${activity.title}</p>
+              <p class="text-gray-400 text-sm">${activity.description}</p>
+              <p class="text-gray-500 text-xs mt-1">${formatRelativeTime(activity.createdAt)}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function formatRelativeTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = now.getTime() - date.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) {
+          return 'اليوم';
+        } else if (diffDays === 1) {
+          return 'أمس';
+        } else if (diffDays < 7) {
+          return `منذ ${diffDays} أيام`;
+        } else {
+          return date.toLocaleDateString('ar-SA');
+        }
+      }
+
+      // Event listeners
+      document.getElementById('challenge-btn')?.addEventListener('click', function() {
+        if (profileUser) {
+          window.dispatchEvent(new CustomEvent('openChallengeModal', { 
+            detail: { user: profileUser } 
+          }));
+        }
+      });
+
+      document.getElementById('message-btn')?.addEventListener('click', function() {
+        if (profileUser) {
+          window.location.href = `/ar/messages?user=${profileUser.id}`;
+        }
+      });
+
+      document.getElementById('add-friend-btn')?.addEventListener('click', async function() {
+        if (profileUser) {
+          try {
+            const token = localStorage.getItem('zh_love_token');
+            const response = await fetch('http://localhost:8080/api/friends/add', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userId: profileUser.id
+              })
+            });
+
+            if (response.ok) {
+              alert('تم إرسال طلب الصداقة بنجاح');
+              this.textContent = 'تم الإرسال';
+              this.disabled = true;
+            }
+          } catch (error) {
+            console.error('Error sending friend request:', error);
+            alert('حدث خطأ أثناء إرسال طلب الصداقة');
+          }
+        }
+      });
+    });
+  </script>
+</BaseLayout> 

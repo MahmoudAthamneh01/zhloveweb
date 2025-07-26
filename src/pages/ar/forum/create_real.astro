@@ -1,0 +1,424 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "إنشاء منشور جديد - المنتدى - زد اتش لوف";
+const description = "شارك خبراتك واستراتيجياتك مع مجتمع لاعبي الجنرالات زيرو آور";
+---
+
+<BaseLayout title={title}>
+  <main class="min-h-screen bg-background text-foreground">
+    <!-- Header -->
+    <header class="bg-card border-b border-border p-4">
+      <div class="container mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <a href="/ar/forum" class="text-tactical-green hover:text-tactical-green/80 transition-colors">
+            ← العودة للمنتدى
+          </a>
+          <h1 class="text-2xl font-bold">إنشاء منشور جديد</h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- Create Post Form -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <div class="bg-card rounded-lg border border-border p-6">
+        <form id="create-post-form" class="space-y-6">
+          <!-- Category Selection -->
+          <div>
+            <label for="category" class="block text-sm font-medium mb-2">الفئة</label>
+            <select 
+              id="category" 
+              name="category_id" 
+              required
+              class="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-tactical-green"
+            >
+              <option value="">اختر الفئة...</option>
+            </select>
+          </div>
+
+          <!-- Post Title -->
+          <div>
+            <label for="title" class="block text-sm font-medium mb-2">عنوان المنشور</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              required
+              maxlength="255"
+              placeholder="اكتب عنواناً واضحاً وجذاباً..."
+              class="w-full p-3 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-tactical-green"
+            />
+          </div>
+
+          <!-- Post Content -->
+          <div>
+            <label for="content" class="block text-sm font-medium mb-2">محتوى المنشور</label>
+            <div class="border border-border rounded-lg bg-background">
+              <!-- Text Editor Toolbar -->
+              <div class="flex items-center gap-2 p-3 border-b border-border bg-muted/30">
+                <button type="button" onclick="formatText('bold')" class="p-2 rounded hover:bg-muted transition-colors" title="عريض">
+                  <strong>B</strong>
+                </button>
+                <button type="button" onclick="formatText('italic')" class="p-2 rounded hover:bg-muted transition-colors" title="مائل">
+                  <em>I</em>
+                </button>
+                <button type="button" onclick="formatText('underline')" class="p-2 rounded hover:bg-muted transition-colors" title="تحته خط">
+                  <u>U</u>
+                </button>
+                <div class="w-px h-6 bg-border"></div>
+                <button type="button" onclick="formatText('insertUnorderedList')" class="p-2 rounded hover:bg-muted transition-colors" title="قائمة">
+                  • List
+                </button>
+                <button type="button" onclick="formatText('insertOrderedList')" class="p-2 rounded hover:bg-muted transition-colors" title="قائمة مرقمة">
+                  1. List
+                </button>
+                <div class="w-px h-6 bg-border"></div>
+                <button type="button" onclick="insertLink()" class="p-2 rounded hover:bg-muted transition-colors" title="رابط">
+                  🔗
+                </button>
+              </div>
+              
+              <div 
+                id="content-editor" 
+                contenteditable="true"
+                class="p-3 min-h-[200px] focus:outline-none"
+                placeholder="اكتب محتوى منشورك هنا..."
+                style="empty:before{content:attr(placeholder);color:#9ca3af;}"
+              ></div>
+              <textarea 
+                id="content" 
+                name="content" 
+                required
+                class="hidden"
+              ></textarea>
+            </div>
+            <div class="text-sm text-muted-foreground mt-2">
+              الحد الأدنى: 10 أحرف
+            </div>
+          </div>
+
+          <!-- Image Upload -->
+          <div>
+            <label for="images" class="block text-sm font-medium mb-2">الصور (اختياري)</label>
+            <div class="border-2 border-dashed border-border rounded-lg p-6 text-center">
+              <input 
+                type="file" 
+                id="images" 
+                name="images" 
+                multiple 
+                accept="image/*"
+                class="hidden"
+                onchange="handleImageUpload(this)"
+              />
+              <div id="upload-area" onclick="document.getElementById('images').click()" class="cursor-pointer">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                  <span class="text-xl">📷</span>
+                </div>
+                <p class="text-sm text-foreground mb-2">اضغط لاختيار الصور</p>
+                <p class="text-xs text-muted-foreground">PNG, JPG, GIF حتى 5MB لكل صورة</p>
+              </div>
+              
+              <!-- Image Preview -->
+              <div id="image-preview" class="hidden mt-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                <button 
+                  type="button" 
+                  onclick="clearImages()" 
+                  class="mt-4 px-4 py-2 text-sm text-red-600 hover:text-red-800 transition-colors"
+                >
+                  مسح جميع الصور
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Post Options -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="is_featured" name="is_featured" class="rounded">
+              <label for="is_featured" class="text-sm">منشور مميز</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="is_pinned" name="is_pinned" class="rounded">
+              <label for="is_pinned" class="text-sm">تثبيت المنشور</label>
+            </div>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="flex items-center gap-4 pt-4">
+            <button 
+              type="submit" 
+              class="px-6 py-3 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors font-medium"
+              id="submit-btn"
+            >
+              نشر الموضوع
+            </button>
+            <button 
+              type="button" 
+              class="px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors"
+              onclick="window.history.back()"
+            >
+              إلغاء
+            </button>
+            <div id="loading" class="hidden flex items-center gap-2 text-muted-foreground">
+              <div class="animate-spin w-4 h-4 border-2 border-tactical-green border-t-transparent rounded-full"></div>
+              جاري النشر...
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Guidelines -->
+      <div class="mt-8 bg-card rounded-lg border border-border p-6">
+        <h3 class="text-lg font-semibold mb-4">📋 إرشادات النشر</h3>
+        <ul class="space-y-2 text-sm text-muted-foreground">
+          <li>• اكتب عنواناً واضحاً يصف محتوى المنشور</li>
+          <li>• اختر الفئة المناسبة لموضوعك</li>
+          <li>• استخدم لغة محترمة ومهذبة</li>
+          <li>• تأكد من أن المحتوى مفيد ومتعلق باللعبة</li>
+          <li>• تجنب النشر المتكرر أو السبام</li>
+          <li>• احترم آراء الآخرين وشارك بصدق</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  textarea {
+    font-family: inherit;
+  }
+</style>
+
+<script>
+  let selectedImages = [];
+
+  // Text editor functions
+  function formatText(command) {
+    document.execCommand(command, false, null);
+    updateHiddenTextarea();
+  }
+
+  function insertLink() {
+    const url = prompt('أدخل رابط URL:');
+    if (url) {
+      document.execCommand('createLink', false, url);
+      updateHiddenTextarea();
+    }
+  }
+
+  function updateHiddenTextarea() {
+    const editor = document.getElementById('content-editor');
+    const textarea = document.getElementById('content');
+    textarea.value = editor.innerHTML;
+  }
+
+  // Image upload functions
+  function handleImageUpload(input) {
+    const files = Array.from(input.files);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        alert(`نوع الملف ${file.name} غير مدعوم`);
+        continue;
+      }
+      
+      if (file.size > maxSize) {
+        alert(`حجم الصورة ${file.name} كبير جداً (الحد الأقصى 5MB)`);
+        continue;
+      }
+      
+      selectedImages.push(file);
+    }
+    
+    displayImagePreviews();
+  }
+
+  function displayImagePreviews() {
+    const preview = document.getElementById('image-preview');
+    const grid = preview.querySelector('.grid');
+    const uploadArea = document.getElementById('upload-area');
+    
+    if (selectedImages.length > 0) {
+      uploadArea.style.display = 'none';
+      preview.classList.remove('hidden');
+      
+      grid.innerHTML = selectedImages.map((file, index) => {
+        const url = URL.createObjectURL(file);
+        return `
+          <div class="relative group">
+            <img src="${url}" alt="Preview" class="w-full h-24 object-cover rounded-lg border border-border">
+            <button 
+              type="button" 
+              onclick="removeImage(${index})" 
+              class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+            >
+              ×
+            </button>
+            <div class="text-xs text-muted-foreground mt-1 truncate">${file.name}</div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      uploadArea.style.display = 'block';
+      preview.classList.add('hidden');
+    }
+  }
+
+  function removeImage(index) {
+    selectedImages.splice(index, 1);
+    displayImagePreviews();
+  }
+
+  function clearImages() {
+    selectedImages = [];
+    displayImagePreviews();
+    document.getElementById('images').value = '';
+  }
+
+  // Load categories
+  async function loadCategories() {
+    try {
+      const response = await fetch('http://localhost:8000/forum_api.php?action=get_categories');
+      const data = await response.json();
+      
+      if (data.success) {
+        const categorySelect = document.getElementById('category');
+        categorySelect.innerHTML = '<option value="">اختر الفئة...</option>';
+        
+        data.categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.id;
+          option.textContent = category.name;
+          categorySelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  }
+
+  // Upload images to server
+  async function uploadImages() {
+    if (selectedImages.length === 0) return [];
+    
+    const formData = new FormData();
+    selectedImages.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
+    
+    try {
+      const response = await fetch('/backend/public/upload_images.php', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        return result.urls;
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      throw error;
+    }
+  }
+
+  // Handle form submission
+  document.getElementById('create-post-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Update content from editor
+    updateHiddenTextarea();
+    
+    const formData = new FormData(e.target);
+    const title = formData.get('title').trim();
+    const content = document.getElementById('content').value.trim();
+    const category_id = formData.get('category_id');
+    
+    // Validation
+    if (!title || title.length < 5) {
+      alert('يجب أن يكون العنوان 5 أحرف على الأقل');
+      return;
+    }
+    
+    if (!content || content.length < 10) {
+      alert('يجب أن يكون المحتوى 10 أحرف على الأقل');
+      return;
+    }
+    
+    if (!category_id) {
+      alert('يرجى اختيار فئة للمنشور');
+      return;
+    }
+    
+    // Get auth token
+    const token = localStorage.getItem('authToken') || 'test_token_123';
+    if (!token) {
+      alert('يجب تسجيل الدخول أولاً');
+      window.location.href = '/ar/login';
+      return;
+    }
+    
+    // Show loading
+    const submitBtn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+    submitBtn.style.display = 'none';
+    loading.classList.remove('hidden');
+    
+    try {
+      // Upload images first
+      let imageUrls = [];
+      if (selectedImages.length > 0) {
+        imageUrls = await uploadImages();
+      }
+      
+      const response = await fetch('/backend/public/forum_api.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'create_post',
+          title: title,
+          content: content,
+          category_id: parseInt(category_id),
+          images: imageUrls,
+          is_featured: formData.get('is_featured') ? 1 : 0,
+          is_pinned: formData.get('is_pinned') ? 1 : 0
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('تم نشر المنشور بنجاح!');
+        window.location.href = '/ar/forum';
+      } else {
+        alert(result.message || 'حدث خطأ أثناء النشر');
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('حدث خطأ في الاتصال');
+    } finally {
+      // Hide loading
+      submitBtn.style.display = 'block';
+      loading.classList.add('hidden');
+    }
+  });
+
+  // Update content when typing in editor
+  document.addEventListener('DOMContentLoaded', () => {
+    const editor = document.getElementById('content-editor');
+    editor.addEventListener('input', updateHiddenTextarea);
+    editor.addEventListener('paste', () => {
+      setTimeout(updateHiddenTextarea, 10);
+    });
+    
+    loadCategories();
+  });
+</script>

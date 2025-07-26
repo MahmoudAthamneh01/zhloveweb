@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation';
+import AuthForm from '../../components/AuthForm';
+---
+
+<BaseLayout 
+  title="Sign Up - ZH-Love"
+  description="Join ZH-Love platform and become part of the largest Generals Zero Hour community"
+>
+  <Navigation 
+    slot="header"
+    client:load
+    currentLang="en"
+    currentPath="/en/register"
+  />
+
+  <div class="min-h-screen bg-gradient-to-br from-background via-background to-gunmetal-gray flex items-center justify-center py-12 px-4">
+    <div class="max-w-md w-full">
+      <AuthForm 
+        client:load
+        mode="register"
+        language="en"
+        onSubmit={async (data) => {
+          const { useAuth } = await import('../../store/authStore');
+          const { register } = useAuth();
+          const success = await register(data);
+          if (success) {
+            window.showToast('Account created successfully! Welcome to ZH-Love', 'success');
+            window.location.href = '/en';
+          } else {
+            window.showToast('Registration failed. Please check your information and try again', 'error');
+          }
+        }}
+        isLoading={false}
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .gradient-bg {
+    background: linear-gradient(135deg, 
+      hsl(var(--background)) 0%, 
+      hsl(var(--muted)) 50%, 
+      hsl(var(--background)) 100%
+    );
+  }
+</style>
+
+<script>
+  // Initialize auth state
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { initializeAuth } = await import('../../store/authStore');
+    await initializeAuth();
+  });
+</script> 

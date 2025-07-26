@@ -1,0 +1,646 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { tournaments } from '../../../utils/tournamentsData.js';
+
+const title = "إدارة طلبات البطولات - لوحة التحكم";
+const description = "إدارة طلبات الانضمام للبطولات";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="min-h-screen bg-background py-8">
+    <div class="container mx-auto px-4">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <a href="/ar/admin" class="text-green-400 hover:text-green-300 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </a>
+          <h1 class="text-3xl font-bold text-white">إدارة طلبات البطولات</h1>
+        </div>
+        <p class="text-gray-400">مراجعة طلبات الانضمام للبطولات وإدارة المشاركين</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-card border border-border rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="mr-4">
+              <h3 class="text-lg font-semibold text-white">قيد المراجعة</h3>
+              <p class="text-2xl font-bold text-orange-400" id="pending-count">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div class="mr-4">
+              <h3 class="text-lg font-semibold text-white">موافق عليها</h3>
+              <p class="text-2xl font-bold text-green-400" id="approved-count">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </div>
+            <div class="mr-4">
+              <h3 class="text-lg font-semibold text-white">مرفوضة</h3>
+              <p class="text-2xl font-bold text-red-400" id="rejected-count">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-card border border-border rounded-lg p-6">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div class="mr-4">
+              <h3 class="text-lg font-semibold text-white">المجموع</h3>
+              <p class="text-2xl font-bold text-blue-400" id="total-count">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-card border border-border rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-white mb-4">تصفية الطلبات</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">البطولة</label>
+            <select id="tournament-filter" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none">
+              <option value="">جميع البطولات</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">الحالة</label>
+            <select id="status-filter" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none">
+              <option value="">جميع الحالات</option>
+              <option value="pending">قيد المراجعة</option>
+              <option value="approved">موافق عليها</option>
+              <option value="rejected">مرفوضة</option>
+              <option value="cancelled">ملغاة</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">نوع الطلب</label>
+            <select id="type-filter" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none">
+              <option value="">جميع الأنواع</option>
+              <option value="individual">فردي</option>
+              <option value="team">فريق</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">البحث</label>
+            <input type="text" id="search-filter" placeholder="ابحث بالاسم أو البريد الإلكتروني" class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-green-500 focus:outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="bg-card border border-border rounded-lg overflow-hidden">
+        <div class="p-6 border-b border-gray-700">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-white">طلبات الانضمام</h2>
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <button id="bulk-approve" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm">
+                موافقة جماعية
+              </button>
+              <button id="bulk-reject" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm">
+                رفض جماعي
+              </button>
+              <button id="export-applications" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm">
+                تصدير
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-800">
+              <tr>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <input type="checkbox" id="select-all" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                </th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">المشارك</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">البطولة</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">نوع الطلب</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">مستوى الخبرة</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">الحالة</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">تاريخ التقديم</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="applications-table-body" class="bg-gray-800 divide-y divide-gray-700">
+              <!-- Applications will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Application Details Modal -->
+      <div id="application-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-semibold text-white">تفاصيل الطلب</h3>
+              <button id="close-modal" class="text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div id="modal-content" class="p-6">
+            <!-- Modal content will be populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Modal -->
+      <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-card border border-border rounded-lg max-w-md w-full">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">تأكيد الإجراء</h3>
+            <p class="text-gray-400 mb-6" id="confirmation-message">هل أنت متأكد من هذا الإجراء؟</p>
+            <div class="flex justify-end space-x-3 rtl:space-x-reverse">
+              <button id="cancel-action" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                إلغاء
+              </button>
+              <button id="confirm-action" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                تأكيد
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ tournaments }}>
+    let applications = [];
+    let filteredApplications = [];
+    let selectedApplications = new Set();
+    let currentAction = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadApplications();
+      setupFilters();
+      setupEventListeners();
+    });
+
+    function loadApplications() {
+      // Load applications from localStorage (demo data)
+      const storedApplications = JSON.parse(localStorage.getItem('tournament_applications') || '[]');
+      
+      // Create sample applications if none exist
+      if (storedApplications.length === 0) {
+        applications = generateSampleApplications();
+        localStorage.setItem('tournament_applications', JSON.stringify(applications));
+      } else {
+        applications = storedApplications;
+      }
+
+      filteredApplications = [...applications];
+      populateTournamentFilter();
+      updateStats();
+      renderApplications();
+    }
+
+    function generateSampleApplications() {
+      const sampleApplications = [
+        {
+          id: 1,
+          tournamentId: 1,
+          tournamentName: 'بطولة الجنرالات الكبرى 2024',
+          userId: 101,
+          applicationType: 'individual',
+          gameName: 'ZH_Master_Pro',
+          experienceLevel: 'advanced',
+          teamName: null,
+          partnerName: null,
+          contactDiscord: 'ZH_Master_Pro#1234',
+          contactTelegram: '@zh_master_pro',
+          contactEmail: 'zh_master@example.com',
+          previousTournaments: 'شاركت في 5 بطولات سابقة',
+          motivation: 'أريد إثبات مهاراتي والمنافسة مع أفضل اللاعبين',
+          applicationStatus: 'pending',
+          submittedAt: '2024-02-20T10:30:00Z'
+        },
+        {
+          id: 2,
+          tournamentId: 1,
+          tournamentName: 'بطولة الجنرالات الكبرى 2024',
+          userId: 102,
+          applicationType: 'team',
+          gameName: 'Desert_Storm_Team',
+          experienceLevel: 'intermediate',
+          teamName: 'Storm Warriors',
+          partnerName: 'Thunder_Strike',
+          contactDiscord: 'Desert_Storm#5678',
+          contactTelegram: '@desert_storm',
+          contactEmail: 'desert@example.com',
+          previousTournaments: 'بطولة واحدة سابقة',
+          motivation: 'نريد تمثيل فريقنا والتطور',
+          applicationStatus: 'approved',
+          submittedAt: '2024-02-19T14:15:00Z'
+        },
+        {
+          id: 3,
+          tournamentId: 2,
+          tournamentName: 'تحدي الكلانات الأسبوعي',
+          userId: 103,
+          applicationType: 'individual',
+          gameName: 'Tactical_Gamer',
+          experienceLevel: 'professional',
+          teamName: null,
+          partnerName: null,
+          contactDiscord: 'Tactical_Gamer#9012',
+          contactTelegram: '@tactical_gamer',
+          contactEmail: 'tactical@example.com',
+          previousTournaments: 'أكثر من 10 بطولات',
+          motivation: 'أحب المنافسة وتطوير الاستراتيجيات',
+          applicationStatus: 'rejected',
+          submittedAt: '2024-02-18T09:45:00Z'
+        }
+      ];
+
+      return sampleApplications;
+    }
+
+    function populateTournamentFilter() {
+      const tournamentFilter = document.getElementById('tournament-filter');
+      const uniqueTournaments = [...new Set(applications.map(app => app.tournamentName))];
+      
+      uniqueTournaments.forEach(tournament => {
+        const option = document.createElement('option');
+        option.value = tournament;
+        option.textContent = tournament;
+        tournamentFilter.appendChild(option);
+      });
+    }
+
+    function updateStats() {
+      const stats = {
+        pending: applications.filter(app => app.applicationStatus === 'pending').length,
+        approved: applications.filter(app => app.applicationStatus === 'approved').length,
+        rejected: applications.filter(app => app.applicationStatus === 'rejected').length,
+        total: applications.length
+      };
+
+      document.getElementById('pending-count').textContent = stats.pending;
+      document.getElementById('approved-count').textContent = stats.approved;
+      document.getElementById('rejected-count').textContent = stats.rejected;
+      document.getElementById('total-count').textContent = stats.total;
+    }
+
+    function renderApplications() {
+      const tbody = document.getElementById('applications-table-body');
+      tbody.innerHTML = '';
+
+      filteredApplications.forEach(app => {
+        const row = createApplicationRow(app);
+        tbody.appendChild(row);
+      });
+    }
+
+    function createApplicationRow(app) {
+      const row = document.createElement('tr');
+      row.className = 'hover:bg-gray-750 transition-colors';
+      
+      const statusColors = {
+        pending: 'bg-orange-600',
+        approved: 'bg-green-600',
+        rejected: 'bg-red-600',
+        cancelled: 'bg-gray-600'
+      };
+
+      const statusLabels = {
+        pending: 'قيد المراجعة',
+        approved: 'موافق عليها',
+        rejected: 'مرفوضة',
+        cancelled: 'ملغاة'
+      };
+
+      const experienceLabels = {
+        beginner: 'مبتدئ',
+        intermediate: 'متوسط',
+        advanced: 'متقدم',
+        professional: 'محترف'
+      };
+
+      row.innerHTML = `
+        <td class="px-6 py-4 whitespace-nowrap">
+          <input type="checkbox" class="application-checkbox rounded border-gray-300 text-green-600 focus:ring-green-500" data-id="${app.id}">
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="flex items-center">
+            <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+              <span class="text-white font-medium">${app.gameName.charAt(0)}</span>
+            </div>
+            <div class="mr-4">
+              <div class="text-sm font-medium text-white">${app.gameName}</div>
+              <div class="text-sm text-gray-400">${app.contactEmail}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="text-sm text-white">${app.tournamentName}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="px-2 py-1 text-xs font-medium rounded-full ${app.applicationType === 'individual' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'}">
+            ${app.applicationType === 'individual' ? 'فردي' : 'فريق'}
+          </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="text-sm text-white">${experienceLabels[app.experienceLevel]}</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[app.applicationStatus]} text-white">
+            ${statusLabels[app.applicationStatus]}
+          </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="text-sm text-gray-400">${new Date(app.submittedAt).toLocaleDateString('ar-EG')}</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <div class="flex space-x-2 rtl:space-x-reverse">
+            <button onclick="viewApplication(${app.id})" class="text-blue-400 hover:text-blue-300 transition-colors">
+              عرض
+            </button>
+            ${app.applicationStatus === 'pending' ? `
+              <button onclick="approveApplication(${app.id})" class="text-green-400 hover:text-green-300 transition-colors">
+                موافقة
+              </button>
+              <button onclick="rejectApplication(${app.id})" class="text-red-400 hover:text-red-300 transition-colors">
+                رفض
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      `;
+
+      return row;
+    }
+
+    function setupFilters() {
+      const filters = ['tournament-filter', 'status-filter', 'type-filter', 'search-filter'];
+      filters.forEach(filterId => {
+        const filter = document.getElementById(filterId);
+        filter.addEventListener('change', applyFilters);
+        filter.addEventListener('input', applyFilters);
+      });
+    }
+
+    function applyFilters() {
+      const tournamentFilter = document.getElementById('tournament-filter').value;
+      const statusFilter = document.getElementById('status-filter').value;
+      const typeFilter = document.getElementById('type-filter').value;
+      const searchFilter = document.getElementById('search-filter').value.toLowerCase();
+
+      filteredApplications = applications.filter(app => {
+        const matchesTournament = !tournamentFilter || app.tournamentName === tournamentFilter;
+        const matchesStatus = !statusFilter || app.applicationStatus === statusFilter;
+        const matchesType = !typeFilter || app.applicationType === typeFilter;
+        const matchesSearch = !searchFilter || 
+          app.gameName.toLowerCase().includes(searchFilter) ||
+          app.contactEmail.toLowerCase().includes(searchFilter);
+
+        return matchesTournament && matchesStatus && matchesType && matchesSearch;
+      });
+
+      renderApplications();
+    }
+
+    function setupEventListeners() {
+      // Select all checkbox
+      document.getElementById('select-all').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.application-checkbox');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = this.checked;
+          if (this.checked) {
+            selectedApplications.add(parseInt(checkbox.dataset.id));
+          } else {
+            selectedApplications.delete(parseInt(checkbox.dataset.id));
+          }
+        });
+      });
+
+      // Individual checkboxes
+      document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('application-checkbox')) {
+          const id = parseInt(e.target.dataset.id);
+          if (e.target.checked) {
+            selectedApplications.add(id);
+          } else {
+            selectedApplications.delete(id);
+          }
+        }
+      });
+
+      // Bulk actions
+      document.getElementById('bulk-approve').addEventListener('click', () => {
+        if (selectedApplications.size === 0) {
+          alert('يرجى اختيار طلب واحد على الأقل');
+          return;
+        }
+        showConfirmation('approve-bulk');
+      });
+
+      document.getElementById('bulk-reject').addEventListener('click', () => {
+        if (selectedApplications.size === 0) {
+          alert('يرجى اختيار طلب واحد على الأقل');
+          return;
+        }
+        showConfirmation('reject-bulk');
+      });
+
+      // Modal controls
+      document.getElementById('close-modal').addEventListener('click', closeModal);
+      document.getElementById('cancel-action').addEventListener('click', closeConfirmation);
+      document.getElementById('confirm-action').addEventListener('click', executeAction);
+    }
+
+    function viewApplication(id) {
+      const app = applications.find(a => a.id === id);
+      if (!app) return;
+
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">اسم اللاعب</label>
+              <p class="text-white">${app.gameName}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">البطولة</label>
+              <p class="text-white">${app.tournamentName}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">نوع الطلب</label>
+              <p class="text-white">${app.applicationType === 'individual' ? 'فردي' : 'فريق'}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">مستوى الخبرة</label>
+              <p class="text-white">${app.experienceLevel}</p>
+            </div>
+          </div>
+
+          ${app.applicationType === 'team' ? `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">اسم الفريق</label>
+                <p class="text-white">${app.teamName}</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">اسم الشريك</label>
+                <p class="text-white">${app.partnerName}</p>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Discord</label>
+              <p class="text-white">${app.contactDiscord}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">Telegram</label>
+              <p class="text-white">${app.contactTelegram}</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">البريد الإلكتروني</label>
+            <p class="text-white">${app.contactEmail}</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">البطولات السابقة</label>
+            <p class="text-gray-300">${app.previousTournaments}</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">الدافع للمشاركة</label>
+            <p class="text-gray-300">${app.motivation}</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">الحالة</label>
+              <p class="text-white">${app.applicationStatus}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-1">تاريخ التقديم</label>
+              <p class="text-white">${new Date(app.submittedAt).toLocaleDateString('ar-EG')}</p>
+            </div>
+          </div>
+
+          ${app.applicationStatus === 'pending' ? `
+            <div class="flex space-x-3 rtl:space-x-reverse pt-4 border-t border-gray-700">
+              <button onclick="approveApplication(${app.id})" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                موافقة
+              </button>
+              <button onclick="rejectApplication(${app.id})" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                رفض
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      document.getElementById('application-modal').classList.remove('hidden');
+    }
+
+    function approveApplication(id) {
+      currentAction = { type: 'approve', id: id };
+      showConfirmation('approve-single');
+    }
+
+    function rejectApplication(id) {
+      currentAction = { type: 'reject', id: id };
+      showConfirmation('reject-single');
+    }
+
+    function showConfirmation(action) {
+      const messages = {
+        'approve-single': 'هل تريد الموافقة على هذا الطلب؟',
+        'reject-single': 'هل تريد رفض هذا الطلب؟',
+        'approve-bulk': `هل تريد الموافقة على ${selectedApplications.size} طلب؟`,
+        'reject-bulk': `هل تريد رفض ${selectedApplications.size} طلب؟`
+      };
+
+      document.getElementById('confirmation-message').textContent = messages[action];
+      document.getElementById('confirmation-modal').classList.remove('hidden');
+    }
+
+    function executeAction() {
+      if (currentAction) {
+        if (currentAction.type === 'approve') {
+          updateApplicationStatus(currentAction.id, 'approved');
+        } else if (currentAction.type === 'reject') {
+          updateApplicationStatus(currentAction.id, 'rejected');
+        }
+      } else {
+        // Bulk actions
+        const action = document.getElementById('confirmation-message').textContent.includes('الموافقة') ? 'approved' : 'rejected';
+        selectedApplications.forEach(id => {
+          updateApplicationStatus(id, action);
+        });
+        selectedApplications.clear();
+      }
+
+      closeConfirmation();
+      closeModal();
+      updateStats();
+      renderApplications();
+    }
+
+    function updateApplicationStatus(id, status) {
+      const appIndex = applications.findIndex(a => a.id === id);
+      if (appIndex !== -1) {
+        applications[appIndex].applicationStatus = status;
+        localStorage.setItem('tournament_applications', JSON.stringify(applications));
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('application-modal').classList.add('hidden');
+    }
+
+    function closeConfirmation() {
+      document.getElementById('confirmation-modal').classList.add('hidden');
+      currentAction = null;
+    }
+
+    // Global functions
+    window.viewApplication = viewApplication;
+    window.approveApplication = approveApplication;
+    window.rejectApplication = rejectApplication;
+  </script>
+</BaseLayout> 

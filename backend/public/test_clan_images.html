@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار عرض صور العشيرة</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .clan-header { position: relative; height: 200px; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+        .clan-logo { width: 64px; height: 64px; border-radius: 8px; border: 4px solid white; overflow: hidden; }
+        .clan-info { position: absolute; bottom: 16px; left: 16px; right: 16px; color: white; }
+        .flex { display: flex; align-items: center; gap: 16px; }
+        .error { color: red; margin-top: 10px; }
+        .success { color: green; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 اختبار عرض صور العشيرة</h1>
+        
+        <div id="test-results"></div>
+        
+        <button onclick="testClanImages()">اختبار تحميل صور العشيرة</button>
+    </div>
+
+    <script>
+        function getImageUrl(url) {
+            if (!url) return null;
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;
+            }
+            if (url.startsWith('/')) {
+                return 'http://localhost:8080' + url;
+            }
+            return 'http://localhost:8080/uploads/clans/' + url;
+        }
+
+        async function testClanImages() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<p>جاري التحميل...</p>';
+            
+            try {
+                // Fetch clan data
+                const response = await fetch('http://localhost:8080/clan_api.php?action=get_user_clan', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch clan data');
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">خطأ: ${data.error}</div>`;
+                    return;
+                }
+                
+                const clan = data.clan;
+                
+                // Build header with images
+                const bannerUrl = getImageUrl(clan.banner_url);
+                const logoUrl = getImageUrl(clan.logo_url);
+                
+                const bannerStyle = bannerUrl 
+                    ? `background-image: url('${bannerUrl}'); background-size: cover; background-position: center;`
+                    : 'background: linear-gradient(to right, #10b981, #3b82f6);';
+                
+                resultsDiv.innerHTML = `
+                    <h2>✅ تم تحميل بيانات العشيرة بنجاح</h2>
+                    <div class="clan-header" style="${bannerStyle}">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
+                        <div class="clan-info">
+                            <div class="flex">
+                                <div class="clan-logo" style="background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                    ${logoUrl 
+                                        ? `<img src="${logoUrl}" alt="شعار العشيرة" style="width: 100%; height: 100%; object-fit: cover;" />`
+                                        : `<span style="font-size: 24px; font-weight: bold;">${clan.tag || clan.name.substring(0, 3).toUpperCase()}</span>`
+                                    }
+                                </div>
+                                <div>
+                                    <h1 style="margin: 0; font-size: 24px;">[${clan.tag || clan.name.substring(0, 3).toUpperCase()}] ${clan.name}</h1>
+                                    <p style="margin: 0; opacity: 0.9;">${clan.description || 'لا يوجد وصف'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #2a2a2a; padding: 16px; border-radius: 8px; margin-top: 20px;">
+                        <h3>📊 تفاصيل الصور:</h3>
+                        <p><strong>مسار الشعار:</strong> ${clan.logo_url || 'غير محدد'}</p>
+                        <p><strong>مسار الخلفية:</strong> ${clan.banner_url || 'غير محدد'}</p>
+                        <p><strong>URL الشعار المعالج:</strong> ${logoUrl || 'غير محدد'}</p>
+                        <p><strong>URL الخلفية المعالج:</strong> ${bannerUrl || 'غير محدد'}</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error testing clan images:', error);
+                resultsDiv.innerHTML = `<div class="error">خطأ في تحميل البيانات: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

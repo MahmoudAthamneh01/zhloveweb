@@ -1,0 +1,457 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { 
+  BarChart3, 
+  TrendingUp, 
+  TrendingDown, 
+  Users, 
+  Shield, 
+  Play, 
+  Star,
+  Trophy,
+  Calendar,
+  Clock,
+  Eye,
+  Download,
+  RefreshCw,
+  Filter,
+  Target,
+  Activity,
+  Globe,
+  Map,
+  Gamepad2,
+  Crown,
+  Medal,
+  Zap
+} from 'lucide-react';
+
+const title = "التقارير والإحصائيات - لوحة التحكم الإدارية";
+const description = "تقارير مفصلة عن أداء المنصة وإحصائيات المستخدمين";
+
+// Mock analytics data
+const overallStats = {
+  users: {
+    total: 25847,
+    active: 18945,
+    newThisMonth: 1247,
+    growth: 12.5,
+    dailyActive: 8456,
+    weeklyActive: 15678,
+    monthlyActive: 21234
+  },
+  content: {
+    clans: 156,
+    replays: 8945,
+    streamers: 78,
+    tournaments: 23,
+    forumPosts: 12456
+  },
+  activity: {
+    totalGames: 456789,
+    gamesThisMonth: 34567,
+    averageSessionTime: 45,
+    totalPlayTime: 234567,
+    peakConcurrent: 1234
+  },
+  revenue: {
+    totalRevenue: 125000,
+    monthlyRevenue: 15000,
+    subscriptions: 2456,
+    donations: 5678
+  }
+};
+
+const userGrowth = [
+  { month: 'يناير', users: 22345, growth: 8.2 },
+  { month: 'فبراير', users: 23456, growth: 5.0 },
+  { month: 'مارس', users: 24123, growth: 2.8 },
+  { month: 'أبريل', users: 24789, growth: 2.8 },
+  { month: 'مايو', users: 25234, growth: 1.8 },
+  { month: 'يونيو', users: 25847, growth: 2.4 }
+];
+
+const gameStats = {
+  totalMatches: 456789,
+  averageMatchDuration: 25,
+  popularMaps: [
+    { name: 'Tournament Desert', matches: 45678, percentage: 28.5 },
+    { name: 'Scorched Earth', matches: 34567, percentage: 21.6 },
+    { name: 'Winter Wolf', matches: 28956, percentage: 18.1 },
+    { name: 'Final Crusade', matches: 23456, percentage: 14.7 },
+    { name: 'Defcon 6', matches: 18945, percentage: 11.8 }
+  ],
+  factionUsage: [
+    { faction: 'USA', usage: 38.5, wins: 45.2 },
+    { faction: 'China', usage: 32.8, wins: 41.8 },
+    { faction: 'GLA', usage: 28.7, wins: 38.9 }
+  ],
+  peakHours: [
+    { hour: '20:00', players: 1234 },
+    { hour: '21:00', players: 1456 },
+    { hour: '22:00', players: 1289 },
+    { hour: '19:00', players: 1123 },
+    { hour: '23:00', players: 1089 }
+  ]
+};
+
+const regionalStats = [
+  { country: 'السعودية', users: 8456, percentage: 32.7 },
+  { country: 'مصر', users: 5678, percentage: 22.0 },
+  { country: 'الإمارات', users: 3456, percentage: 13.4 },
+  { country: 'الكويت', users: 2345, percentage: 9.1 },
+  { country: 'قطر', users: 1789, percentage: 6.9 },
+  { country: 'أخرى', users: 4123, percentage: 15.9 }
+];
+
+const contentStats = {
+  replays: {
+    total: 8945,
+    approved: 8822,
+    pending: 23,
+    rejected: 100,
+    avgViews: 456,
+    topReplays: [
+      { title: 'معركة الأساطير', views: 12456, rating: 4.8 },
+      { title: 'تكتيكات متقدمة', views: 9876, rating: 4.6 },
+      { title: 'الهجوم الخاطف', views: 8765, rating: 4.7 }
+    ]
+  },
+  streamers: {
+    total: 78,
+    verified: 45,
+    totalFollowers: 456789,
+    totalViews: 12456789,
+    avgEngagement: 8.5
+  },
+  clans: {
+    total: 156,
+    active: 134,
+    totalMembers: 5678,
+    avgMembersPerClan: 36,
+    topClans: [
+      { name: 'نسور الشرق', members: 150, rating: 2456 },
+      { name: 'محاربو الصحراء', members: 145, rating: 2398 },
+      { name: 'أساطير الخليج', members: 132, rating: 2287 }
+    ]
+  }
+};
+
+// Check if user is admin
+const isAdmin = true;
+if (!isAdmin) {
+  return new Response('Unauthorized', { status: 401 });
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <BarChart3 size={32} class="text-tactical-green" />
+          <span>التقارير والإحصائيات</span>
+        </h1>
+        <p class="text-muted-foreground">تقارير مفصلة عن أداء المنصة وإحصائيات المستخدمين</p>
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <select class="bg-input border border-border rounded px-3 py-2 text-sm">
+          <option value="7d">آخر 7 أيام</option>
+          <option value="30d">آخر 30 يوم</option>
+          <option value="90d">آخر 3 أشهر</option>
+          <option value="1y">آخر عام</option>
+        </select>
+        <button class="btn btn-outline">
+          <Download size={16} />
+          <span>تصدير</span>
+        </button>
+        <button class="btn btn-outline">
+          <RefreshCw size={16} />
+          <span>تحديث</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Overall Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Users size={24} class="text-tactical-green" />
+          <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm text-tactical-green">
+            <TrendingUp size={16} />
+            <span>+{overallStats.users.growth}%</span>
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-foreground">{overallStats.users.total.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">إجمالي المستخدمين</div>
+        <div class="text-xs text-tactical-green mt-1">+{overallStats.users.newThisMonth} هذا الشهر</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Activity size={24} class="text-command-blue" />
+          <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm text-command-blue">
+            <Eye size={16} />
+            <span>{overallStats.users.dailyActive.toLocaleString()}</span>
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-foreground">{overallStats.users.active.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">مستخدم نشط</div>
+        <div class="text-xs text-command-blue mt-1">يومي: {overallStats.users.dailyActive.toLocaleString()}</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Gamepad2 size={24} class="text-victory-gold" />
+          <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm text-victory-gold">
+            <Target size={16} />
+            <span>{overallStats.activity.peakConcurrent}</span>
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-foreground">{overallStats.activity.totalGames.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">إجمالي المباريات</div>
+        <div class="text-xs text-victory-gold mt-1">هذا الشهر: {overallStats.activity.gamesThisMonth.toLocaleString()}</div>
+      </div>
+
+      <div class="military-card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <Clock size={24} class="text-orange-500" />
+          <div class="flex items-center space-x-1 rtl:space-x-reverse text-sm text-orange-500">
+            <Zap size={16} />
+            <span>{overallStats.activity.averageSessionTime}دقيقة</span>
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-foreground">{overallStats.activity.totalPlayTime.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">ساعة لعب إجمالية</div>
+        <div class="text-xs text-orange-500 mt-1">متوسط الجلسة: {overallStats.activity.averageSessionTime}دقيقة</div>
+      </div>
+    </div>
+
+    <!-- User Growth Chart -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <TrendingUp size={20} class="text-tactical-green" />
+        <span>نمو المستخدمين</span>
+      </h2>
+      <div class="space-y-4">
+        {userGrowth.map((data, index) => (
+          <div key={index} class="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <div class="w-12 h-12 bg-tactical-green/20 rounded-full flex items-center justify-center">
+                <span class="text-tactical-green font-bold">{index + 1}</span>
+              </div>
+              <div>
+                <div class="font-medium text-foreground">{data.month}</div>
+                <div class="text-sm text-muted-foreground">{data.users.toLocaleString()} مستخدم</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-32 bg-muted rounded-full h-2">
+                <div 
+                  class="bg-tactical-green h-2 rounded-full"
+                  style={`width: ${Math.min(data.growth * 10, 100)}%`}
+                ></div>
+              </div>
+              <span class="text-sm font-medium text-tactical-green">+{data.growth}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Regional Distribution -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="military-card p-6">
+        <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Globe size={20} class="text-command-blue" />
+          <span>التوزيع الجغرافي</span>
+        </h2>
+        <div class="space-y-3">
+          {regionalStats.map((region, index) => (
+            <div key={index} class="flex items-center justify-between">
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <div class="w-6 h-6 bg-command-blue/20 rounded-full flex items-center justify-center">
+                  <span class="text-xs font-bold text-command-blue">{index + 1}</span>
+                </div>
+                <span class="font-medium text-foreground">{region.country}</span>
+              </div>
+              <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                <div class="w-24 bg-muted rounded-full h-2">
+                  <div 
+                    class="bg-command-blue h-2 rounded-full"
+                    style={`width: ${region.percentage}%`}
+                  ></div>
+                </div>
+                <span class="text-sm text-muted-foreground w-12">{region.percentage}%</span>
+                <span class="text-sm font-medium text-foreground w-16">{region.users.toLocaleString()}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="military-card p-6">
+        <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Target size={20} class="text-victory-gold" />
+          <span>استخدام الفصائل</span>
+        </h2>
+        <div class="space-y-4">
+          {gameStats.factionUsage.map((faction, index) => (
+            <div key={index} class="p-3 bg-muted rounded-lg">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <span class="text-2xl">
+                    {faction.faction === 'USA' ? '🇺🇸' : faction.faction === 'China' ? '🇨🇳' : '☪️'}
+                  </span>
+                  <span class="font-medium text-foreground">{faction.faction}</span>
+                </div>
+                <span class="text-sm text-muted-foreground">{faction.usage}%</span>
+              </div>
+              <div class="space-y-1">
+                <div class="w-full bg-muted-foreground/20 rounded-full h-2">
+                  <div 
+                    class="bg-victory-gold h-2 rounded-full"
+                    style={`width: ${faction.usage}%`}
+                  ></div>
+                </div>
+                <div class="text-xs text-muted-foreground">معدل الفوز: {faction.wins}%</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="military-card p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Play size={20} class="text-tactical-green" />
+          <span>إحصائيات الريبلايز</span>
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">الإجمالي:</span>
+            <span class="font-medium text-foreground">{contentStats.replays.total.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">المعتمد:</span>
+            <span class="font-medium text-tactical-green">{contentStats.replays.approved.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">في الانتظار:</span>
+            <span class="font-medium text-orange-500">{contentStats.replays.pending}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">متوسط المشاهدات:</span>
+            <span class="font-medium text-foreground">{contentStats.replays.avgViews}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="military-card p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Star size={20} class="text-orange-500" />
+          <span>إحصائيات الستريمرز</span>
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">الإجمالي:</span>
+            <span class="font-medium text-foreground">{contentStats.streamers.total}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">الموثق:</span>
+            <span class="font-medium text-tactical-green">{contentStats.streamers.verified}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">إجمالي المتابعين:</span>
+            <span class="font-medium text-foreground">{contentStats.streamers.totalFollowers.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">متوسط التفاعل:</span>
+            <span class="font-medium text-foreground">{contentStats.streamers.avgEngagement}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="military-card p-6">
+        <h3 class="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+          <Shield size={20} class="text-command-blue" />
+          <span>إحصائيات العشائر</span>
+        </h3>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">الإجمالي:</span>
+            <span class="font-medium text-foreground">{contentStats.clans.total}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">النشط:</span>
+            <span class="font-medium text-tactical-green">{contentStats.clans.active}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">إجمالي الأعضاء:</span>
+            <span class="font-medium text-foreground">{contentStats.clans.totalMembers.toLocaleString()}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-foreground">متوسط الأعضاء:</span>
+            <span class="font-medium text-foreground">{contentStats.clans.avgMembersPerClan}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Maps -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <Map size={20} class="text-victory-gold" />
+        <span>الخرائط الأكثر شعبية</span>
+      </h2>
+      <div class="space-y-3">
+        {gameStats.popularMaps.map((map, index) => (
+          <div key={index} class="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-victory-gold/20 rounded-full flex items-center justify-center">
+                <span class="text-victory-gold font-bold text-sm">{index + 1}</span>
+              </div>
+              <div>
+                <div class="font-medium text-foreground">{map.name}</div>
+                <div class="text-sm text-muted-foreground">{map.matches.toLocaleString()} مباراة</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-32 bg-muted rounded-full h-2">
+                <div 
+                  class="bg-victory-gold h-2 rounded-full"
+                  style={`width: ${map.percentage}%`}
+                ></div>
+              </div>
+              <span class="text-sm font-medium text-foreground">{map.percentage}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Peak Hours -->
+    <div class="military-card p-6">
+      <h2 class="text-xl font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+        <Clock size={20} class="text-orange-500" />
+        <span>أوقات الذروة</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        {gameStats.peakHours.map((peak, index) => (
+          <div key={index} class="text-center p-3 bg-muted rounded-lg">
+            <div class="text-lg font-bold text-foreground">{peak.hour}</div>
+            <div class="text-sm text-muted-foreground">{peak.players} لاعب</div>
+            <div class="w-full bg-muted-foreground/20 rounded-full h-1 mt-2">
+              <div 
+                class="bg-orange-500 h-1 rounded-full"
+                style={`width: ${(peak.players / 1456) * 100}%`}
+              ></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

@@ -1,0 +1,415 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Shield, Plus, Edit2, Trash2, Palette, Tag } from 'lucide-react';
+
+const title = "إدارة فئات المنتدى - زد اتش لوف";
+const description = "إدارة فئات المنتدى";
+
+// Check admin authentication (in real app, this would check server-side)
+// For now, we'll just show the page
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-tactical-green/10 to-primary/10 rounded-xl p-8 mb-8">
+      <div class="flex items-center gap-4 mb-4">
+        <Shield class="w-8 h-8 text-tactical-green" />
+        <h1 class="text-3xl font-bold text-foreground">إدارة فئات المنتدى</h1>
+      </div>
+      <p class="text-muted-foreground">إضافة وتعديل وحذف فئات المنتدى</p>
+    </div>
+
+    <!-- Add New Category Form -->
+    <div class="bg-card border border-border rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+        <Plus class="w-5 h-5" />
+        إضافة فئة جديدة
+      </h2>
+      
+      <form id="addCategoryForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="categoryName" class="block text-sm font-medium text-foreground mb-2">
+              اسم الفئة *
+            </label>
+            <input
+              type="text"
+              id="categoryName"
+              required
+              class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+              placeholder="مثل: النقاشات العامة"
+            />
+          </div>
+          
+          <div>
+            <label for="categoryColor" class="block text-sm font-medium text-foreground mb-2">
+              لون الفئة *
+            </label>
+            <div class="flex gap-2">
+              <input
+                type="color"
+                id="categoryColor"
+                value="#4F9CF9"
+                class="w-12 h-10 border border-border rounded-md cursor-pointer"
+              />
+              <input
+                type="text"
+                id="categoryColorText"
+                value="#4F9CF9"
+                class="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+                placeholder="#4F9CF9"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label for="categoryDescription" class="block text-sm font-medium text-foreground mb-2">
+            وصف الفئة
+          </label>
+          <textarea
+            id="categoryDescription"
+            rows="3"
+            class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent resize-none"
+            placeholder="وصف مختصر عن محتوى هذه الفئة..."
+          ></textarea>
+        </div>
+        
+        <div class="flex gap-2">
+          <button
+            type="submit"
+            class="bg-tactical-green text-white px-6 py-2 rounded-md hover:bg-tactical-green/90 transition-colors flex items-center gap-2"
+          >
+            <Plus class="w-4 h-4" />
+            إضافة الفئة
+          </button>
+          <button
+            type="reset"
+            class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors"
+          >
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Categories List -->
+    <div class="bg-card border border-border rounded-lg overflow-hidden">
+      <div class="p-6 border-b border-border">
+        <h2 class="text-xl font-semibold text-foreground flex items-center gap-2">
+          <Tag class="w-5 h-5" />
+          الفئات الحالية
+        </h2>
+      </div>
+      
+      <div id="categoriesList" class="divide-y divide-border">
+        <!-- Categories will be loaded here -->
+        <div class="p-6 text-center text-muted-foreground">
+          جاري تحميل الفئات...
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+      <div class="bg-card border border-border rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-foreground mb-4">تعديل الفئة</h3>
+        
+        <form id="editCategoryForm" class="space-y-4">
+          <input type="hidden" id="editCategoryId" />
+          
+          <div>
+            <label for="editCategoryName" class="block text-sm font-medium text-foreground mb-2">
+              اسم الفئة *
+            </label>
+            <input
+              type="text"
+              id="editCategoryName"
+              required
+              class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label for="editCategoryColor" class="block text-sm font-medium text-foreground mb-2">
+              لون الفئة *
+            </label>
+            <div class="flex gap-2">
+              <input
+                type="color"
+                id="editCategoryColor"
+                class="w-12 h-10 border border-border rounded-md cursor-pointer"
+              />
+              <input
+                type="text"
+                id="editCategoryColorText"
+                class="flex-1 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label for="editCategoryDescription" class="block text-sm font-medium text-foreground mb-2">
+              وصف الفئة
+            </label>
+            <textarea
+              id="editCategoryDescription"
+              rows="3"
+              class="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent resize-none"
+            ></textarea>
+          </div>
+          
+          <div class="flex gap-2 justify-end">
+            <button
+              type="button"
+              id="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              class="bg-tactical-green text-white px-4 py-2 rounded-md hover:bg-tactical-green/90 transition-colors flex items-center gap-2"
+            >
+              <Edit2 class="w-4 h-4" />
+              حفظ التعديل
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  // Load categories
+  async function loadCategories() {
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=get_categories');
+      const data = await response.json();
+      
+      const categoriesList = document.getElementById('categoriesList');
+      
+      if (data.error) {
+        categoriesList.innerHTML = `
+          <div class="p-6 text-center text-red-500">
+            خطأ في تحميل الفئات: ${data.error}
+          </div>
+        `;
+        return;
+      }
+      
+      if (data.categories && data.categories.length > 0) {
+        categoriesList.innerHTML = data.categories.map(category => `
+          <div class="p-6 flex items-center justify-between hover:bg-muted/30 transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="w-4 h-4 rounded-full" style="background-color: ${category.color}"></div>
+              <div>
+                <h3 class="font-semibold text-foreground">${category.name}</h3>
+                <p class="text-sm text-muted-foreground">${category.description || 'لا يوجد وصف'}</p>
+                <p class="text-xs text-muted-foreground mt-1">
+                  ${category.posts_count || 0} منشور
+                </p>
+              </div>
+            </div>
+            
+            <div class="flex gap-2">
+              <button
+                onclick="editCategory(${category.id}, '${category.name}', '${category.color}', '${category.description || ''}')"
+                class="p-2 text-blue-500 hover:bg-blue-500/10 rounded-md transition-colors"
+                title="تعديل"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button
+                onclick="deleteCategory(${category.id}, '${category.name}')"
+                class="p-2 text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                title="حذف"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        categoriesList.innerHTML = `
+          <div class="p-6 text-center text-muted-foreground">
+            لا توجد فئات بعد. أضف فئة جديدة للبدء.
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      const categoriesList = document.getElementById('categoriesList');
+      categoriesList.innerHTML = `
+        <div class="p-6 text-center text-red-500">
+          حدث خطأ في تحميل الفئات
+        </div>
+      `;
+    }
+  }
+  
+  // Add new category
+  document.getElementById('addCategoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('categoryName').value.trim();
+    const color = document.getElementById('categoryColorText').value.trim();
+    const description = document.getElementById('categoryDescription').value.trim();
+    
+    if (!name || !color) {
+      alert('يرجى ملء الحقول المطلوبة');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=add_category', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer test_token_123'
+        },
+        body: JSON.stringify({ name, color, description })
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        alert('خطأ: ' + data.error);
+      } else {
+        alert('تم إضافة الفئة بنجاح!');
+        document.getElementById('addCategoryForm').reset();
+        document.getElementById('categoryColor').value = '#4F9CF9';
+        document.getElementById('categoryColorText').value = '#4F9CF9';
+        loadCategories();
+      }
+    } catch (error) {
+      console.error('Error adding category:', error);
+      alert('حدث خطأ أثناء إضافة الفئة');
+    }
+  });
+  
+  // Edit category
+  window.editCategory = function(id, name, color, description) {
+    document.getElementById('editCategoryId').value = id;
+    document.getElementById('editCategoryName').value = name;
+    document.getElementById('editCategoryColor').value = color;
+    document.getElementById('editCategoryColorText').value = color;
+    document.getElementById('editCategoryDescription').value = description;
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editModal').classList.add('flex');
+  };
+  
+  // Delete category
+  window.deleteCategory = async function(id, name) {
+    if (!confirm(`هل أنت متأكد من حذف الفئة "${name}"؟`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=delete_category', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer test_token_123'
+        },
+        body: JSON.stringify({ id })
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        alert('خطأ: ' + data.error);
+      } else {
+        alert('تم حذف الفئة بنجاح!');
+        loadCategories();
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('حدث خطأ أثناء حذف الفئة');
+    }
+  };
+  
+  // Color input sync
+  document.getElementById('categoryColor').addEventListener('input', (e) => {
+    document.getElementById('categoryColorText').value = e.target.value;
+  });
+  
+  document.getElementById('categoryColorText').addEventListener('input', (e) => {
+    if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+      document.getElementById('categoryColor').value = e.target.value;
+    }
+  });
+  
+  document.getElementById('editCategoryColor').addEventListener('input', (e) => {
+    document.getElementById('editCategoryColorText').value = e.target.value;
+  });
+  
+  document.getElementById('editCategoryColorText').addEventListener('input', (e) => {
+    if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+      document.getElementById('editCategoryColor').value = e.target.value;
+    }
+  });
+  
+  // Edit form submit
+  document.getElementById('editCategoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const id = document.getElementById('editCategoryId').value;
+    const name = document.getElementById('editCategoryName').value.trim();
+    const color = document.getElementById('editCategoryColorText').value.trim();
+    const description = document.getElementById('editCategoryDescription').value.trim();
+    
+    if (!name || !color) {
+      alert('يرجى ملء الحقول المطلوبة');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=update_category', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer test_token_123'
+        },
+        body: JSON.stringify({ id, name, color, description })
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        alert('خطأ: ' + data.error);
+      } else {
+        alert('تم تحديث الفئة بنجاح!');
+        document.getElementById('editModal').classList.add('hidden');
+        document.getElementById('editModal').classList.remove('flex');
+        loadCategories();
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      alert('حدث خطأ أثناء تحديث الفئة');
+    }
+  });
+  
+  // Close edit modal
+  document.getElementById('cancelEdit').addEventListener('click', () => {
+    document.getElementById('editModal').classList.add('hidden');
+    document.getElementById('editModal').classList.remove('flex');
+  });
+  
+  // Close modal on outside click
+  document.getElementById('editModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      document.getElementById('editModal').classList.add('hidden');
+      document.getElementById('editModal').classList.remove('flex');
+    }
+  });
+  
+  // Load categories on page load
+  document.addEventListener('DOMContentLoaded', loadCategories);
+</script>

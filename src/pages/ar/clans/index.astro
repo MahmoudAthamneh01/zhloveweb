@@ -1,0 +1,409 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ClanCard from '../../../components/clans/ClanCard.tsx';
+import { Shield, Plus, Search, Filter, Crown, Trophy, Users, Star } from 'lucide-react';
+
+const title = "العشائر - زد اتش لوف";
+const description = "انضم إلى عشيرة أو أنشئ عشيرتك الخاصة وقم ببناء إمبراطوريتك في الجنرالات زيرو آور";
+
+// Mock clans data
+const featuredClans = [
+  {
+    id: 1,
+    name: 'نسور الشرق',
+    tag: 'EAST',
+    description: 'عشيرة نخبة للاعبين المحترفين في الشرق الأوسط. ننافس في أعلى المستويات ونسعى للتميز.',
+    level: 45,
+    totalMembers: 48,
+    maxMembers: 50,
+    activeMembers: 42,
+    joinRequirements: {
+      minLevel: 30,
+      minWinRate: 75,
+      applicationRequired: true
+    },
+    stats: {
+      totalWins: 2850,
+      totalLosses: 420,
+      winRate: 87,
+      totalTrophies: 125000,
+      totalXP: 450000,
+      warWins: 156,
+      warLosses: 23,
+      warWinRate: 87
+    },
+    leader: {
+      id: 1,
+      username: 'سلطان_الحرب',
+      avatar: '/avatars/leader1.png',
+      isOnline: true
+    },
+    officers: [
+      {
+        id: 2,
+        username: 'قائد_النصر',
+        avatar: '/avatars/officer1.png',
+        isOnline: true
+      }
+    ],
+    region: 'الشرق الأوسط',
+    language: 'العربية',
+    isPublic: false,
+    createdAt: '2022-03-15T10:00:00Z',
+    lastActivity: '2024-01-15T18:30:00Z',
+    avatar: '/clans/east-eagles.png',
+    banner: '/banners/east-eagles-banner.jpg',
+    membershipStatus: 'none' as const,
+    isRecruiting: true,
+    tags: ['professional', 'competitive', 'elite'],
+    isVerified: true,
+    isElite: true
+  },
+  {
+    id: 2,
+    name: 'محاربو الصحراء',
+    tag: 'DSRT',
+    description: 'عشيرة ودودة ترحب بجميع المستويات. نساعد بعضنا البعض ونتعلم سوياً.',
+    level: 32,
+    totalMembers: 35,
+    maxMembers: 40,
+    activeMembers: 28,
+    joinRequirements: {
+      minLevel: 15,
+      minWinRate: 50,
+      applicationRequired: false
+    },
+    stats: {
+      totalWins: 1680,
+      totalLosses: 520,
+      winRate: 76,
+      totalTrophies: 85000,
+      totalXP: 320000,
+      warWins: 89,
+      warLosses: 31,
+      warWinRate: 74
+    },
+    leader: {
+      id: 3,
+      username: 'أمير_الرمال',
+      avatar: '/avatars/leader2.png',
+      isOnline: false
+    },
+    officers: [
+      {
+        id: 4,
+        username: 'حارس_الواحة',
+        avatar: '/avatars/officer2.png',
+        isOnline: true
+      }
+    ],
+    region: 'الشرق الأوسط',
+    language: 'العربية',
+    isPublic: true,
+    createdAt: '2022-08-20T14:00:00Z',
+    lastActivity: '2024-01-15T16:45:00Z',
+    avatar: '/clans/desert-warriors.png',
+    membershipStatus: 'member' as const,
+    isRecruiting: true,
+    tags: ['friendly', 'learning', 'active'],
+    isVerified: true,
+    isElite: false
+  }
+];
+
+const allClans = [
+  ...featuredClans,
+  {
+    id: 3,
+    name: 'أساطير الخليج',
+    tag: 'GULF',
+    description: 'عشيرة قوية من دول الخليج العربي',
+    level: 38,
+    totalMembers: 44,
+    maxMembers: 50,
+    activeMembers: 38,
+    joinRequirements: {
+      minLevel: 25,
+      minWinRate: 65,
+      applicationRequired: true
+    },
+    stats: {
+      totalWins: 2200,
+      totalLosses: 380,
+      winRate: 85,
+      totalTrophies: 110000,
+      totalXP: 380000,
+      warWins: 123,
+      warLosses: 29,
+      warWinRate: 81
+    },
+    leader: {
+      id: 5,
+      username: 'ملك_الخليج',
+      avatar: '/avatars/leader3.png',
+      isOnline: true
+    },
+    officers: [],
+    region: 'الخليج العربي',
+    language: 'العربية',
+    isPublic: false,
+    createdAt: '2022-06-10T12:00:00Z',
+    lastActivity: '2024-01-15T19:20:00Z',
+    avatar: '/clans/gulf-legends.png',
+    membershipStatus: 'none' as const,
+    isRecruiting: true,
+    tags: ['gulf', 'strong', 'competitive'],
+    isVerified: true,
+    isElite: false
+  },
+  {
+    id: 4,
+    name: 'فرسان الشام',
+    tag: 'SHAM',
+    description: 'عشيرة تضم أفضل لاعبي بلاد الشام',
+    level: 29,
+    totalMembers: 31,
+    maxMembers: 35,
+    activeMembers: 25,
+    joinRequirements: {
+      minLevel: 20,
+      minWinRate: 60,
+      applicationRequired: false
+    },
+    stats: {
+      totalWins: 1450,
+      totalLosses: 350,
+      winRate: 81,
+      totalTrophies: 75000,
+      totalXP: 290000,
+      warWins: 76,
+      warLosses: 18,
+      warWinRate: 81
+    },
+    leader: {
+      id: 6,
+      username: 'بطل_دمشق',
+      avatar: '/avatars/leader4.png',
+      isOnline: false
+    },
+    officers: [],
+    region: 'بلاد الشام',
+    language: 'العربية',
+    isPublic: true,
+    createdAt: '2023-01-05T09:00:00Z',
+    lastActivity: '2024-01-15T12:15:00Z',
+    avatar: '/clans/levant-knights.png',
+    membershipStatus: 'none' as const,
+    isRecruiting: true,
+    tags: ['levant', 'brotherhood', 'honor'],
+    isVerified: false,
+    isElite: false
+  }
+];
+
+const clanStats = {
+  totalClans: allClans.length,
+  eliteClans: allClans.filter(c => c.isElite).length,
+  recruitingClans: allClans.filter(c => c.isRecruiting).length,
+  totalMembers: allClans.reduce((sum, c) => sum + c.totalMembers, 0),
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Shield size={32} class="text-tactical-green" />
+          <span>العشائر</span>
+        </h1>
+        <p class="text-muted-foreground">انضم إلى عشيرة أو أنشئ عشيرتك الخاصة وقم ببناء إمبراطوريتك</p>
+      </div>
+      <a href="/ar/clans/create" class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+        <Plus size={20} />
+        <span>إنشاء عشيرة</span>
+      </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">{clanStats.totalClans}</div>
+        <div class="text-sm text-muted-foreground">عشيرة نشطة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">{clanStats.eliteClans}</div>
+        <div class="text-sm text-muted-foreground">عشيرة نخبة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">{clanStats.recruitingClans}</div>
+        <div class="text-sm text-muted-foreground">تبحث عن أعضاء</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-neutral-silver mb-1">{clanStats.totalMembers}</div>
+        <div class="text-sm text-muted-foreground">إجمالي الأعضاء</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="البحث في العشائر..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <Filter size={20} class="text-muted-foreground" />
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع العشائر</option>
+            <option value="recruiting">تبحث عن أعضاء</option>
+            <option value="elite">النخبة</option>
+            <option value="verified">موثقة</option>
+            <option value="public">مفتوحة</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <span class="text-sm text-muted-foreground">المنطقة:</span>
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع المناطق</option>
+            <option value="middle-east">الشرق الأوسط</option>
+            <option value="gulf">الخليج العربي</option>
+            <option value="levant">بلاد الشام</option>
+            <option value="north-africa">شمال أفريقيا</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center space-x-2 rtl:space-x-reverse">
+          <span class="text-sm text-muted-foreground">المستوى:</span>
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع المستويات</option>
+            <option value="1-20">1-20</option>
+            <option value="21-40">21-40</option>
+            <option value="41-60">41-60</option>
+            <option value="61+">61+</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Clans -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Crown size={24} class="text-victory-gold" />
+        <span>العشائر المميزة</span>
+      </h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {featuredClans.map(clan => (
+          <ClanCard 
+            clan={clan}
+            onJoin={(id) => console.log('Join clan:', id)}
+            onView={(id) => window.location.href = `/ar/clans/${id}`}
+            onLeave={(id) => console.log('Leave clan:', id)}
+            showActions={true}
+            isCompact={false}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Recruiting Clans -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Users size={24} class="text-tactical-green" />
+        <span>تبحث عن أعضاء</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {allClans.filter(clan => clan.isRecruiting).map(clan => (
+          <ClanCard 
+            clan={clan}
+            onJoin={(id) => console.log('Join clan:', id)}
+            onView={(id) => window.location.href = `/ar/clans/${id}`}
+            onLeave={(id) => console.log('Leave clan:', id)}
+            showActions={true}
+            isCompact={true}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- All Clans -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+        <Shield size={24} class="text-command-blue" />
+        <span>جميع العشائر</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {allClans.map(clan => (
+          <ClanCard 
+            clan={clan}
+            onJoin={(id) => console.log('Join clan:', id)}
+            onView={(id) => window.location.href = `/ar/clans/${id}`}
+            onLeave={(id) => console.log('Leave clan:', id)}
+            showActions={true}
+            isCompact={true}
+            currentUserId={1}
+            client:load
+          />
+        ))}
+      </div>
+    </section>
+
+    <!-- Clan Tips -->
+    <section class="military-card p-6">
+      <h2 class="text-xl font-bold text-foreground mb-4">نصائح للانضمام للعشائر</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-tactical-green/20 text-tactical-green rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">1</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">اختر عشيرة تناسب مستواك</h3>
+              <p class="text-sm text-muted-foreground">تأكد من أن متطلبات العشيرة تتناسب مع مستوى لعبك</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-victory-gold/20 text-victory-gold rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">2</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">كن نشطاً ومشاركاً</h3>
+              <p class="text-sm text-muted-foreground">شارك في حروب العشيرة وساعد الأعضاء الآخرين</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-command-blue/20 text-command-blue rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">3</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">احترم قوانين العشيرة</h3>
+              <p class="text-sm text-muted-foreground">اقرأ واتبع قوانين العشيرة للحفاظ على بيئة صحية</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-3 rtl:space-x-reverse">
+            <div class="w-8 h-8 bg-neutral-silver/20 text-neutral-silver rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold">4</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-foreground mb-1">تطور باستمرار</h3>
+              <p class="text-sm text-muted-foreground">اعمل على تحسين مهاراتك ومساهماتك في العشيرة</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout> 

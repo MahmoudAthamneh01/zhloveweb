@@ -1,0 +1,24 @@
+# Avatar Images Directory
+# 
+# This directory should contain user avatar images
+# Default avatar dimensions: 200x200px
+# Supported formats: PNG, JPG, WebP
+# 
+# Files needed:
+# - default.png (default avatar)
+# - admin.png (admin avatar)
+# - legend.png (legend user avatar)
+# - gla.png (GLA master avatar)
+# - usa.png (USA commander avatar)
+# - china.png (China general avatar)
+# - desert.png (desert warrior avatar)
+# - pro.png (pro gamer avatar)
+# - tactical.png (tactical mind avatar)
+#
+# To generate these images, you can use:
+# 1. Online avatar generators
+# 2. Military/gaming themed icons
+# 3. Command & Conquer faction logos
+# 4. Custom designed avatars
+
+# Placeholder note - replace with actual PNG images 

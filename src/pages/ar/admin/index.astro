@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { Shield, Users, Trophy, FileText, MessageSquare, Star, Play, Swords } from 'lucide-react';
+
+const title = "لوحة التحكم الإدارية - زد اتش لوف";
+const description = "إدارة ومراقبة المجتمع والمحتوى";
+
+// Get user info from localStorage or session
+const isAdmin = true; // This should be checked from actual authentication
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+        <Shield size={32} class="text-tactical-green" />
+        <span>لوحة التحكم الإدارية</span>
+      </h1>
+      <p class="text-muted-foreground">إدارة ومراقبة المجتمع والمحتوى</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">1,247</div>
+        <div class="text-sm text-muted-foreground">إجمالي المستخدمين</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">89</div>
+        <div class="text-sm text-muted-foreground">بطولات نشطة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">156</div>
+        <div class="text-sm text-muted-foreground">منشورات المنتدى</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">23</div>
+        <div class="text-sm text-muted-foreground">تقارير معلقة</div>
+      </div>
+    </div>
+
+    <!-- Admin Functions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- User Management -->
+      <a href="/ar/admin/users" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-tactical-green/20 text-tactical-green rounded-lg flex items-center justify-center">
+            <Users size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إدارة المستخدمين</h3>
+            <p class="text-sm text-muted-foreground">إدارة حسابات وصلاحيات المستخدمين</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          12 مستخدم جديد هذا الأسبوع
+        </div>
+      </a>
+
+      <!-- Tournament Management -->
+      <a href="/ar/admin/tournament-approval" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-victory-gold/20 text-victory-gold rounded-lg flex items-center justify-center">
+            <Trophy size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">مراجعة البطولات</h3>
+            <p class="text-sm text-muted-foreground">مراجعة والموافقة على البطولات الجديدة</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          5 بطولات في انتظار المراجعة
+        </div>
+      </a>
+
+      <!-- Forum Management -->
+      <a href="/ar/admin/forum" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-command-blue/20 text-command-blue rounded-lg flex items-center justify-center">
+            <MessageSquare size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إدارة المنتدى</h3>
+            <p class="text-sm text-muted-foreground">مراقبة المنشورات والتعليقات</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          3 تقارير جديدة
+        </div>
+      </a>
+
+      <!-- Content Management -->
+      <a href="/ar/admin/content" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-orange-500/20 text-orange-500 rounded-lg flex items-center justify-center">
+            <FileText size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إدارة المحتوى</h3>
+            <p class="text-sm text-muted-foreground">مراجعة الريبلايات والملفات</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          8 ملفات في انتظار المراجعة
+        </div>
+      </a>
+
+      <!-- Streamers Management -->
+      <a href="/ar/admin/streamers-approval" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-red-500/20 text-red-500 rounded-lg flex items-center justify-center">
+            <Play size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إدارة الستريمرز</h3>
+            <p class="text-sm text-muted-foreground">مراجعة طلبات الانضمام للستريمرز</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          <span id="pending-streamers">0</span> طلب في انتظار المراجعة
+        </div>
+      </a>
+
+      <!-- Clans Management -->
+      <a href="/ar/admin/clans-approval" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-purple-500/20 text-purple-500 rounded-lg flex items-center justify-center">
+            <Swords size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إدارة العشائر</h3>
+            <p class="text-sm text-muted-foreground">مراجعة طلبات إنشاء العشائر</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          <span id="pending-clans">0</span> طلب في انتظار المراجعة
+        </div>
+      </a>
+
+      <!-- Reports -->
+      <a href="/ar/admin/reports" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-alert-red/20 text-alert-red rounded-lg flex items-center justify-center">
+            <Shield size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">البلاغات والتقارير</h3>
+            <p class="text-sm text-muted-foreground">مراجعة البلاغات المرسلة</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          23 تقرير غير مراجع
+        </div>
+      </a>
+
+      <!-- System Settings -->
+      <a href="/ar/admin/settings" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-neutral-silver/20 text-neutral-silver rounded-lg flex items-center justify-center">
+            <Star size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">إعدادات النظام</h3>
+            <p class="text-sm text-muted-foreground">إعدادات الموقع والنظام</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          آخر تحديث منذ 3 أيام
+        </div>
+      </a>
+
+      <!-- Analytics -->
+      <a href="/ar/admin/analytics" class="military-card p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center space-x-4 rtl:space-x-reverse mb-4">
+          <div class="w-12 h-12 bg-tactical-green/20 text-tactical-green rounded-lg flex items-center justify-center">
+            <FileText size={24} />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground">التحليلات والإحصائيات</h3>
+            <p class="text-sm text-muted-foreground">إحصائيات النشاط والاستخدام</p>
+          </div>
+        </div>
+        <div class="text-xs text-muted-foreground">
+          تحديث مباشر
+        </div>
+      </a>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-12">
+      <h2 class="text-xl font-bold text-foreground mb-6">النشاط الأخير</h2>
+      <div class="military-card p-6">
+        <div class="space-y-4">
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+            <span class="text-sm text-foreground">تم الموافقة على بطولة "كأس الشرق الأوسط"</span>
+            <span class="text-xs text-muted-foreground">منذ 5 دقائق</span>
+          </div>
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-command-blue rounded-full"></div>
+            <span class="text-sm text-foreground">مستخدم جديد انضم: "محارب_الصحراء"</span>
+            <span class="text-xs text-muted-foreground">منذ 15 دقيقة</span>
+          </div>
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-victory-gold rounded-full"></div>
+            <span class="text-sm text-foreground">تم تحديث منشور في المنتدى</span>
+            <span class="text-xs text-muted-foreground">منذ 30 دقيقة</span>
+          </div>
+          <div class="flex items-center space-x-3 rtl:space-x-reverse">
+            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+            <span class="text-sm text-foreground">تم رفع ريبلاي جديد للمراجعة</span>
+            <span class="text-xs text-muted-foreground">منذ ساعة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Update pending counts from localStorage
+    updatePendingCounts();
+    
+    function updatePendingCounts() {
+      // Update streamers count
+      const streamerApplications = JSON.parse(localStorage.getItem('streamerApplications') || '[]');
+      const pendingStreamers = streamerApplications.filter(app => app.status === 'pending').length;
+      document.getElementById('pending-streamers').textContent = pendingStreamers;
+      
+      // Update clans count
+      const clanApplications = JSON.parse(localStorage.getItem('clanApplications') || '[]');
+      const pendingClans = clanApplications.filter(app => app.status === 'pending').length;
+      document.getElementById('pending-clans').textContent = pendingClans;
+    }
+  });
+</script>
+
+<style>
+  .btn-primary {
+    @apply bg-tactical-green hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors font-medium;
+  }
+  
+  .military-card {
+    @apply bg-card border border-border rounded-lg shadow-sm;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+</style> 

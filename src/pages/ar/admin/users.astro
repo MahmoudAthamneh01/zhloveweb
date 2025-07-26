@@ -1,0 +1,415 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { 
+  Users, 
+  Search, 
+  Filter, 
+  MoreVertical, 
+  Edit, 
+  Trash2, 
+  Shield, 
+  Ban, 
+  CheckCircle, 
+  XCircle,
+  Eye,
+  Calendar,
+  Clock,
+  Flag,
+  Crown,
+  Star,
+  AlertTriangle,
+  TrendingUp,
+  Download,
+  RefreshCw
+} from 'lucide-react';
+
+const title = "إدارة المستخدمين - لوحة التحكم الإدارية";
+const description = "إدارة حسابات المستخدمين والأعضاء";
+
+// Mock users data
+const users = [
+  {
+    id: 1,
+    username: 'sultan_commander',
+    displayName: 'سلطان القائد',
+    email: 'sultan@example.com',
+    avatar: '/avatars/sultan_commander.png',
+    status: 'active',
+    verified: true,
+    role: 'admin',
+    country: 'السعودية',
+    joinDate: '2018-03-15T00:00:00Z',
+    lastLogin: '2024-01-15T20:30:00Z',
+    stats: {
+      totalGames: 1250,
+      wins: 1125,
+      losses: 125,
+      rating: 2847,
+      rank: 1,
+      clanId: 1
+    },
+    flags: {
+      isBanned: false,
+      isReported: false,
+      isVip: true,
+      isStreamer: true
+    },
+    activity: {
+      gamesThisMonth: 85,
+      hoursPlayed: 240,
+      reportsReceived: 0,
+      reportsSubmitted: 5
+    }
+  },
+  {
+    id: 2,
+    username: 'desert_warrior',
+    displayName: 'محارب الصحراء',
+    email: 'desert@example.com',
+    avatar: '/avatars/desert_warrior.png',
+    status: 'active',
+    verified: true,
+    role: 'streamer',
+    country: 'مصر',
+    joinDate: '2019-06-20T00:00:00Z',
+    lastLogin: '2024-01-14T18:45:00Z',
+    stats: {
+      totalGames: 890,
+      wins: 750,
+      losses: 140,
+      rating: 2156,
+      rank: 15,
+      clanId: 2
+    },
+    flags: {
+      isBanned: false,
+      isReported: false,
+      isVip: false,
+      isStreamer: true
+    },
+    activity: {
+      gamesThisMonth: 45,
+      hoursPlayed: 120,
+      reportsReceived: 1,
+      reportsSubmitted: 12
+    }
+  },
+  {
+    id: 3,
+    username: 'toxic_player',
+    displayName: 'لاعب مشكوك',
+    email: 'toxic@example.com',
+    avatar: '/avatars/toxic_player.png',
+    status: 'warned',
+    verified: false,
+    role: 'user',
+    country: 'الكويت',
+    joinDate: '2023-11-10T00:00:00Z',
+    lastLogin: '2024-01-10T14:20:00Z',
+    stats: {
+      totalGames: 156,
+      wins: 89,
+      losses: 67,
+      rating: 1245,
+      rank: 458,
+      clanId: null
+    },
+    flags: {
+      isBanned: false,
+      isReported: true,
+      isVip: false,
+      isStreamer: false
+    },
+    activity: {
+      gamesThisMonth: 15,
+      hoursPlayed: 25,
+      reportsReceived: 8,
+      reportsSubmitted: 2
+    }
+  }
+];
+
+const userStats = {
+  total: 25847,
+  active: 18945,
+  banned: 156,
+  warned: 89,
+  newThisMonth: 1247,
+  verified: 2450
+};
+
+// Check if user is admin
+const isAdmin = true;
+if (!isAdmin) {
+  return new Response('Unauthorized', { status: 401 });
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Users size={32} class="text-tactical-green" />
+          <span>إدارة المستخدمين</span>
+        </h1>
+        <p class="text-muted-foreground">إدارة حسابات المستخدمين والأعضاء</p>
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <button class="btn btn-outline">
+          <Download size={16} />
+          <span>تصدير</span>
+        </button>
+        <button class="btn btn-outline">
+          <RefreshCw size={16} />
+          <span>تحديث</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-foreground mb-1">{userStats.total.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">إجمالي المستخدمين</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">{userStats.active.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">نشط</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">{userStats.verified.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">موثق</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">{userStats.newThisMonth.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">جديد هذا الشهر</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">{userStats.warned}</div>
+        <div class="text-sm text-muted-foreground">محذر</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-alert-red mb-1">{userStats.banned}</div>
+        <div class="text-sm text-muted-foreground">محظور</div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="البحث في المستخدمين..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <Filter size={20} class="text-muted-foreground" />
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الحالات</option>
+            <option value="active">نشط</option>
+            <option value="inactive">غير نشط</option>
+            <option value="banned">محظور</option>
+            <option value="warned">محذر</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأدوار</option>
+            <option value="admin">مدير</option>
+            <option value="moderator">مشرف</option>
+            <option value="streamer">ستريمر</option>
+            <option value="user">مستخدم</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع البلدان</option>
+            <option value="saudi">السعودية</option>
+            <option value="egypt">مصر</option>
+            <option value="uae">الإمارات</option>
+            <option value="kuwait">الكويت</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="military-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-muted/50">
+            <tr>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">المستخدم</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">الحالة</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">الدور</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">الإحصائيات</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">النشاط</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">آخر دخول</th>
+              <th class="text-left rtl:text-right p-3 text-sm font-medium text-foreground">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} class="border-b border-border hover:bg-muted/30 transition-colors">
+                <!-- User Info -->
+                <td class="p-3">
+                  <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <div class="relative">
+                      <img 
+                        src={user.avatar} 
+                        alt={user.username}
+                        class="w-10 h-10 rounded-full"
+                      />
+                      {user.flags.isVip && (
+                        <Crown size={14} class="absolute -top-1 -right-1 text-victory-gold" />
+                      )}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                        <span class="font-medium text-foreground">{user.displayName}</span>
+                        {user.verified && (
+                          <CheckCircle size={14} class="text-tactical-green" />
+                        )}
+                        {user.flags.isStreamer && (
+                          <Star size={14} class="text-orange-500" />
+                        )}
+                      </div>
+                      <div class="text-sm text-muted-foreground">@{user.username}</div>
+                      <div class="text-xs text-muted-foreground">{user.country}</div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Status -->
+                <td class="p-3">
+                  <div class="flex flex-col space-y-1">
+                    <span class={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                      user.status === 'active' ? 'bg-tactical-green/20 text-tactical-green' :
+                      user.status === 'warned' ? 'bg-orange-500/20 text-orange-500' :
+                      user.status === 'banned' ? 'bg-alert-red/20 text-alert-red' :
+                      'bg-muted text-muted-foreground'
+                    }`}>
+                      {user.status === 'active' ? 'نشط' :
+                       user.status === 'warned' ? 'محذر' :
+                       user.status === 'banned' ? 'محظور' : 'غير نشط'}
+                    </span>
+                    {user.flags.isReported && (
+                      <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                        <Flag size={12} class="text-alert-red" />
+                        <span class="text-xs text-alert-red">مبلغ عنه</span>
+                      </div>
+                    )}
+                  </div>
+                </td>
+
+                <!-- Role -->
+                <td class="p-3">
+                  <span class={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                    user.role === 'admin' ? 'bg-purple-500/20 text-purple-500' :
+                    user.role === 'moderator' ? 'bg-command-blue/20 text-command-blue' :
+                    user.role === 'streamer' ? 'bg-orange-500/20 text-orange-500' :
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    {user.role === 'admin' ? 'مدير' :
+                     user.role === 'moderator' ? 'مشرف' :
+                     user.role === 'streamer' ? 'ستريمر' : 'مستخدم'}
+                  </span>
+                </td>
+
+                <!-- Stats -->
+                <td class="p-3">
+                  <div class="text-sm">
+                    <div class="font-medium text-foreground">#{user.stats.rank}</div>
+                    <div class="text-muted-foreground">{user.stats.rating} تقييم</div>
+                    <div class="text-muted-foreground">{user.stats.totalGames} مباراة</div>
+                  </div>
+                </td>
+
+                <!-- Activity -->
+                <td class="p-3">
+                  <div class="text-sm">
+                    <div class="font-medium text-foreground">{user.activity.gamesThisMonth} مباراة</div>
+                    <div class="text-muted-foreground">{user.activity.hoursPlayed} ساعة</div>
+                    {user.activity.reportsReceived > 0 && (
+                      <div class="text-alert-red">{user.activity.reportsReceived} بلاغ</div>
+                    )}
+                  </div>
+                </td>
+
+                <!-- Last Login -->
+                <td class="p-3">
+                  <div class="text-sm">
+                    <div class="font-medium text-foreground">
+                      {new Date(user.lastLogin).toLocaleDateString('ar-SA')}
+                    </div>
+                    <div class="text-muted-foreground">
+                      {new Date(user.lastLogin).toLocaleTimeString('ar-SA')}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Actions -->
+                <td class="p-3">
+                  <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                      <Eye size={16} />
+                    </button>
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                      <Edit size={16} />
+                    </button>
+                    {user.flags.isReported && (
+                      <button class="p-1 text-orange-500 hover:text-orange-600 transition-colors">
+                        <AlertTriangle size={16} />
+                      </button>
+                    )}
+                    {!user.flags.isBanned && (
+                      <button class="p-1 text-alert-red hover:text-alert-red/80 transition-colors">
+                        <Ban size={16} />
+                      </button>
+                    )}
+                    <button class="p-1 text-muted-foreground hover:text-foreground transition-colors">
+                      <MoreVertical size={16} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between mt-6">
+      <div class="text-sm text-muted-foreground">
+        عرض 1-10 من 25,847 مستخدم
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          السابق
+        </button>
+        <button class="px-3 py-1 bg-primary text-primary-foreground rounded">
+          1
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          2
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          3
+        </button>
+        <span class="px-3 py-1 text-muted-foreground">...</span>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          2585
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          التالي
+        </button>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

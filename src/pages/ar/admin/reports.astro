@@ -1,0 +1,485 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { 
+  Flag, 
+  Search, 
+  Filter, 
+  CheckCircle, 
+  XCircle, 
+  AlertTriangle, 
+  Eye, 
+  Ban, 
+  MessageSquare,
+  Calendar,
+  Clock,
+  User,
+  FileText,
+  Shield,
+  MoreVertical,
+  RefreshCw,
+  Download,
+  Trash2,
+  Archive
+} from 'lucide-react';
+
+const title = "إدارة البلاغات - لوحة التحكم الإدارية";
+const description = "مراجعة والتعامل مع البلاغات والمخالفات";
+
+// Mock reports data
+const reports = [
+  {
+    id: 1,
+    type: 'user',
+    category: 'harassment',
+    priority: 'high',
+    status: 'pending',
+    reporter: {
+      id: 123,
+      username: 'reporter_user',
+      avatar: '/avatars/reporter.png'
+    },
+    reported: {
+      id: 456,
+      username: 'toxic_player',
+      avatar: '/avatars/toxic_player.png',
+      type: 'user'
+    },
+    reason: 'سب وإهانة في الدردشة',
+    description: 'هذا اللاعب يستخدم ألفاظاً نابية ويسب اللاعبين الآخرين باستمرار في الدردشة. مما يفسد تجربة اللعب للجميع.',
+    evidence: {
+      screenshots: ['/evidence/screenshot1.png', '/evidence/screenshot2.png'],
+      chatLogs: 'سجل الدردشة متوفر',
+      video: null
+    },
+    timestamp: '2024-01-15T18:30:00Z',
+    reviewedBy: null,
+    reviewedAt: null,
+    actions: []
+  },
+  {
+    id: 2,
+    type: 'content',
+    category: 'inappropriate',
+    priority: 'medium',
+    status: 'reviewed',
+    reporter: {
+      id: 789,
+      username: 'concerned_user',
+      avatar: '/avatars/concerned.png'
+    },
+    reported: {
+      id: 321,
+      username: 'replay_uploader',
+      avatar: '/avatars/uploader.png',
+      type: 'replay',
+      title: 'ريبلاي مشكوك فيه'
+    },
+    reason: 'محتوى غير لائق',
+    description: 'الريبلاي يحتوي على تعليقات غير لائقة في الوصف وقد يكون مسروق من لاعب آخر.',
+    evidence: {
+      screenshots: ['/evidence/replay_screenshot.png'],
+      chatLogs: null,
+      video: null
+    },
+    timestamp: '2024-01-14T14:20:00Z',
+    reviewedBy: {
+      id: 1,
+      username: 'admin_user',
+      avatar: '/avatars/admin.png'
+    },
+    reviewedAt: '2024-01-15T10:15:00Z',
+    actions: [
+      {
+        type: 'content_removed',
+        description: 'تم إزالة المحتوى',
+        timestamp: '2024-01-15T10:15:00Z'
+      }
+    ]
+  },
+  {
+    id: 3,
+    type: 'clan',
+    category: 'name_violation',
+    priority: 'low',
+    status: 'resolved',
+    reporter: {
+      id: 654,
+      username: 'community_helper',
+      avatar: '/avatars/helper.png'
+    },
+    reported: {
+      id: 987,
+      username: 'clan_leader',
+      avatar: '/avatars/clan_leader.png',
+      type: 'clan',
+      title: 'عشيرة بإسم مخالف'
+    },
+    reason: 'اسم عشيرة مخالف',
+    description: 'اسم العشيرة يحتوي على كلمات غير لائقة وقد يكون مسيئاً لبعض الأعضاء.',
+    evidence: {
+      screenshots: ['/evidence/clan_name.png'],
+      chatLogs: null,
+      video: null
+    },
+    timestamp: '2024-01-13T16:45:00Z',
+    reviewedBy: {
+      id: 2,
+      username: 'moderator_user',
+      avatar: '/avatars/moderator.png'
+    },
+    reviewedAt: '2024-01-14T09:30:00Z',
+    actions: [
+      {
+        type: 'name_change_required',
+        description: 'طُلب من العشيرة تغيير الاسم',
+        timestamp: '2024-01-14T09:30:00Z'
+      },
+      {
+        type: 'name_changed',
+        description: 'تم تغيير الاسم بنجاح',
+        timestamp: '2024-01-14T15:20:00Z'
+      }
+    ]
+  }
+];
+
+const reportStats = {
+  total: 156,
+  pending: 23,
+  reviewed: 89,
+  resolved: 44,
+  todayNew: 8,
+  highPriority: 12,
+  mediumPriority: 35,
+  lowPriority: 109
+};
+
+const reportCategories = [
+  { id: 'harassment', name: 'تحرش أو إساءة', count: 45 },
+  { id: 'inappropriate', name: 'محتوى غير لائق', count: 38 },
+  { id: 'cheating', name: 'غش أو خداع', count: 28 },
+  { id: 'spam', name: 'بريد مزعج', count: 22 },
+  { id: 'name_violation', name: 'مخالفة الأسماء', count: 15 },
+  { id: 'other', name: 'أخرى', count: 8 }
+];
+
+// Check if user is admin
+const isAdmin = true;
+if (!isAdmin) {
+  return new Response('Unauthorized', { status: 401 });
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <Flag size={32} class="text-alert-red" />
+          <span>إدارة البلاغات</span>
+        </h1>
+        <p class="text-muted-foreground">مراجعة والتعامل مع البلاغات والمخالفات</p>
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <button class="btn btn-outline">
+          <Download size={16} />
+          <span>تصدير</span>
+        </button>
+        <button class="btn btn-outline">
+          <RefreshCw size={16} />
+          <span>تحديث</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-7 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-foreground mb-1">{reportStats.total}</div>
+        <div class="text-sm text-muted-foreground">إجمالي البلاغات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1">{reportStats.pending}</div>
+        <div class="text-sm text-muted-foreground">في الانتظار</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1">{reportStats.reviewed}</div>
+        <div class="text-sm text-muted-foreground">تم المراجعة</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1">{reportStats.resolved}</div>
+        <div class="text-sm text-muted-foreground">محلول</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1">{reportStats.todayNew}</div>
+        <div class="text-sm text-muted-foreground">جديد اليوم</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-alert-red mb-1">{reportStats.highPriority}</div>
+        <div class="text-sm text-muted-foreground">أولوية عالية</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-neutral-silver mb-1">{reportStats.mediumPriority}</div>
+        <div class="text-sm text-muted-foreground">أولوية متوسطة</div>
+      </div>
+    </div>
+
+    <!-- Categories Overview -->
+    <div class="military-card p-6 mb-8">
+      <h2 class="text-xl font-bold text-foreground mb-4">فئات البلاغات</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {reportCategories.map((category) => (
+          <div key={category.id} class="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                <Flag size={16} class="text-primary" />
+              </div>
+              <span class="font-medium text-foreground">{category.name}</span>
+            </div>
+            <span class="text-sm font-bold text-foreground">{category.count}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            placeholder="البحث في البلاغات..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <Filter size={20} class="text-muted-foreground" />
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الحالات</option>
+            <option value="pending">في الانتظار</option>
+            <option value="reviewed">تم المراجعة</option>
+            <option value="resolved">محلول</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأولويات</option>
+            <option value="high">عالية</option>
+            <option value="medium">متوسطة</option>
+            <option value="low">منخفضة</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأنواع</option>
+            <option value="user">مستخدم</option>
+            <option value="content">محتوى</option>
+            <option value="clan">عشيرة</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports List -->
+    <div class="space-y-4">
+      {reports.map((report) => (
+        <div key={report.id} class="military-card p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-3 rtl:space-x-reverse">
+              <div class={`w-3 h-3 rounded-full ${
+                report.priority === 'high' ? 'bg-alert-red' :
+                report.priority === 'medium' ? 'bg-victory-gold' :
+                'bg-tactical-green'
+              }`}></div>
+              <div>
+                <h3 class="font-semibold text-foreground">بلاغ #{report.id}</h3>
+                <div class="flex items-center space-x-2 rtl:space-x-reverse text-sm text-muted-foreground">
+                  <span>{report.category === 'harassment' ? 'تحرش' : 
+                         report.category === 'inappropriate' ? 'محتوى غير لائق' :
+                         report.category === 'cheating' ? 'غش' :
+                         report.category === 'spam' ? 'بريد مزعج' :
+                         report.category === 'name_violation' ? 'مخالفة الأسماء' : 'أخرى'}</span>
+                  <span>•</span>
+                  <span>{report.type === 'user' ? 'مستخدم' : report.type === 'content' ? 'محتوى' : 'عشيرة'}</span>
+                  <span>•</span>
+                  <span>{new Date(report.timestamp).toLocaleDateString('ar-SA')}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <span class={`px-3 py-1 rounded-full text-xs font-medium ${
+                report.status === 'pending' ? 'bg-orange-500/20 text-orange-500' :
+                report.status === 'reviewed' ? 'bg-command-blue/20 text-command-blue' :
+                'bg-tactical-green/20 text-tactical-green'
+              }`}>
+                {report.status === 'pending' ? 'في الانتظار' :
+                 report.status === 'reviewed' ? 'تم المراجعة' : 'محلول'}
+              </span>
+              <button class="p-1 text-muted-foreground hover:text-foreground">
+                <MoreVertical size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Report Details -->
+            <div class="space-y-4">
+              <div>
+                <h4 class="font-medium text-foreground mb-2">تفاصيل البلاغ</h4>
+                <div class="bg-muted p-3 rounded-lg">
+                  <div class="text-sm font-medium text-foreground mb-1">{report.reason}</div>
+                  <p class="text-sm text-muted-foreground">{report.description}</p>
+                </div>
+              </div>
+
+              <!-- Reporter Info -->
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <User size={16} class="text-muted-foreground" />
+                <span class="text-sm text-muted-foreground">بلاغ من:</span>
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <img 
+                    src={report.reporter.avatar} 
+                    alt={report.reporter.username}
+                    class="w-6 h-6 rounded-full"
+                  />
+                  <span class="text-sm font-medium text-foreground">{report.reporter.username}</span>
+                </div>
+              </div>
+
+              <!-- Reported Item -->
+              <div class="flex items-center space-x-3 rtl:space-x-reverse">
+                <AlertTriangle size={16} class="text-alert-red" />
+                <span class="text-sm text-muted-foreground">المبلغ عنه:</span>
+                <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                  <img 
+                    src={report.reported.avatar} 
+                    alt={report.reported.username}
+                    class="w-6 h-6 rounded-full"
+                  />
+                  <span class="text-sm font-medium text-foreground">
+                    {report.reported.title || report.reported.username}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Evidence -->
+              {report.evidence && (
+                <div>
+                  <h4 class="font-medium text-foreground mb-2">الأدلة</h4>
+                  <div class="space-y-2">
+                    {report.evidence.screenshots && report.evidence.screenshots.length > 0 && (
+                      <div class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                        <FileText size={14} class="text-muted-foreground" />
+                        <span class="text-muted-foreground">لقطات شاشة: {report.evidence.screenshots.length}</span>
+                      </div>
+                    )}
+                    {report.evidence.chatLogs && (
+                      <div class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
+                        <MessageSquare size={14} class="text-muted-foreground" />
+                        <span class="text-muted-foreground">{report.evidence.chatLogs}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <!-- Actions and Review -->
+            <div class="space-y-4">
+              {report.status === 'pending' && (
+                <div>
+                  <h4 class="font-medium text-foreground mb-2">إجراءات سريعة</h4>
+                  <div class="flex flex-wrap gap-2">
+                    <button class="btn btn-sm bg-tactical-green text-white hover:bg-tactical-green/90">
+                      <CheckCircle size={14} />
+                      <span>قبول</span>
+                    </button>
+                    <button class="btn btn-sm bg-alert-red text-white hover:bg-alert-red/90">
+                      <XCircle size={14} />
+                      <span>رفض</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline">
+                      <Eye size={14} />
+                      <span>مراجعة</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline">
+                      <Ban size={14} />
+                      <span>حظر</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {report.reviewedBy && (
+                <div>
+                  <h4 class="font-medium text-foreground mb-2">المراجعة</h4>
+                  <div class="bg-muted p-3 rounded-lg">
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse mb-2">
+                      <img 
+                        src={report.reviewedBy.avatar} 
+                        alt={report.reviewedBy.username}
+                        class="w-6 h-6 rounded-full"
+                      />
+                      <span class="text-sm font-medium text-foreground">{report.reviewedBy.username}</span>
+                      <span class="text-xs text-muted-foreground">
+                        {new Date(report.reviewedAt).toLocaleDateString('ar-SA')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {report.actions && report.actions.length > 0 && (
+                <div>
+                  <h4 class="font-medium text-foreground mb-2">الإجراءات المتخذة</h4>
+                  <div class="space-y-2">
+                    {report.actions.map((action, index) => (
+                      <div key={index} class="flex items-center space-x-2 rtl:space-x-reverse p-2 bg-muted rounded">
+                        <CheckCircle size={14} class="text-tactical-green" />
+                        <span class="text-sm text-foreground">{action.description}</span>
+                        <span class="text-xs text-muted-foreground">
+                          {new Date(action.timestamp).toLocaleDateString('ar-SA')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-between mt-8">
+      <div class="text-sm text-muted-foreground">
+        عرض 1-10 من 156 بلاغ
+      </div>
+      <div class="flex items-center space-x-2 rtl:space-x-reverse">
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          السابق
+        </button>
+        <button class="px-3 py-1 bg-primary text-primary-foreground rounded">
+          1
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          2
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          3
+        </button>
+        <span class="px-3 py-1 text-muted-foreground">...</span>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          16
+        </button>
+        <button class="px-3 py-1 bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors">
+          التالي
+        </button>
+      </div>
+    </div>
+  </div>
+</BaseLayout> 

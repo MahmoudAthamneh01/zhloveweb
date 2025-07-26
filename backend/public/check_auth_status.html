@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Auth Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #2d5a2d; }
+        .error { background: #5a2d2d; }
+        .info { background: #2d2d5a; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Status Check</h1>
+    <div id="status"></div>
+    
+    <script>
+        function checkStatus() {
+            const statusDiv = document.getElementById('status');
+            let html = '';
+            
+            // Check all possible token names
+            const tokenNames = ['authToken', 'zh_love_token', 'token'];
+            let foundToken = null;
+            
+            html += '<h3>🔍 Token Search:</h3>';
+            tokenNames.forEach(name => {
+                const token = localStorage.getItem(name);
+                if (token) {
+                    html += `<div class="success">✅ Found token "${name}": ${token.substring(0, 50)}...</div>`;
+                    foundToken = token;
+                } else {
+                    html += `<div class="error">❌ No token found for "${name}"</div>`;
+                }
+            });
+            
+            // Check user data
+            html += '<h3>👤 User Data:</h3>';
+            const userData = localStorage.getItem('zh_love_user');
+            if (userData) {
+                html += `<div class="success">✅ User data found: ${userData}</div>`;
+            } else {
+                html += `<div class="error">❌ No user data found</div>`;
+            }
+            
+            // Test current location access
+            html += '<h3>🌐 Current Location:</h3>';
+            html += `<div class="info">Current URL: ${window.location.href}</div>`;
+            
+            // All localStorage items
+            html += '<h3>💾 All localStorage items:</h3>';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                html += `<div class="info">${key}: ${value.substring(0, 100)}...</div>`;
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        checkStatus();
+    </script>
+</body>
+</html>

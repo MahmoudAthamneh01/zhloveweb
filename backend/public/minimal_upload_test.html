@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Upload Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Upload Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Direct File Upload (No Authentication)</h3>
+        <form id="directForm" enctype="multipart/form-data">
+            <input type="file" id="directFile" name="test_file" accept="image/*"><br><br>
+            <button type="button" onclick="testDirectUpload()">Upload Directly</button>
+        </form>
+        <div id="directResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Clan Upload with Authentication</h3>
+        <form id="clanForm" enctype="multipart/form-data">
+            <input type="text" id="clanName" name="name" placeholder="Clan Name" value="Test Clan"><br><br>
+            <input type="text" id="clanTag" name="tag" placeholder="Clan Tag" value="TEST"><br><br>
+            <textarea id="clanDesc" name="description" placeholder="Description">Test Description</textarea><br><br>
+            <input type="file" id="clanLogo" name="logo" accept="image/*"><br><br>
+            <button type="button" onclick="testClanUpload()">Upload with Clan Data</button>
+        </form>
+        <div id="clanResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testDirectUpload() {
+            const file = document.getElementById('directFile').files[0];
+            const result = document.getElementById('directResult');
+            
+            if (!file) {
+                result.innerHTML = '❌ Please select a file';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('test_file', file);
+            
+            console.log('Direct upload - FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
+            try {
+                const response = await fetch('/test_upload_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+            } catch (error) {
+                result.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        async function testClanUpload() {
+            const file = document.getElementById('clanLogo').files[0];
+            const result = document.getElementById('clanResult');
+            
+            if (!file) {
+                result.innerHTML = '❌ Please select a file';
+                return;
+            }
+            
+            // Get token from localStorage (assuming user is logged in)
+            const token = localStorage.getItem('zh_love_token');
+            if (!token) {
+                result.innerHTML = '❌ No authentication token found. Please login first.';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('clanName').value);
+            formData.append('tag', document.getElementById('clanTag').value);
+            formData.append('description', document.getElementById('clanDesc').value);
+            formData.append('logo', file);
+            
+            console.log('Clan upload - FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                if (value instanceof File) {
+                    console.log(key, `File: ${value.name}, Size: ${value.size}, Type: ${value.type}`);
+                } else {
+                    console.log(key, value);
+                }
+            }
+            
+            try {
+                const response = await fetch('/clan_api.php?action=update_clan_settings', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                        // Note: No Content-Type header for FormData
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+            } catch (error) {
+                result.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

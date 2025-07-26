@@ -1,0 +1,1562 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ForumPost from '../../../components/forum/ForumPost.tsx';
+import { 
+  MessageCircle, 
+  Plus, 
+  Search, 
+  Filter, 
+  Pin, 
+  Star, 
+  TrendingUp, 
+  Clock, 
+  Eye, 
+  Users, 
+  Award,
+  Flame,
+  Target,
+  Calendar,
+  BookOpen,
+  HelpCircle,
+  Gamepad2,
+  Trophy,
+  Zap,
+  Compass
+} from 'lucide-react';
+
+const title = "المنتدى - زد اتش لوف";
+const description = "انضم لمجتمع لاعبي الجنرالات زيرو آور وشارك في النقاشات";
+
+// Mock forum data (fallback if API fails)
+const forumStats = {
+  totalPosts: 0,
+  totalTopics: 0,
+  totalMembers: 0,
+  onlineMembers: 0,
+  todaysPosts: 0
+};
+
+const categories = [
+  {
+    id: 1,
+    name: "النقاشات العامة",
+    slug: "general",
+    description: "نقاشات عامة حول اللعبة والمجتمع",
+    color: "#4F9CF9",
+    icon: "💬",
+    topicsCount: 850,
+    postsCount: 4200,
+    lastPost: {
+      title: "أفضل استراتيجيات للمبتدئين",
+      author: "جنرال الصحراء",
+      timestamp: "2024-02-17T20:30:00Z"
+    }
+  },
+  {
+    id: 2,
+    name: "الاستراتيجيات والتكتيكات",
+    slug: "strategies",
+    description: "شارك استراتيجياتك وتعلم من الخبراء",
+    color: "#06D6A0",
+    icon: "🎯",
+    topicsCount: 920,
+    postsCount: 5680,
+    lastPost: {
+      title: "تكتيكات جديدة مع الـ GLA",
+      author: "سيد الحرب",
+      timestamp: "2024-02-17T19:15:00Z"
+    }
+  },
+  {
+    id: 3,
+    name: "البطولات والتحديات",
+    slug: "tournaments",
+    description: "أخبار البطولات والمنافسات",
+    color: "#FFD166",
+    icon: "🏆",
+    topicsCount: 320,
+    postsCount: 1890,
+    lastPost: {
+      title: "بطولة الشرق الأوسط - التسجيل مفتوح",
+      author: "إدارة البطولات",
+      timestamp: "2024-02-17T18:45:00Z"
+    }
+  },
+  {
+    id: 4,
+    name: "المودز والخرائط",
+    slug: "mods-maps",
+    description: "تحميل ومشاركة المودز والخرائط",
+    color: "#F72585",
+    icon: "🗺️",
+    topicsCount: 450,
+    postsCount: 2300,
+    lastPost: {
+      title: "خريطة جديدة: الصحراء المحرقة",
+      author: "صانع الخرائط",
+      timestamp: "2024-02-17T17:20:00Z"
+    }
+  },
+  {
+    id: 5,
+    name: "الدعم التقني",
+    slug: "support",
+    description: "مساعدة في حل المشاكل التقنية",
+    color: "#FF6B6B",
+    icon: "🔧",
+    topicsCount: 680,
+    postsCount: 3200,
+    lastPost: {
+      title: "مشكلة في الاتصال المتعدد",
+      author: "لاعب جديد",
+      timestamp: "2024-02-17T16:30:00Z"
+    }
+  }
+];
+
+const featuredPosts = [
+  {
+    id: 1,
+    title: "الدليل الشامل للعب مع الولايات المتحدة في 2024",
+    content: "دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة...",
+    excerpt: "دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة للوصول لأعلى المستويات التنافسية",
+    author: {
+      id: 1,
+      username: "usa_master",
+      displayName: "سيد أمريكا",
+      avatar: "/avatars/usa_master.png",
+      badge: "expert",
+      level: 45,
+      reputation: 2850,
+      verified: true,
+      isOnline: true,
+      postCount: 1250,
+      joinedAt: "2023-01-15T00:00:00Z"
+    },
+    category: {
+      id: 2,
+      name: "الاستراتيجيات والتكتيكات",
+      slug: "strategies",
+      color: "#06D6A0"
+    },
+    tags: [
+      { id: 1, name: "أمريكا", color: "#4F9CF9" },
+      { id: 2, name: "استراتيجية", color: "#06D6A0" },
+      { id: 3, name: "متقدم", color: "#FFD166" }
+    ],
+    createdAt: "2024-02-17T14:30:00Z",
+    updatedAt: "2024-02-17T14:30:00Z",
+    stats: {
+      views: 3420,
+      likes: 189,
+      dislikes: 12,
+      comments: 67,
+      shares: 34,
+      bookmarks: 156
+    },
+    status: "published",
+    type: "guide",
+    priority: "featured",
+    difficulty: "advanced",
+    gameRelated: {
+      faction: "usa",
+      gameMode: "1v1"
+    },
+    hasAnswered: false,
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  },
+  {
+    id: 2,
+    title: "بطولة الشرق الأوسط الكبرى - جميع التفاصيل والجوائز",
+    content: "إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار...",
+    excerpt: "إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار والتسجيل مفتوح الآن",
+    author: {
+      id: 2,
+      username: "tournament_admin",
+      displayName: "إدارة البطولات",
+      avatar: "/avatars/tournament_admin.png",
+      badge: "moderator",
+      level: 50,
+      reputation: 5000,
+      verified: true,
+      isOnline: false,
+      postCount: 890,
+      joinedAt: "2023-01-01T00:00:00Z"
+    },
+    category: {
+      id: 3,
+      name: "البطولات والتحديات",
+      slug: "tournaments",
+      color: "#FFD166"
+    },
+    tags: [
+      { id: 4, name: "بطولة", color: "#FFD166" },
+      { id: 5, name: "جوائز", color: "#F72585" },
+      { id: 6, name: "تسجيل", color: "#06D6A0" }
+    ],
+    createdAt: "2024-02-17T12:00:00Z",
+    updatedAt: "2024-02-17T12:00:00Z",
+    stats: {
+      views: 5680,
+      likes: 267,
+      dislikes: 8,
+      comments: 134,
+      shares: 89,
+      bookmarks: 234
+    },
+    status: "published",
+    type: "news",
+    priority: "pinned",
+    hasAnswered: false,
+    isLiked: true,
+    isBookmarked: true,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  }
+];
+
+const recentPosts = [
+  {
+    id: 3,
+    title: "كيف أتعامل مع هجمات الطائرات المبكرة؟",
+    content: "أواجه صعوبة في التعامل مع الهجمات الجوية المبكرة، خاصة مع أمريكا...",
+    excerpt: "أواجه صعوبة في التعامل مع الهجمات الجوية المبكرة، خاصة مع أمريكا. ما هي أفضل الطرق للدفاع؟",
+    author: {
+      id: 3,
+      username: "newbie_general",
+      displayName: "جنرال مبتدئ",
+      avatar: "/avatars/newbie_general.png",
+      level: 8,
+      reputation: 120,
+      verified: false,
+      isOnline: true,
+      postCount: 45,
+      joinedAt: "2024-01-20T00:00:00Z"
+    },
+    category: {
+      id: 2,
+      name: "الاستراتيجيات والتكتيكات",
+      slug: "strategies",
+      color: "#06D6A0"
+    },
+    tags: [
+      { id: 7, name: "مبتدئ", color: "#06D6A0" },
+      { id: 8, name: "دفاع", color: "#4F9CF9" },
+      { id: 9, name: "طيران", color: "#FFD166" }
+    ],
+    createdAt: "2024-02-17T20:15:00Z",
+    updatedAt: "2024-02-17T20:15:00Z",
+    stats: {
+      views: 89,
+      likes: 12,
+      dislikes: 1,
+      comments: 8,
+      shares: 2,
+      bookmarks: 5
+    },
+    status: "published",
+    type: "question",
+    priority: "normal",
+    difficulty: "beginner",
+    gameRelated: {
+      faction: "usa",
+      gameMode: "1v1"
+    },
+    hasAnswered: false,
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  },
+  {
+    id: 4,
+    title: "مشاكل في الاتصال المتعدد - حلول مقترحة",
+    content: "جمعت هنا أهم الحلول لمشاكل الاتصال الشائعة في اللعب المتعدد...",
+    excerpt: "جمعت هنا أهم الحلول لمشاكل الاتصال الشائعة في اللعب المتعدد بناءً على تجربتي الطويلة",
+    author: {
+      id: 4,
+      username: "tech_support",
+      displayName: "الدعم التقني",
+      avatar: "/avatars/tech_support.png",
+      badge: "expert",
+      level: 38,
+      reputation: 1890,
+      verified: true,
+      isOnline: false,
+      postCount: 567,
+      joinedAt: "2023-03-10T00:00:00Z"
+    },
+    category: {
+      id: 5,
+      name: "الدعم التقني",
+      slug: "support",
+      color: "#FF6B6B"
+    },
+    tags: [
+      { id: 10, name: "اتصال", color: "#FF6B6B" },
+      { id: 11, name: "حلول", color: "#06D6A0" },
+      { id: 12, name: "متعدد", color: "#4F9CF9" }
+    ],
+    createdAt: "2024-02-17T19:45:00Z",
+    updatedAt: "2024-02-17T19:45:00Z",
+    stats: {
+      views: 234,
+      likes: 45,
+      dislikes: 3,
+      comments: 23,
+      shares: 12,
+      bookmarks: 34
+    },
+    status: "published",
+    type: "guide",
+    priority: "normal",
+    difficulty: "intermediate",
+    hasAnswered: true,
+    bestAnswer: {
+      commentId: 15,
+      authorId: 4
+    },
+    isLiked: false,
+    isBookmarked: false,
+    permissions: {
+      canEdit: false,
+      canDelete: false,
+      canPin: false,
+      canLock: false
+    }
+  }
+];
+
+const quickActions = [
+  { id: "new-post", name: "منشور جديد", icon: Plus, color: "bg-tactical-green" },
+  { id: "ask-question", name: "اسأل سؤال", icon: HelpCircle, color: "bg-command-blue" },
+  { id: "share-strategy", name: "شارك استراتيجية", icon: Target, color: "bg-victory-gold" },
+  { id: "upload-replay", name: "ارفع ريبلاي", icon: Gamepad2, color: "bg-purple-500" }
+];
+
+const topContributors = [
+  {
+    id: 1,
+    username: "master_strategist",
+    displayName: "سيد الاستراتيجية",
+    avatar: "/avatars/master_strategist.png",
+    badge: "expert",
+    postsThisWeek: 23,
+    reputation: 4500,
+    verified: true
+  },
+  {
+    id: 2,
+    username: "tournament_king",
+    displayName: "ملك البطولات",
+    avatar: "/avatars/tournament_king.png",
+    badge: "vip",
+    postsThisWeek: 18,
+    reputation: 3890,
+    verified: true
+  },
+  {
+    id: 3,
+    username: "helpful_guide",
+    displayName: "المرشد المفيد",
+    avatar: "/avatars/helpful_guide.png",
+    badge: "veteran",
+    postsThisWeek: 15,
+    reputation: 3200,
+    verified: false
+  }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container-custom py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-foreground mb-2 flex items-center space-x-3 rtl:space-x-reverse">
+          <MessageCircle size={32} class="text-command-blue" />
+          <span>المنتدى</span>
+        </h1>
+        <p class="text-muted-foreground">انضم لمجتمع لاعبي الجنرالات زيرو آور وشارك في النقاشات</p>
+      </div>
+      <a href="/ar/forum/new" id="new-post-btn" class="btn btn-primary flex items-center space-x-2 rtl:space-x-reverse">
+        <Plus size={20} />
+        <span>منشور جديد</span>
+      </a>
+    </div>
+
+    <!-- Forum Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-command-blue mb-1" data-stat="total-posts">{forumStats.totalPosts.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">إجمالي المنشورات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-tactical-green mb-1" data-stat="total-topics">{forumStats.totalTopics.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">الموضوعات</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-victory-gold mb-1" data-stat="total-members">{forumStats.totalMembers.toLocaleString()}</div>
+        <div class="text-sm text-muted-foreground">الأعضاء</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-orange-500 mb-1" data-stat="online-members">{forumStats.onlineMembers}</div>
+        <div class="text-sm text-muted-foreground">متصل الآن</div>
+      </div>
+      <div class="military-card p-4 text-center">
+        <div class="text-2xl font-bold text-purple-500 mb-1" data-stat="todays-posts">{forumStats.todaysPosts}</div>
+        <div class="text-sm text-muted-foreground">منشورات اليوم</div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="military-card p-4 mb-8">
+      <div class="flex flex-col lg:flex-row gap-4">
+        <div class="flex-1 relative">
+          <Search class="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+          <input
+            type="text"
+            id="search-input"
+            placeholder="ابحث في المنتدى..."
+            class="w-full pl-10 rtl:pr-10 rtl:pl-3 pr-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <Filter size={20} class="text-muted-foreground" />
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الفئات</option>
+            {categories.map(cat => (
+              <option value={cat.slug}>{cat.name}</option>
+            ))}
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="">جميع الأنواع</option>
+            <option value="discussion">مناقشة</option>
+            <option value="question">سؤال</option>
+            <option value="guide">دليل</option>
+            <option value="news">أخبار</option>
+            <option value="poll">استطلاع</option>
+          </select>
+          
+          <select class="bg-input border border-border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring">
+            <option value="recent">الأحدث</option>
+            <option value="popular">الأكثر شعبية</option>
+            <option value="trending">الأكثر تفاعلاً</option>
+            <option value="answered">تم الرد عليها</option>
+            <option value="unanswered">بدون رد</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {quickActions.map((action) => (
+        <a 
+          key={action.id}
+          href={`/ar/forum/new?type=${action.id}`} 
+          class="military-card p-4 text-center hover:shadow-lg transition-all duration-300 group"
+        >
+          <div class={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
+            <action.icon size={24} class="text-white" />
+          </div>
+          <div class="font-medium text-foreground text-sm">{action.name}</div>
+        </a>
+      ))}
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Forum Content -->
+      <div class="lg:col-span-3 space-y-8">
+        <!-- Categories Overview -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Compass size={24} class="text-primary" />
+            <span>فئات المنتدى</span>
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="categories-container">
+            {categories.map(category => (
+              <a 
+                key={category.id}
+                href={`/ar/forum/category/${category.slug}`}
+                class="military-card p-6 hover:shadow-lg transition-all duration-300 group"
+              >
+                <div class="flex items-start space-x-4 rtl:space-x-reverse">
+                  <div 
+                    class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"
+                    style={`background-color: ${category.color}20`}
+                  >
+                    {category.icon}
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-foreground group-hover:text-primary transition-colors mb-1">
+                      {category.name}
+                    </h3>
+                    <p class="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {category.description}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-xs text-muted-foreground">
+                      <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <span>{category.topicsCount} موضوع</span>
+                        <span>{category.postsCount} منشور</span>
+                      </div>
+                      
+                      {category.lastPost && (
+                        <div class="text-right rtl:text-left">
+                          <div class="font-medium text-foreground text-sm truncate max-w-24">
+                            {category.lastPost.title}
+                          </div>
+                          <div class="text-xs">
+                            بواسطة {category.lastPost.author}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <!-- Featured Posts -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Star size={24} class="text-victory-gold" />
+            <span>المنشورات المميزة</span>
+          </h2>
+          
+          <div class="space-y-6" id="featured-posts-container">
+            {featuredPosts.map(post => (
+              <ForumPost 
+                key={post.id}
+                post={post}
+                onLike={(id) => console.log('Like post:', id)}
+                onComment={(id) => window.location.href = `/ar/forum/post/${id}#comments`}
+                onShare={(id) => console.log('Share post:', id)}
+                onBookmark={(id) => console.log('Bookmark post:', id)}
+                onReport={(id) => console.log('Report post:', id)}
+                onView={(id) => window.location.href = `/ar/forum/post/${id}`}
+                showActions={true}
+                isCompact={false}
+                currentUserId={1}
+                client:load
+              />
+            ))}
+          </div>
+        </section>
+
+        <!-- Recent Posts -->
+        <section>
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center space-x-2 rtl:space-x-reverse">
+            <Clock size={24} class="text-tactical-green" />
+            <span>أحدث المنشورات</span>
+          </h2>
+          
+          <div class="space-y-4" id="recent-posts-container">
+            {recentPosts.map(post => (
+              <ForumPost 
+                key={post.id}
+                post={post}
+                onLike={(id) => console.log('Like post:', id)}
+                onComment={(id) => window.location.href = `/ar/forum/post/${id}#comments`}
+                onShare={(id) => console.log('Share post:', id)}
+                onBookmark={(id) => console.log('Bookmark post:', id)}
+                onReport={(id) => console.log('Report post:', id)}
+                onView={(id) => window.location.href = `/ar/forum/post/${id}`}
+                showActions={true}
+                isCompact={true}
+                currentUserId={1}
+                client:load
+              />
+            ))}
+          </div>
+          
+          <div class="text-center mt-6">
+            <a href="/ar/forum/recent" class="btn btn-outline">
+              عرض المزيد من المنشورات
+            </a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Top Contributors -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Award size={20} class="text-victory-gold" />
+            <span>أفضل المساهمين</span>
+          </h3>
+          
+          <div class="space-y-4">
+            {topContributors.map((contributor, index) => (
+              <div key={contributor.id} class="flex items-center space-x-3 rtl:space-x-reverse">
+                <div class="relative">
+                  <img 
+                    src={contributor.avatar} 
+                    alt={contributor.displayName}
+                    class="w-10 h-10 rounded-full"
+                  />
+                  <div class={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                    index === 0 ? 'bg-victory-gold' : 
+                    index === 1 ? 'bg-neutral-silver' : 
+                    'bg-amber-600'
+                  }`}>
+                    {index + 1}
+                  </div>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center space-x-1 rtl:space-x-reverse">
+                    <span class="font-medium text-foreground text-sm truncate">
+                      {contributor.displayName}
+                    </span>
+                    {contributor.verified && (
+                      <Star size={12} class="text-tactical-green" />
+                    )}
+                  </div>
+                  <div class="text-xs text-muted-foreground">
+                    {contributor.postsThisWeek} منشور • {contributor.reputation} نقطة
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Trending Topics -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <TrendingUp size={20} class="text-orange-500" />
+            <span>الموضوعات الرائجة</span>
+          </h3>
+          
+          <div class="space-y-3">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Flame size={16} class="text-orange-500" />
+              <a href="/ar/forum/topic/hot" class="text-sm text-foreground hover:text-primary transition-colors">
+                أفضل تحديث للعبة هذا العام
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Zap size={16} class="text-victory-gold" />
+              <a href="/ar/forum/topic/trending" class="text-sm text-foreground hover:text-primary transition-colors">
+                استراتيجيات الصين الجديدة
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Trophy size={16} class="text-tactical-green" />
+              <a href="/ar/forum/topic/tournament" class="text-sm text-foreground hover:text-primary transition-colors">
+                بطولة الشرق الأوسط 2024
+              </a>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <Target size={16} class="text-command-blue" />
+              <a href="/ar/forum/topic/strategy" class="text-sm text-foreground hover:text-primary transition-colors">
+                تكتيكات الدفاع المتقدمة
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forum Rules -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <BookOpen size={20} class="text-command-blue" />
+            <span>قوانين المنتدى</span>
+          </h3>
+          
+          <div class="space-y-2 text-sm text-muted-foreground">
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>احترم الأعضاء الآخرين</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>لا تنشر محتوى مسيء</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>استخدم الفئات المناسبة</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>لا تنشر إعلانات غير مرخصة</span>
+            </div>
+            <div class="flex items-start space-x-2 rtl:space-x-reverse">
+              <div class="w-1.5 h-1.5 bg-tactical-green rounded-full flex-shrink-0 mt-2"></div>
+              <span>تأكد من دقة المعلومات</span>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <a href="/ar/forum/rules" class="text-sm text-primary hover:underline">
+              اقرأ القوانين الكاملة
+            </a>
+          </div>
+        </div>
+
+        <!-- Online Members -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Users size={20} class="text-tactical-green" />
+            <span>متصل الآن ({forumStats.onlineMembers})</span>
+          </h3>
+          
+          <div class="flex flex-wrap gap-2">
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">سيد الاستراتيجية</span>
+            </div>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">جنرال الصحراء</span>
+            </div>
+            <div class="flex items-center space-x-1 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-xs text-muted-foreground">ملك البطولات</span>
+            </div>
+            <span class="text-xs text-muted-foreground">و {forumStats.onlineMembers - 3} آخرين</span>
+          </div>
+        </div>
+
+        <!-- Latest Activity -->
+        <div class="military-card p-6">
+          <h3 class="text-lg font-bold text-foreground mb-4 flex items-center space-x-2 rtl:space-x-reverse">
+            <Clock size={20} class="text-orange-500" />
+            <span>آخر الأنشطة</span>
+          </h3>
+          
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-tactical-green rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">أحمد</span> رد على 
+                <span class="text-primary">استراتيجيات الدفاع</span>
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-command-blue rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">سارة</span> أنشأت موضوع 
+                <span class="text-primary">مودز جديدة</span>
+              </span>
+            </div>
+            <div class="flex items-center space-x-2 rtl:space-x-reverse">
+              <div class="w-2 h-2 bg-victory-gold rounded-full"></div>
+              <span class="text-muted-foreground">
+                <span class="font-medium text-foreground">محمد</span> أعجب بـ 
+                <span class="text-primary">دليل المبتدئين</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-title:hover {
+    text-decoration: underline;
+  }
+  
+  /* Loading animation */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .loading {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+<!-- JavaScript for API Integration -->
+<script>
+  // Forum data and state
+  let currentPage = 1;
+  let loading = false;
+  let categories = [];
+  let posts = [];
+
+  // API functions
+  async function fetchForumStats() {
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=get_stats');
+      const data = await response.json();
+      
+      if (data.success) {
+        updateStats(data.stats);
+      } else {
+        console.error('Failed to fetch stats:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching forum stats:', error);
+    }
+  }
+
+  async function fetchCategories() {
+    try {
+      const response = await fetch('/backend/public/forum_api.php?action=get_categories');
+      const data = await response.json();
+      
+      if (data.success) {
+        categories = data.categories;
+        renderCategories(categories);
+      } else {
+        console.error('Failed to fetch categories:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  }
+
+  async function fetchPosts(page = 1, categoryId = null, sort = 'latest', search = '') {
+    if (loading) return;
+    loading = true;
+    
+    try {
+      const params = new URLSearchParams({
+        action: 'get_posts',
+        page: page.toString(),
+        limit: '10',
+        sort: sort
+      });
+      
+      if (categoryId) params.append('category_id', categoryId);
+      if (search) params.append('search', search);
+      
+      const response = await fetch(`/backend/public/forum_api.php?${params}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        if (page === 1) {
+          posts = data.posts;
+        } else {
+          posts = [...posts, ...data.posts];
+        }
+        
+        if (posts.length === 0 && page === 1) {
+          renderEmptyState();
+        } else {
+          renderRecentPosts(posts, page === 1);
+          renderFeaturedPosts(posts.filter(post => post.is_featured == 1));
+        }
+      } else {
+        console.error('Failed to fetch posts:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    } finally {
+      loading = false;
+    }
+  }
+
+  // Interactive functions for posts
+  async function likePost(postId) {
+    try {
+      const token = localStorage.getItem('zh_love_token');
+      const response = await fetch('http://localhost:8080/forum_api.php?action=like_post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ post_id: postId })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // Update like count in UI
+        updatePostLikeCount(postId, data.like_count, data.user_liked);
+        showNotification('تم الإعجاب بالمنشور', 'success');
+      } else {
+        showNotification(data.error || 'فشل في الإعجاب', 'error');
+      }
+    } catch (error) {
+      console.error('Error liking post:', error);
+      showNotification('حدث خطأ في الشبكة', 'error');
+    }
+  }
+
+  async function commentOnPost(postId, content) {
+    try {
+      const token = localStorage.getItem('zh_love_token');
+      const response = await fetch('http://localhost:8080/forum_api.php?action=create_comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          post_id: postId,
+          content: content
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // Add comment to UI
+        addCommentToPost(postId, data.comment);
+        showNotification('تم إضافة التعليق بنجاح', 'success');
+        return true;
+      } else {
+        showNotification(data.error || 'فشل في إضافة التعليق', 'error');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error commenting on post:', error);
+      showNotification('حدث خطأ في الشبكة', 'error');
+      return false;
+    }
+  }
+
+  async function fetchComments(postId) {
+    try {
+      const response = await fetch(`http://localhost:8080/forum_api.php?action=get_comments&post_id=${postId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        return data.comments;
+      } else {
+        console.error('Failed to fetch comments:', data.error);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      return [];
+    }
+  }
+
+  function sharePost(postId) {
+    const url = `${window.location.origin}/ar/forum/post/${postId}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'منشور من منتدى زد اتش لوف',
+        url: url
+      });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        showNotification('تم نسخ رابط المنشور', 'success');
+      });
+    }
+  }
+
+  // Render functions
+  function updateStats(stats) {
+    // Update forum stats in the page
+    const totalPostsElement = document.querySelector('[data-stat="total-posts"]');
+    const totalTopicsElement = document.querySelector('[data-stat="total-topics"]');
+    const totalMembersElement = document.querySelector('[data-stat="total-members"]');
+    const todaysPostsElement = document.querySelector('[data-stat="todays-posts"]');
+    
+    if (totalPostsElement) totalPostsElement.textContent = stats.total_posts || '0';
+    if (totalTopicsElement) totalTopicsElement.textContent = stats.total_posts || '0';
+    if (totalMembersElement) totalMembersElement.textContent = stats.total_members || '0';
+    if (todaysPostsElement) todaysPostsElement.textContent = stats.todays_posts || '0';
+  }
+
+  function renderCategories(categories) {
+    const categoriesContainer = document.querySelector('#categories-container');
+    if (!categoriesContainer) return;
+    
+    const categoriesHtml = categories.map(category => `
+      <div class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/50 transition-colors cursor-pointer category-card" 
+           data-category-id="${category.id}">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-2xl">${category.icon || '📁'}</span>
+              <h3 class="text-lg font-semibold text-foreground">${category.name}</h3>
+            </div>
+            <p class="text-muted-foreground text-sm mb-4">${category.description || ''}</p>
+            
+            <div class="flex items-center gap-4 text-sm text-muted-foreground">
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">💬</span>
+                ${category.topic_count || category.post_count || 0} موضوع
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">💭</span>
+                ${category.comment_count || category.total_comments || 0} تعليق
+              </span>
+            </div>
+          </div>
+          
+          <div class="text-right">
+            <div class="w-3 h-3 rounded-full" style="background-color: ${category.color || '#4F9CF9'}"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    categoriesContainer.innerHTML = categoriesHtml;
+    
+    // Add click handlers
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const categoryId = card.getAttribute('data-category-id');
+        filterByCategory(categoryId);
+      });
+    });
+  }
+
+  function renderRecentPosts(posts, replace = true) {
+    const recentPostsContainer = document.querySelector('#recent-posts-container');
+    if (!recentPostsContainer) return;
+    
+    const postsHtml = posts.map(post => `
+      <article class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/30 transition-colors" data-post-id="${post.id}">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              ${post.is_pinned == 1 ? '<span class="w-4 h-4 text-yellow-500">📌</span>' : ''}
+              ${post.is_featured == 1 ? '<span class="w-4 h-4 text-yellow-500">⭐</span>' : ''}
+              <span class="px-2 py-1 text-xs rounded-full" style="background-color: ${post.category_color || '#4F9CF9'}20; color: ${post.category_color || '#4F9CF9'}">
+                ${post.category_name || 'عام'}
+              </span>
+            </div>
+            
+            <h3 class="text-lg font-semibold text-foreground mb-2 cursor-pointer hover:text-tactical-green transition-colors post-title" 
+                data-post-id="${post.id}">
+              ${post.title}
+            </h3>
+            
+            <p class="text-muted-foreground text-sm mb-4 line-clamp-2">
+              ${post.content.substring(0, 200)}...
+            </p>
+            
+            ${post.images ? `
+              <div class="flex gap-2 mb-4 flex-wrap">
+                ${JSON.parse(post.images).slice(0, 3).map(img => `
+                  <img src="/uploads/forum/${img}" alt="صورة من المنشور" 
+                       class="w-16 h-16 object-cover rounded-md border border-border">
+                `).join('')}
+                ${JSON.parse(post.images).length > 3 ? `
+                  <div class="w-16 h-16 bg-gray-100 rounded-md border border-border flex items-center justify-center text-xs text-gray-600">
+                    +${JSON.parse(post.images).length - 3}
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+            
+            <div class="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">👤</span>
+                ${post.author_username || 'مجهول'}
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">👁</span>
+                ${post.view_count || 0}
+              </span>
+              <span class="text-xs">
+                ${formatDate(post.created_at)}
+              </span>
+            </div>
+            
+            <!-- Post Actions -->
+            <div class="flex items-center gap-4 py-3 border-t border-border">
+              <button 
+                class="like-btn flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors ${post.user_liked ? 'text-red-500' : 'text-muted-foreground'}"
+                data-post-id="${post.id}"
+                onclick="likePost(${post.id})"
+              >
+                <span class="w-5 h-5">${post.user_liked ? '❤️' : '🤍'}</span>
+                <span class="like-count">${post.like_count || 0}</span>
+                <span>إعجاب</span>
+              </button>
+              
+              <button 
+                class="comment-btn flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
+                data-post-id="${post.id}"
+                onclick="toggleComments(${post.id})"
+              >
+                <span class="w-5 h-5">💬</span>
+                <span class="comment-count">${post.comment_count || post.total_comments || 0}</span>
+                <span>تعليق</span>
+              </button>
+              
+              <button 
+                class="share-btn flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
+                onclick="sharePost(${post.id})"
+              >
+                <span class="w-5 h-5">📤</span>
+                <span>مشاركة</span>
+              </button>
+            </div>
+            
+            <!-- Comments Section -->
+            <div class="comments-section hidden mt-4" id="comments-${post.id}">
+              <div class="bg-muted/50 rounded-lg p-4">
+                <!-- Comment Form -->
+                <div class="flex gap-3 mb-4">
+                  <div class="w-8 h-8 bg-tactical-green rounded-full flex items-center justify-center text-white text-sm">
+                    أ
+                  </div>
+                  <div class="flex-1">
+                    <textarea 
+                      id="comment-input-${post.id}"
+                      placeholder="اكتب تعليقاً..."
+                      class="w-full p-3 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-tactical-green"
+                      rows="2"
+                    ></textarea>
+                    <div class="flex justify-end mt-2">
+                      <button 
+                        class="submit-comment-btn px-4 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors"
+                        data-post-id="${post.id}"
+                        onclick="submitComment(${post.id})"
+                      >
+                        نشر
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Comments List -->
+                <div class="comments-list" id="comments-list-${post.id}">
+                  <!-- Comments will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    `).join('');
+    
+    if (replace) {
+      recentPostsContainer.innerHTML = postsHtml;
+    } else {
+      recentPostsContainer.innerHTML += postsHtml;
+    }
+    
+    // Add click handlers for post titles
+    document.querySelectorAll('.post-title').forEach(title => {
+      title.addEventListener('click', () => {
+        const postId = title.getAttribute('data-post-id');
+        window.location.href = `/ar/forum/post/${postId}`;
+      });
+    });
+  }
+
+  function renderFeaturedPosts(featuredPosts) {
+    const featuredContainer = document.querySelector('#featured-posts-container');
+    if (!featuredContainer || featuredPosts.length === 0) return;
+    
+    const featuredHtml = featuredPosts.map(post => `
+      <article class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/30 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-4 h-4 text-yellow-500">⭐</span>
+              <span class="px-2 py-1 text-xs rounded-full" style="background-color: ${post.category_color || '#4F9CF9'}20; color: ${post.category_color || '#4F9CF9'}">
+                ${post.category_name || 'عام'}
+              </span>
+            </div>
+            
+            <h3 class="text-xl font-semibold text-foreground mb-3 cursor-pointer hover:text-tactical-green transition-colors post-title" 
+                data-post-id="${post.id}">
+              ${post.title}
+            </h3>
+            
+            <p class="text-muted-foreground text-sm mb-4 line-clamp-3">
+              ${post.content.substring(0, 300)}...
+            </p>
+            
+            <div class="flex items-center gap-4 text-sm text-muted-foreground">
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">👤</span>
+                ${post.author_username || 'مجهول'}
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">👁</span>
+                ${post.view_count || 0}
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">❤</span>
+                ${post.like_count || 0}
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="w-4 h-4">💬</span>
+                ${post.comment_count || post.total_comments || 0}
+              </span>
+            </div>
+          </div>
+        </div>
+      </article>
+    `).join('');
+    
+    featuredContainer.innerHTML = featuredHtml;
+  }
+
+  // Utility functions
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'اليوم';
+    if (diffDays === 1) return 'أمس';
+    if (diffDays < 7) return `منذ ${diffDays} أيام`;
+    
+    return date.toLocaleDateString('ar-SA');
+  }
+
+  function filterByCategory(categoryId) {
+    currentPage = 1;
+    fetchPosts(1, categoryId, 'latest');
+  }
+
+  // Event handlers
+  function setupEventListeners() {
+    // Search functionality
+    const searchInput = document.querySelector('#search-input');
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          currentPage = 1;
+          fetchPosts(1, null, 'latest', e.target.value);
+        }, 500);
+      });
+    }
+
+    // New post button
+    const newPostBtn = document.querySelector('#new-post-btn');
+    if (newPostBtn) {
+      newPostBtn.addEventListener('click', () => {
+        window.location.href = '/ar/forum/create';
+      });
+    }
+  }
+  
+  // Render empty state
+  function renderEmptyState() {
+    const recentPostsContainer = document.querySelector('#recent-posts-container');
+    if (!recentPostsContainer) return;
+    
+    recentPostsContainer.innerHTML = `
+      <div class="text-center py-12">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+          <span class="text-2xl">📝</span>
+        </div>
+        <h3 class="text-lg font-medium text-foreground mb-2">لا توجد منشورات بعد</h3>
+        <p class="text-muted-foreground mb-6">كن أول من يشارك في المنتدى!</p>
+        <button 
+          class="px-6 py-3 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors"
+          onclick="window.location.href='/ar/forum/create_real'"
+        >
+          إنشاء منشور جديد
+        </button>
+      </div>
+    `;
+  }
+
+  // Post interaction functions
+  window.likePost = async function(postId) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      showNotification('يجب تسجيل الدخول أولاً', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch('/backend/public/forum_api.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          action: 'like_post',
+          post_id: postId 
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // Update like count in UI
+        const increment = data.liked ? 1 : -1;
+        updatePostLikeCount(postId, increment, data.liked);
+        showNotification(data.liked ? 'تم الإعجاب بالمنشور' : 'تم إلغاء الإعجاب', 'success');
+      } else {
+        showNotification(data.error || 'فشل في العملية', 'error');
+      }
+    } catch (error) {
+      console.error('Error liking post:', error);
+      showNotification('حدث خطأ في الشبكة', 'error');
+    }
+  };
+
+  window.fetchComments = async function(postId) {
+    try {
+      const response = await fetch(`/backend/public/forum_api.php?action=get_comments&post_id=${postId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const commentsList = document.getElementById(`comments-list-${postId}`);
+        if (commentsList) {
+          commentsList.innerHTML = data.comments.map(comment => `
+            <div class="flex gap-3 mb-4 comment-item" data-comment-id="${comment.id}">
+              <div class="w-8 h-8 bg-tactical-green rounded-full flex items-center justify-center text-white text-sm">
+                ${comment.author_username ? comment.author_username.charAt(0) : 'أ'}
+              </div>
+              <div class="flex-1">
+                <div class="bg-white rounded-lg p-3 border border-border">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="font-medium text-sm">${comment.author_username || 'مجهول'}</span>
+                    <span class="text-xs text-muted-foreground">${formatDate(comment.created_at)}</span>
+                  </div>
+                  <p class="text-sm">${comment.content}</p>
+                </div>
+                <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                  <button class="hover:text-tactical-green transition-colors">إعجاب</button>
+                  <button class="hover:text-tactical-green transition-colors">رد</button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  window.sharePost = async function(postId) {
+    try {
+      const url = `${window.location.origin}/ar/forum/post/${postId}`;
+      await navigator.clipboard.writeText(url);
+      showNotification('تم نسخ رابط المنشور', 'success');
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      showNotification('فشل في نسخ الرابط', 'error');
+    }
+  };
+
+  // Toggle comments section
+  window.toggleComments = async function(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (!commentsSection) return;
+    
+    if (commentsSection.classList.contains('hidden')) {
+      commentsSection.classList.remove('hidden');
+      await fetchComments(postId);
+    } else {
+      commentsSection.classList.add('hidden');
+    }
+  };
+  
+  // Submit comment
+  window.submitComment = async function(postId) {
+    const content = document.getElementById(`comment-input-${postId}`).value.trim();
+    if (!content) {
+      showNotification('يرجى كتابة تعليق قبل النشر', 'warning');
+      return;
+    }
+    
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      showNotification('يجب تسجيل الدخول أولاً', 'error');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/backend/public/forum_api.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'create_comment',
+          post_id: postId,
+          content: content
+        })
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        document.getElementById(`comment-input-${postId}`).value = '';
+        await fetchComments(postId);
+        updateCommentCount(postId, 1);
+        showNotification('تم نشر التعليق بنجاح', 'success');
+      } else {
+        showNotification(result.message || 'حدث خطأ أثناء نشر التعليق', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      showNotification('حدث خطأ في الاتصال', 'error');
+    }
+  };
+  
+  // Update comment count
+  function updateCommentCount(postId, increment) {
+    const commentBtn = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+    if (commentBtn) {
+      const currentCount = parseInt(commentBtn.textContent) || 0;
+      commentBtn.textContent = currentCount + increment;
+    }
+  }
+  
+  // Update like count
+  function updatePostLikeCount(postId, increment, liked) {
+    const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+    if (likeBtn) {
+      const likeCount = likeBtn.querySelector('.like-count');
+      const likeIcon = likeBtn.querySelector('span');
+      
+      if (likeCount) {
+        const currentCount = parseInt(likeCount.textContent) || 0;
+        likeCount.textContent = currentCount + increment;
+      }
+      
+      if (likeIcon) {
+        likeIcon.textContent = liked ? '❤️' : '🤍';
+      }
+      
+      // Update button style
+      if (liked) {
+        likeBtn.classList.add('text-red-500');
+        likeBtn.classList.remove('text-muted-foreground');
+      } else {
+        likeBtn.classList.remove('text-red-500');
+        likeBtn.classList.add('text-muted-foreground');
+      }
+    }
+  }
+  
+  // Add comment to post
+  function addCommentToPost(postId, comment) {
+    const commentsList = document.getElementById(`comments-list-${postId}`);
+    if (!commentsList) return;
+    
+    const commentHtml = `
+      <div class="flex gap-3 mb-4 comment-item" data-comment-id="${comment.id}">
+        <div class="w-8 h-8 bg-tactical-green rounded-full flex items-center justify-center text-white text-sm">
+          ${comment.author_username ? comment.author_username.charAt(0) : 'أ'}
+        </div>
+        <div class="flex-1">
+          <div class="bg-white rounded-lg p-3 border border-border">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="font-medium text-sm">${comment.author_username || 'مجهول'}</span>
+              <span class="text-xs text-muted-foreground">${formatDate(comment.created_at)}</span>
+            </div>
+            <p class="text-sm">${comment.content}</p>
+          </div>
+          <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+            <button class="hover:text-tactical-green transition-colors">إعجاب</button>
+            <button class="hover:text-tactical-green transition-colors">رد</button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    commentsList.insertAdjacentHTML('afterbegin', commentHtml);
+  }
+  
+  // Show notification
+  function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+      type === 'success' ? 'bg-green-500 text-white' : 
+      type === 'error' ? 'bg-red-500 text-white' : 
+      type === 'warning' ? 'bg-yellow-500 text-white' : 
+      'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+  
+  // Format date
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      return 'أمس';
+    } else if (diffDays < 7) {
+      return `منذ ${diffDays} أيام`;
+    } else {
+      return date.toLocaleDateString('ar-SA');
+    }
+  }
+
+  // Initialize the forum page
+  document.addEventListener('DOMContentLoaded', async () => {
+    setupEventListeners();
+    
+    // Check if user is logged in for testing
+    if (!localStorage.getItem('authToken')) {
+      // Set a test token for development
+      localStorage.setItem('authToken', 'test_token_123');
+      console.log('Added test auth token for development');
+    }
+    
+    // Load data from API
+    await Promise.all([
+      fetchForumStats(),
+      fetchCategories(),
+      fetchPosts()
+    ]);
+  });
+</script> 

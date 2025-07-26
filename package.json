@@ -1,0 +1,65 @@
+{
+  "name": "zh-love",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "ZH-Love Gaming Community Platform for Command & Conquer: Generals Zero Hour",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "backend": "cd backend && php -S localhost:8080 -t public",
+    "full-dev": "concurrently \"npm run dev\" \"npm run backend\"",
+    "setup": "npm install && cd backend && composer install",
+    "db-setup": "mysql -u root -p zh_love_db < backend/database/schema.sql && mysql -u root -p zh_love_db < backend/database/initial_data.sql"
+  },
+  "keywords": [
+    "gaming",
+    "community",
+    "command-conquer",
+    "generals",
+    "zero-hour",
+    "tournaments",
+    "clans",
+    "forum",
+    "replays",
+    "streamers",
+    "rankings",
+    "arabic",
+    "rtl"
+  ],
+  "author": "ZH-Love Gaming Community",
+  "license": "MIT",
+  "dependencies": {
+    "@astrojs/check": "^0.3.1",
+    "@astrojs/node": "^8.2.0",
+    "@astrojs/react": "^3.0.9",
+    "@astrojs/tailwind": "^5.1.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "astro": "^4.2.1",
+    "framer-motion": "^10.16.16",
+    "lucide-react": "^0.303.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
+    "zod": "^3.22.4",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "concurrently": "^8.2.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=18.14.0",
+    "npm": ">=8.0.0"
+  }
+}

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تشخيص مشكلة العشيرة</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #2a2a2a;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #1f5f3f;
+            border: 1px solid #4CAF50;
+        }
+        .error {
+            background: #5f1f1f;
+            border: 1px solid #f44336;
+        }
+        .info {
+            background: #1f3f5f;
+            border: 1px solid #2196F3;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تشخيص مشكلة العشيرة</h1>
+        <p>هذا التشخيص لفهم سبب ظهور "Unauthorized" في API العشيرة</p>
+        
+        <div class="step">
+            <h3>الخطوة 1: فحص التوكن المحفوظ</h3>
+            <button onclick="checkStoredToken()">فحص التوكن</button>
+            <div id="tokenResult"></div>
+        </div>
+        
+        <div class="step">
+            <h3>الخطوة 2: تسجيل دخول جديد</h3>
+            <button onclick="freshLogin()">تسجيل دخول mah.athamnh@gmail.com</button>
+            <div id="loginResult"></div>
+        </div>
+        
+        <div class="step">
+            <h3>الخطوة 3: اختبار API مباشر</h3>
+            <button onclick="testClanAPIDirect()">اختبار API العشيرة مباشر</button>
+            <div id="directResult"></div>
+        </div>
+        
+        <div class="step">
+            <h3>الخطوة 4: فحص تفصيلي للتوكن</h3>
+            <button onclick="analyzeToken()">تحليل التوكن</button>
+            <div id="analyzeResult"></div>
+        </div>
+        
+        <div class="step">
+            <h3>الخطوة 5: فحص قاعدة البيانات</h3>
+            <button onclick="checkDatabase()">فحص المستخدم في قاعدة البيانات</button>
+            <div id="dbResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}"><pre>${message}</pre></div>`;
+        }
+
+        function checkStoredToken() {
+            const token = localStorage.getItem('zh_love_token');
+            const user = localStorage.getItem('zh_love_user');
+            
+            let result = "فحص التوكن المحفوظ:\n\n";
+            
+            if (token) {
+                result += `✅ التوكن موجود\n`;
+                result += `الطول: ${token.length} حرف\n`;
+                result += `أول 50 حرف: ${token.substring(0, 50)}...\n\n`;
+                
+                if (user) {
+                    try {
+                        const userData = JSON.parse(user);
+                        result += `✅ بيانات المستخدم موجودة:\n`;
+                        result += `ID: ${userData.id}\n`;
+                        result += `اسم المستخدم: ${userData.username}\n`;
+                        result += `الإيميل: ${userData.email}\n`;
+                    } catch (e) {
+                        result += `❌ خطأ في قراءة بيانات المستخدم: ${e.message}\n`;
+                    }
+                } else {
+                    result += `⚠️ لا توجد بيانات مستخدم محفوظة\n`;
+                }
+                
+                showResult('tokenResult', result, 'success');
+            } else {
+                result += `❌ لا يوجد توكن محفوظ\n`;
+                showResult('tokenResult', result, 'error');
+            }
+        }
+
+        async function freshLogin() {
+            try {
+                showResult('loginResult', 'جاري تسجيل الدخول...', 'info');
+                
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username: 'mah.athamnh@gmail.com', 
+                        password: 'password' 
+                    }),
+                });
+
+                const data = await response.json();
+
+                let result = `حالة الاستجابة: ${response.status}\n\n`;
+                result += `استجابة API:\n${JSON.stringify(data, null, 2)}\n\n`;
+
+                if (data.success && data.token) {
+                    localStorage.setItem('zh_love_token', data.token);
+                    localStorage.setItem('zh_love_user', JSON.stringify(data.user));
+                    result += `✅ تم حفظ التوكن والمستخدم بنجاح\n`;
+                    showResult('loginResult', result, 'success');
+                } else {
+                    result += `❌ فشل في تسجيل الدخول\n`;
+                    showResult('loginResult', result, 'error');
+                }
+            } catch (error) {
+                showResult('loginResult', `❌ خطأ في الشبكة: ${error.message}`, 'error');
+            }
+        }
+
+        async function testClanAPIDirect() {
+            const token = localStorage.getItem('zh_love_token');
+            
+            if (!token) {
+                showResult('directResult', '❌ لا يوجد توكن. يجب تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
+            try {
+                showResult('directResult', 'جاري اختبار API العشيرة...', 'info');
+                
+                const response = await fetch('http://localhost:8080/clan_api.php?action=user_clan', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let result = `حالة الاستجابة: ${response.status}\n\n`;
+                
+                const responseText = await response.text();
+                result += `النص الخام للاستجابة:\n${responseText}\n\n`;
+                
+                try {
+                    const data = JSON.parse(responseText);
+                    result += `البيانات المحللة:\n${JSON.stringify(data, null, 2)}\n`;
+                    
+                    if (data.success) {
+                        showResult('directResult', result, 'success');
+                    } else {
+                        showResult('directResult', result, 'error');
+                    }
+                } catch (parseError) {
+                    result += `❌ خطأ في تحليل JSON: ${parseError.message}\n`;
+                    showResult('directResult', result, 'error');
+                }
+                
+            } catch (error) {
+                showResult('directResult', `❌ خطأ في API: ${error.message}`, 'error');
+            }
+        }
+
+        function analyzeToken() {
+            const token = localStorage.getItem('zh_love_token');
+            
+            if (!token) {
+                showResult('analyzeResult', '❌ لا يوجد توكن لتحليله', 'error');
+                return;
+            }
+
+            try {
+                const parts = token.split('.');
+                let result = `تحليل التوكن:\n\n`;
+                result += `عدد الأجزاء: ${parts.length} (يجب أن يكون 3)\n\n`;
+                
+                if (parts.length === 3) {
+                    // Decode header
+                    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+                    result += `الرأس (Header):\n${JSON.stringify(header, null, 2)}\n\n`;
+                    
+                    // Decode payload
+                    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    result += `البيانات (Payload):\n${JSON.stringify(payload, null, 2)}\n\n`;
+                    
+                    // Check expiration
+                    if (payload.exp) {
+                        const expDate = new Date(payload.exp * 1000);
+                        const now = new Date();
+                        result += `تاريخ انتهاء الصلاحية: ${expDate.toLocaleString('ar-SA')}\n`;
+                        result += `الوقت الحالي: ${now.toLocaleString('ar-SA')}\n`;
+                        result += `صالح: ${expDate > now ? '✅ نعم' : '❌ منتهي الصلاحية'}\n\n`;
+                    }
+                    
+                    result += `التوقيع: ${parts[2].substring(0, 20)}...\n`;
+                    
+                    showResult('analyzeResult', result, 'success');
+                } else {
+                    result += `❌ تنسيق التوكن غير صحيح\n`;
+                    showResult('analyzeResult', result, 'error');
+                }
+            } catch (error) {
+                showResult('analyzeResult', `❌ خطأ في تحليل التوكن: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkDatabase() {
+            const user = localStorage.getItem('zh_love_user');
+            
+            if (!user) {
+                showResult('dbResult', '❌ لا توجد بيانات مستخدم محفوظة', 'error');
+                return;
+            }
+
+            try {
+                const userData = JSON.parse(user);
+                let result = `فحص المستخدم في قاعدة البيانات:\n\n`;
+                result += `ID المحفوظ: ${userData.id}\n`;
+                result += `اسم المستخدم: ${userData.username}\n`;
+                result += `الإيميل: ${userData.email}\n\n`;
+                
+                // Try to get user info from auth API
+                const response = await fetch(`http://localhost:8080/api/auth/user/${userData.id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const dbUser = await response.json();
+                    result += `✅ المستخدم موجود في قاعدة البيانات:\n`;
+                    result += JSON.stringify(dbUser, null, 2);
+                    showResult('dbResult', result, 'success');
+                } else {
+                    result += `❌ لم يتم العثور على المستخدم في قاعدة البيانات\n`;
+                    result += `حالة الاستجابة: ${response.status}\n`;
+                    showResult('dbResult', result, 'error');
+                }
+                
+            } catch (error) {
+                showResult('dbResult', `❌ خطأ في فحص قاعدة البيانات: ${error.message}`, 'error');
+            }
+        }
+
+        // فحص تلقائي عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            checkStoredToken();
+        });
+    </script>
+</body>
+</html>

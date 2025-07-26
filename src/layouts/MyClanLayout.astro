@@ -1,0 +1,91 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+    title: string;
+    activePage?: string;
+}
+
+const { title, activePage = 'home' } = Astro.props;
+---
+
+<BaseLayout title={title}>
+    <div class="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
+        <!-- Navigation Bar -->
+        <nav class="bg-zinc-800 border-b border-zinc-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <a href="/ar/my-clan" class="text-white font-bold text-xl">إدارة العشيرة</a>
+                        
+                        <div class="hidden md:flex space-x-4 rtl:space-x-reverse">
+                            <a 
+                                href="/ar/my-clan" 
+                                class={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    activePage === 'home' 
+                                        ? 'bg-orange-600 text-white' 
+                                        : 'text-gray-300 hover:text-white hover:bg-zinc-700'
+                                }`}
+                            >
+                                الرئيسية
+                            </a>
+                            <a 
+                                href="/ar/my-clan/wars" 
+                                class={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    activePage === 'wars' 
+                                        ? 'bg-orange-600 text-white' 
+                                        : 'text-gray-300 hover:text-white hover:bg-zinc-700'
+                                }`}
+                            >
+                                إدارة الحروب
+                            </a>
+                            <a 
+                                href="/ar/my-clan/declare-war" 
+                                class={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                    activePage === 'declare-war' 
+                                        ? 'bg-red-600 text-white' 
+                                        : 'text-gray-300 hover:text-white hover:bg-zinc-700'
+                                }`}
+                            >
+                                إعلان حرب
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                        <a href="/ar" class="text-gray-300 hover:text-white transition-colors">
+                            العودة للرئيسية
+                        </a>
+                        <button 
+                            onclick="logout()" 
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                            تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <slot />
+        </main>
+    </div>
+
+    <!-- Global Scripts -->
+    <script is:inline>
+        function logout() {
+            localStorage.removeItem('authToken');
+            window.location.href = '/ar/login';
+        }
+
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = '/ar/login';
+            }
+        });
+    </script>
+</BaseLayout>

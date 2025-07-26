@@ -1,0 +1,1101 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { 
+  MessageCircle, 
+  Plus, 
+  Search, 
+  Filter, 
+  Pin, 
+  Star, 
+  TrendingUp, 
+  Clock, 
+  Eye, 
+  Users, 
+  Award,
+  Flame,
+  Target,
+  Calendar,
+  BookOpen,
+  HelpCircle,
+  Gamepad2,
+  Trophy,
+  Zap,
+  Compass,
+  ChevronRight,
+  User,
+  Heart,
+  MessageSquare,
+  Share2,
+  Bookmark
+} from 'lucide-react';
+
+const title = "المنتدى - زد اتش لوف";
+const description = "انضم لمجتمع لاعبي الجنرالات زيرو آور وشارك في النقاشات";
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="container mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <section class="mb-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-foreground mb-2">
+            💬 منتدى المجتمع
+          </h1>
+          <p class="text-muted-foreground">
+            مركز النقاشات والمعرفة لمجتمع الجنرالات زيرو آور
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <!-- Search Bar -->
+          <div class="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <input 
+              type="text"
+              id="search-input"
+              placeholder="البحث في المنتدى..."
+              class="w-full md:w-80 pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-tactical-green focus:border-transparent"
+            />
+          </div>
+          
+          <!-- New Post Button -->
+          <button 
+            id="new-post-btn"
+            class="flex items-center gap-2 px-4 py-2 bg-tactical-green text-white rounded-lg hover:bg-tactical-green/80 transition-colors font-medium whitespace-nowrap"
+          >
+            <Plus className="w-4 h-4" />
+            موضوع جديد
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Forum Stats -->
+    <section class="mb-8">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="bg-card border border-border rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-tactical-green" id="total-posts">---</div>
+          <div class="text-sm text-muted-foreground">إجمالي المواضيع</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-tactical-green" id="total-categories">---</div>
+          <div class="text-sm text-muted-foreground">الأقسام</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-tactical-green" id="total-members">---</div>
+          <div class="text-sm text-muted-foreground">الأعضاء</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-tactical-green" id="todays-posts">---</div>
+          <div class="text-sm text-muted-foreground">مواضيع اليوم</div>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-4 text-center">
+          <div class="text-2xl font-bold text-tactical-green" id="todays-comments">---</div>
+          <div class="text-sm text-muted-foreground">تعليقات اليوم</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-foreground">📚 أقسام المنتدى</h2>
+        <div class="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <select id="category-filter" class="border border-border rounded px-3 py-1 bg-background text-foreground">
+            <option value="">جميع الأقسام</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="categories-container" class="grid gap-4">
+        <!-- Categories will be loaded here -->
+        <div class="flex items-center justify-center py-8">
+          <div class="text-muted-foreground">جاري تحميل الأقسام...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Posts -->
+    <section class="mb-8">
+      <div class="flex items-center gap-2 mb-6">
+        <Star className="w-5 h-5 text-yellow-500" />
+        <h2 class="text-2xl font-bold text-foreground">⭐ المواضيع المميزة</h2>
+      </div>
+      
+      <div id="featured-posts" class="grid gap-6">
+        <!-- Featured posts will be loaded here -->
+        <div class="flex items-center justify-center py-8">
+          <div class="text-muted-foreground">جاري تحميل المواضيع المميزة...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts -->
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <Clock className="w-5 h-5 text-tactical-green" />
+          <h2 class="text-2xl font-bold text-foreground">🕒 أحدث المواضيع</h2>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <select id="sort-posts" class="border border-border rounded px-3 py-1 bg-background text-foreground">
+            <option value="latest">الأحدث</option>
+            <option value="popular">الأكثر شعبية</option>
+            <option value="oldest">الأقدم</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="recent-posts" class="space-y-4">
+        <!-- Recent posts will be loaded here -->
+        <div class="flex items-center justify-center py-8">
+          <div class="text-muted-foreground">جاري تحميل المواضيع...</div>
+        </div>
+      </div>
+      
+      <!-- Load More Button -->
+      <div class="text-center mt-6">
+        <button 
+          id="load-more-btn"
+          class="px-6 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+        >
+          تحميل المزيد
+        </button>
+      </div>
+    </section>
+
+    <!-- Floating Action Button for Mobile -->
+    <button 
+      id="mobile-new-post"
+      class="fixed bottom-6 right-6 md:hidden w-14 h-14 bg-tactical-green text-white rounded-full shadow-lg flex items-center justify-center hover:bg-tactical-green/80 transition-colors z-50"
+    >
+      <Plus className="w-6 h-6" />
+    </button>
+  </main>
+
+  <!-- JavaScript for dynamic functionality -->
+  <script>
+    // Forum data and state
+    let currentPage = 1;
+    let loading = false;
+    let categories = [];
+    let posts = [];
+
+    // DOM elements
+    const elementsCache = {
+      searchInput: null,
+      newPostBtn: null,
+      mobileNewPost: null,
+      categoryFilter: null,
+      sortPosts: null,
+      loadMoreBtn: null,
+      categoriesContainer: null,
+      featuredPosts: null,
+      recentPosts: null,
+      stats: {
+        totalPosts: null,
+        totalCategories: null,
+        totalMembers: null,
+        todaysPosts: null,
+        todaysComments: null
+      }
+    };
+
+    // Initialize DOM elements
+    function initializeElements() {
+      elementsCache.searchInput = document.getElementById('search-input');
+      elementsCache.newPostBtn = document.getElementById('new-post-btn');
+      elementsCache.mobileNewPost = document.getElementById('mobile-new-post');
+      elementsCache.categoryFilter = document.getElementById('category-filter');
+      elementsCache.sortPosts = document.getElementById('sort-posts');
+      elementsCache.loadMoreBtn = document.getElementById('load-more-btn');
+      elementsCache.categoriesContainer = document.getElementById('categories-container');
+      elementsCache.featuredPosts = document.getElementById('featured-posts');
+      elementsCache.recentPosts = document.getElementById('recent-posts');
+      
+      // Stats elements
+      elementsCache.stats.totalPosts = document.getElementById('total-posts');
+      elementsCache.stats.totalCategories = document.getElementById('total-categories');
+      elementsCache.stats.totalMembers = document.getElementById('total-members');
+      elementsCache.stats.todaysPosts = document.getElementById('todays-posts');
+      elementsCache.stats.todaysComments = document.getElementById('todays-comments');
+    }
+
+    // API functions
+    async function fetchForumStats() {
+      try {
+        const response = await fetch('http://localhost:8080/forum_api.php?action=get_stats');
+        const data = await response.json();
+        
+        if (data.success) {
+          updateStats(data.stats);
+        } else {
+          console.error('Failed to fetch stats:', data.error);
+          // Use fallback stats
+          updateStats({
+            total_posts: 156,
+            total_categories: 6,
+            total_members: 2840,
+            todays_posts: 12,
+            todays_comments: 34
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching forum stats:', error);
+        // Use fallback stats
+        updateStats({
+          total_posts: 156,
+          total_categories: 6,
+          total_members: 2840,
+          todays_posts: 12,
+          todays_comments: 34
+        });
+      }
+    }
+
+    async function fetchCategories() {
+      try {
+        const response = await fetch('http://localhost:8080/forum_api.php?action=get_categories');
+        const data = await response.json();
+        
+        if (data.success) {
+          categories = data.categories;
+          renderCategories(categories);
+          populateCategoryFilter(categories);
+        } else {
+          console.error('Failed to fetch categories:', data.error);
+          renderFallbackCategories();
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        renderFallbackCategories();
+      }
+    }
+
+    async function fetchPosts(page = 1, categoryId = null, sort = 'latest', search = '') {
+      if (loading) return;
+      loading = true;
+      
+      try {
+        const params = new URLSearchParams({
+          action: 'get_posts',
+          page: page.toString(),
+          limit: '10',
+          sort: sort
+        });
+        
+        if (categoryId) params.append('category_id', categoryId);
+        if (search) params.append('search', search);
+        
+        const response = await fetch(`http://localhost:8080/forum_api.php?${params}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          if (page === 1) {
+            posts = data.posts;
+          } else {
+            posts = [...posts, ...data.posts];
+          }
+          
+          renderPosts(posts, page === 1);
+          
+          // Update load more button
+          if (elementsCache.loadMoreBtn) {
+            elementsCache.loadMoreBtn.style.display = 
+              data.pagination.page >= data.pagination.pages ? 'none' : 'block';
+          }
+        } else {
+          console.error('Failed to fetch posts:', data.error);
+          if (page === 1) {
+            renderFallbackPosts();
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        if (page === 1) {
+          renderFallbackPosts();
+        }
+      } finally {
+        loading = false;
+      }
+    }
+
+    // Render functions
+    function updateStats(stats) {
+      if (elementsCache.stats.totalPosts) {
+        elementsCache.stats.totalPosts.textContent = stats.total_posts || '---';
+      }
+      if (elementsCache.stats.totalCategories) {
+        elementsCache.stats.totalCategories.textContent = stats.total_categories || '---';
+      }
+      if (elementsCache.stats.totalMembers) {
+        elementsCache.stats.totalMembers.textContent = stats.total_members || '---';
+      }
+      if (elementsCache.stats.todaysPosts) {
+        elementsCache.stats.todaysPosts.textContent = stats.todays_posts || '---';
+      }
+      if (elementsCache.stats.todaysComments) {
+        elementsCache.stats.todaysComments.textContent = stats.todays_comments || '---';
+      }
+    }
+
+    function renderCategories(categories) {
+      if (!elementsCache.categoriesContainer) return;
+      
+      const categoriesHtml = categories.map(category => `
+        <div class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/50 transition-colors cursor-pointer category-card" data-category-id="${category.id}">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="text-2xl">${category.icon || '📁'}</span>
+                <h3 class="text-lg font-semibold text-foreground">${category.name}</h3>
+              </div>
+              <p class="text-muted-foreground text-sm mb-4">${category.description || ''}</p>
+              
+              <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">💬</i>
+                  ${category.topic_count || category.post_count || 0} موضوع
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">💭</i>
+                  ${category.comment_count || category.total_comments || 0} تعليق
+                </span>
+              </div>
+            </div>
+            
+            <div class="text-right">
+              <div class="w-3 h-3 rounded-full" style="background-color: ${category.color || '#4F9CF9'}"></div>
+            </div>
+          </div>
+          
+          ${category.last_post_title ? `
+            <div class="mt-4 pt-4 border-t border-border">
+              <div class="text-xs text-muted-foreground">آخر موضوع:</div>
+              <div class="text-sm font-medium text-foreground truncate">${category.last_post_title}</div>
+              <div class="text-xs text-muted-foreground">بواسطة ${category.last_post_author || 'مجهول'}</div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+      
+      elementsCache.categoriesContainer.innerHTML = categoriesHtml;
+      
+      // Add click handlers
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const categoryId = card.getAttribute('data-category-id');
+          filterByCategory(categoryId);
+        });
+      });
+    }
+
+    function renderPosts(posts, replace = true) {
+      if (!elementsCache.recentPosts) return;
+      
+      const postsHtml = posts.map(post => `
+        <article class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/30 transition-colors">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                ${post.is_pinned == 1 ? '<i class="w-4 h-4 text-yellow-500">📌</i>' : ''}
+                ${post.is_featured == 1 ? '<i class="w-4 h-4 text-yellow-500">⭐</i>' : ''}
+                <span class="px-2 py-1 text-xs rounded-full" style="background-color: ${post.category_color || '#4F9CF9'}20; color: ${post.category_color || '#4F9CF9'}">
+                  ${post.category_name || 'عام'}
+                </span>
+              </div>
+              
+              <h3 class="text-lg font-semibold text-foreground mb-2 cursor-pointer hover:text-tactical-green transition-colors post-title" data-post-id="${post.id}">
+                ${post.title}
+              </h3>
+              
+              <p class="text-muted-foreground text-sm mb-4 line-clamp-2">
+                ${post.content.substring(0, 200)}...
+              </p>
+              
+              <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">👤</i>
+                  ${post.author_username || 'مجهول'}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">👁</i>
+                  ${post.view_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">❤</i>
+                  ${post.like_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="w-4 h-4">💬</i>
+                  ${post.comment_count || post.total_comments || 0}
+                </span>
+                <span class="text-xs">
+                  ${formatDate(post.created_at)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join('');
+      
+      if (replace) {
+        elementsCache.recentPosts.innerHTML = postsHtml;
+        // Also show featured posts
+        const featuredPosts = posts.filter(post => post.is_featured == 1);
+        if (featuredPosts.length > 0 && elementsCache.featuredPosts) {
+          elementsCache.featuredPosts.innerHTML = featuredPosts.map(post => `
+            <article class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/30 transition-colors">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-2">
+                    <i class="w-4 h-4 text-yellow-500">⭐</i>
+                    <span class="px-2 py-1 text-xs rounded-full" style="background-color: ${post.category_color || '#4F9CF9'}20; color: ${post.category_color || '#4F9CF9'}">
+                      ${post.category_name || 'عام'}
+                    </span>
+                  </div>
+                  
+                  <h3 class="text-xl font-semibold text-foreground mb-3 cursor-pointer hover:text-tactical-green transition-colors post-title" data-post-id="${post.id}">
+                    ${post.title}
+                  </h3>
+                  
+                  <p class="text-muted-foreground text-sm mb-4 line-clamp-3">
+                    ${post.content.substring(0, 300)}...
+                  </p>
+                  
+                  <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span class="flex items-center gap-1">
+                      <i class="w-4 h-4">👤</i>
+                      ${post.author_username || 'مجهول'}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <i class="w-4 h-4">👁</i>
+                      ${post.view_count || 0}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <i class="w-4 h-4">❤</i>
+                      ${post.like_count || 0}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <i class="w-4 h-4">💬</i>
+                      ${post.comment_count || post.total_comments || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          `).join('');
+        }
+      } else {
+        elementsCache.recentPosts.innerHTML += postsHtml;
+      }
+      
+      // Add click handlers for post titles
+      document.querySelectorAll('.post-title').forEach(title => {
+        title.addEventListener('click', () => {
+          const postId = title.getAttribute('data-post-id');
+          window.location.href = `/ar/forum/post/${postId}`;
+        });
+      });
+    }
+
+    // Fallback render functions
+    function renderFallbackCategories() {
+      const fallbackCategories = [
+        { id: 1, name: 'النقاشات العامة', description: 'نقاشات عامة حول اللعبة والمجتمع', icon: '💬', color: '#4F9CF9', topic_count: 85, comment_count: 420 },
+        { id: 2, name: 'الاستراتيجيات والتكتيكات', description: 'شارك استراتيجياتك وتعلم من الخبراء', icon: '🎯', color: '#06D6A0', topic_count: 92, comment_count: 568 },
+        { id: 3, name: 'البطولات والتحديات', description: 'أخبار البطولات والمنافسات', icon: '🏆', color: '#FFD166', topic_count: 32, comment_count: 189 },
+        { id: 4, name: 'المودز والخرائط', description: 'تحميل ومشاركة المودز والخرائط', icon: '🗺️', color: '#F72585', topic_count: 45, comment_count: 230 },
+        { id: 5, name: 'الدعم التقني', description: 'مساعدة في حل المشاكل التقنية', icon: '🔧', color: '#FF6B6B', topic_count: 68, comment_count: 320 }
+      ];
+      
+      renderCategories(fallbackCategories);
+    }
+
+    function renderFallbackPosts() {
+      const fallbackPosts = [
+        {
+          id: 1,
+          title: 'الدليل الشامل للعب مع الولايات المتحدة في 2024',
+          content: 'دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة للوصول لأعلى المستويات التنافسية',
+          author_username: 'سيد أمريكا',
+          category_name: 'الاستراتيجيات والتكتيكات',
+          category_color: '#06D6A0',
+          view_count: 1250,
+          like_count: 45,
+          comment_count: 23,
+          is_pinned: 1,
+          is_featured: 1,
+          created_at: '2024-02-15 10:30:00'
+        },
+        {
+          id: 2,
+          title: 'بطولة الشرق الأوسط الكبرى - جوائز 5000$ 💰',
+          content: 'إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار والتسجيل مفتوح الآن',
+          author_username: 'إدارة البطولات',
+          category_name: 'البطولات والتحديات',
+          category_color: '#FFD166',
+          view_count: 890,
+          like_count: 67,
+          comment_count: 34,
+          is_pinned: 1,
+          is_featured: 1,
+          created_at: '2024-02-10 12:00:00'
+        }
+      ];
+      
+      renderPosts(fallbackPosts);
+    }
+
+    // Utility functions
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'اليوم';
+      if (diffDays === 1) return 'أمس';
+      if (diffDays < 7) return `منذ ${diffDays} أيام`;
+      
+      return date.toLocaleDateString('ar-SA');
+    }
+
+    function populateCategoryFilter(categories) {
+      if (!elementsCache.categoryFilter) return;
+      
+      const options = categories.map(cat => 
+        `<option value="${cat.id}">${cat.name}</option>`
+      ).join('');
+      
+      elementsCache.categoryFilter.innerHTML = `
+        <option value="">جميع الأقسام</option>
+        ${options}
+      `;
+    }
+
+    function filterByCategory(categoryId) {
+      if (elementsCache.categoryFilter) {
+        elementsCache.categoryFilter.value = categoryId;
+      }
+      currentPage = 1;
+      fetchPosts(1, categoryId, elementsCache.sortPosts?.value || 'latest');
+    }
+
+    // Event handlers
+    function setupEventListeners() {
+      // Search functionality
+      if (elementsCache.searchInput) {
+        let searchTimeout;
+        elementsCache.searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            fetchPosts(1, elementsCache.categoryFilter?.value, elementsCache.sortPosts?.value, e.target.value);
+          }, 500);
+        });
+      }
+
+      // New post buttons
+      [elementsCache.newPostBtn, elementsCache.mobileNewPost].forEach(btn => {
+        if (btn) {
+          btn.addEventListener('click', () => {
+            window.location.href = '/ar/forum/create';
+          });
+        }
+      });
+
+      // Category filter
+      if (elementsCache.categoryFilter) {
+        elementsCache.categoryFilter.addEventListener('change', (e) => {
+          currentPage = 1;
+          fetchPosts(1, e.target.value, elementsCache.sortPosts?.value, elementsCache.searchInput?.value);
+        });
+      }
+
+      // Sort posts
+      if (elementsCache.sortPosts) {
+        elementsCache.sortPosts.addEventListener('change', (e) => {
+          currentPage = 1;
+          fetchPosts(1, elementsCache.categoryFilter?.value, e.target.value, elementsCache.searchInput?.value);
+        });
+      }
+
+      // Load more button
+      if (elementsCache.loadMoreBtn) {
+        elementsCache.loadMoreBtn.addEventListener('click', () => {
+          currentPage++;
+          fetchPosts(currentPage, elementsCache.categoryFilter?.value, elementsCache.sortPosts?.value, elementsCache.searchInput?.value);
+        });
+      }
+    }
+
+    // Initialize the forum page
+    document.addEventListener('DOMContentLoaded', async () => {
+      initializeElements();
+      setupEventListeners();
+      
+      // Load data
+      await Promise.all([
+        fetchForumStats(),
+        fetchCategories(),
+        fetchPosts()
+      ]);
+    });
+  </script>
+    // Forum data and state
+    let currentPage = 1;
+    let loading = false;
+    let categories = [];
+    let posts = [];
+
+    // DOM elements
+    const elementsCache = {
+      searchInput: null,
+      newPostBtn: null,
+      mobileNewPost: null,
+      categoryFilter: null,
+      sortPosts: null,
+      loadMoreBtn: null,
+      categoriesContainer: null,
+      featuredPosts: null,
+      recentPosts: null,
+      stats: {
+        totalPosts: null,
+        totalCategories: null,
+        totalMembers: null,
+        todaysPosts: null,
+        todaysComments: null
+      }
+    };
+
+    // Initialize DOM elements
+    function initializeElements() {
+      elementsCache.searchInput = document.getElementById('search-input');
+      elementsCache.newPostBtn = document.getElementById('new-post-btn');
+      elementsCache.mobileNewPost = document.getElementById('mobile-new-post');
+      elementsCache.categoryFilter = document.getElementById('category-filter');
+      elementsCache.sortPosts = document.getElementById('sort-posts');
+      elementsCache.loadMoreBtn = document.getElementById('load-more-btn');
+      elementsCache.categoriesContainer = document.getElementById('categories-container');
+      elementsCache.featuredPosts = document.getElementById('featured-posts');
+      elementsCache.recentPosts = document.getElementById('recent-posts');
+      
+      // Stats elements
+      elementsCache.stats.totalPosts = document.getElementById('total-posts');
+      elementsCache.stats.totalCategories = document.getElementById('total-categories');
+      elementsCache.stats.totalMembers = document.getElementById('total-members');
+      elementsCache.stats.todaysPosts = document.getElementById('todays-posts');
+      elementsCache.stats.todaysComments = document.getElementById('todays-comments');
+    }
+
+    // API functions
+    async function fetchForumStats() {
+      try {
+        const response = await fetch('http://localhost:8080/forum_api.php?action=get_stats');
+        const data = await response.json();
+        
+        if (data.success) {
+          updateStats(data.stats);
+        } else {
+          console.error('Failed to fetch stats:', data.error);
+          // Use fallback stats
+          updateStats({
+            total_posts: 156,
+            total_categories: 6,
+            total_members: 2840,
+            todays_posts: 12,
+            todays_comments: 34
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching forum stats:', error);
+        // Use fallback stats
+        updateStats({
+          total_posts: 156,
+          total_categories: 6,
+          total_members: 2840,
+          todays_posts: 12,
+          todays_comments: 34
+        });
+      }
+    }
+
+    async function fetchCategories() {
+      try {
+        const response = await fetch('http://localhost:8080/forum_api.php?action=get_categories');
+        const data = await response.json();
+        
+        if (data.success) {
+          categories = data.categories;
+          renderCategories(categories);
+          populateCategoryFilter(categories);
+        } else {
+          console.error('Failed to fetch categories:', data.error);
+          renderFallbackCategories();
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        renderFallbackCategories();
+      }
+    }
+
+    async function fetchPosts(page = 1, categoryId = null, sort = 'latest', search = '') {
+      if (loading) return;
+      loading = true;
+      
+      try {
+        const params = new URLSearchParams({
+          action: 'get_posts',
+          page: page.toString(),
+          limit: '10',
+          sort: sort
+        });
+        
+        if (categoryId) params.append('category_id', categoryId);
+        if (search) params.append('search', search);
+        
+        const response = await fetch(`http://localhost:8080/forum_api.php?${params}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          if (page === 1) {
+            posts = data.posts;
+          } else {
+            posts = [...posts, ...data.posts];
+          }
+          
+          renderPosts(posts, page === 1);
+          
+          // Update load more button
+          if (elementsCache.loadMoreBtn) {
+            elementsCache.loadMoreBtn.style.display = 
+              data.pagination.page >= data.pagination.pages ? 'none' : 'block';
+          }
+        } else {
+          console.error('Failed to fetch posts:', data.error);
+          if (page === 1) {
+            renderFallbackPosts();
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        if (page === 1) {
+          renderFallbackPosts();
+        }
+      } finally {
+        loading = false;
+      }
+    }
+
+    // Render functions
+    function updateStats(stats) {
+      if (elementsCache.stats.totalPosts) {
+        elementsCache.stats.totalPosts.textContent = stats.total_posts || '---';
+      }
+      if (elementsCache.stats.totalCategories) {
+        elementsCache.stats.totalCategories.textContent = stats.total_categories || '---';
+      }
+      if (elementsCache.stats.totalMembers) {
+        elementsCache.stats.totalMembers.textContent = stats.total_members || '---';
+      }
+      if (elementsCache.stats.todaysPosts) {
+        elementsCache.stats.todaysPosts.textContent = stats.todays_posts || '---';
+      }
+      if (elementsCache.stats.todaysComments) {
+        elementsCache.stats.todaysComments.textContent = stats.todays_comments || '---';
+      }
+    }
+
+    function renderCategories(categories) {
+      if (!elementsCache.categoriesContainer) return;
+      
+      const categoriesHtml = categories.map(category => `
+        <div class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/50 transition-colors cursor-pointer category-card" data-category-id="${category.id}">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="text-2xl">${category.icon || '📁'}</span>
+                <h3 class="text-lg font-semibold text-foreground">${category.name}</h3>
+              </div>
+              <p class="text-muted-foreground text-sm mb-4">${category.description || ''}</p>
+              
+              <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <MessageCircle className="w-4 h-4" />
+                  ${category.topic_count || 0} موضوع
+                </span>
+                <span class="flex items-center gap-1">
+                  <MessageSquare className="w-4 h-4" />
+                  ${category.comment_count || 0} تعليق
+                </span>
+              </div>
+            </div>
+            
+            <div class="text-right">
+              <div class="w-3 h-3 rounded-full" style="background-color: ${category.color || '#4F9CF9'}"></div>
+            </div>
+          </div>
+          
+          ${category.last_post_title ? `
+            <div class="mt-4 pt-4 border-t border-border">
+              <div class="text-xs text-muted-foreground">آخر موضوع:</div>
+              <div class="text-sm font-medium text-foreground truncate">${category.last_post_title}</div>
+              <div class="text-xs text-muted-foreground">بواسطة ${category.last_post_author || 'مجهول'}</div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+      
+      elementsCache.categoriesContainer.innerHTML = categoriesHtml;
+      
+      // Add click handlers
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const categoryId = card.getAttribute('data-category-id');
+          filterByCategory(categoryId);
+        });
+      });
+    }
+
+    function renderPosts(posts, replace = true) {
+      if (!elementsCache.recentPosts) return;
+      
+      const postsHtml = posts.map(post => `
+        <article class="bg-card border border-border rounded-lg p-6 hover:border-tactical-green/30 transition-colors">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-2">
+                ${post.is_pinned ? '<Pin className="w-4 h-4 text-yellow-500" />' : ''}
+                ${post.is_featured ? '<Star className="w-4 h-4 text-yellow-500" />' : ''}
+                <span class="px-2 py-1 text-xs rounded-full" style="background-color: ${post.category_color || '#4F9CF9'}20; color: ${post.category_color || '#4F9CF9'}">
+                  ${post.category_name || 'عام'}
+                </span>
+              </div>
+              
+              <h3 class="text-lg font-semibold text-foreground mb-2 cursor-pointer hover:text-tactical-green transition-colors post-title" data-post-id="${post.id}">
+                ${post.title}
+              </h3>
+              
+              <p class="text-muted-foreground text-sm mb-4 line-clamp-2">
+                ${post.content.substring(0, 200)}...
+              </p>
+              
+              <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <User className="w-4 h-4" />
+                  ${post.author_username || 'مجهول'}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Eye className="w-4 h-4" />
+                  ${post.view_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Heart className="w-4 h-4" />
+                  ${post.like_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <MessageSquare className="w-4 h-4" />
+                  ${post.comment_count || 0}
+                </span>
+                <span class="text-xs">
+                  ${formatDate(post.created_at)}
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join('');
+      
+      if (replace) {
+        elementsCache.recentPosts.innerHTML = postsHtml;
+      } else {
+        elementsCache.recentPosts.innerHTML += postsHtml;
+      }
+      
+      // Add click handlers for post titles
+      document.querySelectorAll('.post-title').forEach(title => {
+        title.addEventListener('click', () => {
+          const postId = title.getAttribute('data-post-id');
+          window.location.href = `/ar/forum/post/${postId}`;
+        });
+      });
+    }
+
+    // Fallback render functions
+    function renderFallbackCategories() {
+      const fallbackCategories = [
+        { id: 1, name: 'النقاشات العامة', description: 'نقاشات عامة حول اللعبة والمجتمع', icon: '💬', color: '#4F9CF9', topic_count: 85, comment_count: 420 },
+        { id: 2, name: 'الاستراتيجيات والتكتيكات', description: 'شارك استراتيجياتك وتعلم من الخبراء', icon: '🎯', color: '#06D6A0', topic_count: 92, comment_count: 568 },
+        { id: 3, name: 'البطولات والتحديات', description: 'أخبار البطولات والمنافسات', icon: '🏆', color: '#FFD166', topic_count: 32, comment_count: 189 },
+        { id: 4, name: 'المودز والخرائط', description: 'تحميل ومشاركة المودز والخرائط', icon: '🗺️', color: '#F72585', topic_count: 45, comment_count: 230 },
+        { id: 5, name: 'الدعم التقني', description: 'مساعدة في حل المشاكل التقنية', icon: '🔧', color: '#FF6B6B', topic_count: 68, comment_count: 320 }
+      ];
+      
+      renderCategories(fallbackCategories);
+    }
+
+    function renderFallbackPosts() {
+      const fallbackPosts = [
+        {
+          id: 1,
+          title: 'الدليل الشامل للعب مع الولايات المتحدة في 2024',
+          content: 'دليل متكامل يغطي جميع استراتيجيات الولايات المتحدة مع أحدث التحديثات والتكتيكات المتقدمة للوصول لأعلى المستويات التنافسية',
+          author_username: 'سيد أمريكا',
+          category_name: 'الاستراتيجيات والتكتيكات',
+          category_color: '#06D6A0',
+          view_count: 1250,
+          like_count: 45,
+          comment_count: 23,
+          is_pinned: true,
+          is_featured: true,
+          created_at: '2024-02-15 10:30:00'
+        },
+        {
+          id: 2,
+          title: 'بطولة الشرق الأوسط الكبرى - جوائز 5000$ 💰',
+          content: 'إعلان رسمي عن بطولة الشرق الأوسط الكبرى 2024 مع جوائز تصل إلى 5000 دولار والتسجيل مفتوح الآن',
+          author_username: 'إدارة البطولات',
+          category_name: 'البطولات والتحديات',
+          category_color: '#FFD166',
+          view_count: 890,
+          like_count: 67,
+          comment_count: 34,
+          is_pinned: true,
+          is_featured: true,
+          created_at: '2024-02-10 12:00:00'
+        }
+      ];
+      
+      renderPosts(fallbackPosts);
+    }
+
+    // Utility functions
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now - date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) return 'اليوم';
+      if (diffDays === 1) return 'أمس';
+      if (diffDays < 7) return `منذ ${diffDays} أيام`;
+      
+      return date.toLocaleDateString('ar-SA');
+    }
+
+    function populateCategoryFilter(categories) {
+      if (!elementsCache.categoryFilter) return;
+      
+      const options = categories.map(cat => 
+        `<option value="${cat.id}">${cat.name}</option>`
+      ).join('');
+      
+      elementsCache.categoryFilter.innerHTML = `
+        <option value="">جميع الأقسام</option>
+        ${options}
+      `;
+    }
+
+    function filterByCategory(categoryId) {
+      if (elementsCache.categoryFilter) {
+        elementsCache.categoryFilter.value = categoryId;
+      }
+      currentPage = 1;
+      fetchPosts(1, categoryId, elementsCache.sortPosts?.value || 'latest');
+    }
+
+    // Event handlers
+    function setupEventListeners() {
+      // Search functionality
+      if (elementsCache.searchInput) {
+        let searchTimeout;
+        elementsCache.searchInput.addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            currentPage = 1;
+            fetchPosts(1, elementsCache.categoryFilter?.value, elementsCache.sortPosts?.value, e.target.value);
+          }, 500);
+        });
+      }
+
+      // New post buttons
+      [elementsCache.newPostBtn, elementsCache.mobileNewPost].forEach(btn => {
+        if (btn) {
+          btn.addEventListener('click', () => {
+            window.location.href = '/ar/forum/create';
+          });
+        }
+      });
+
+      // Category filter
+      if (elementsCache.categoryFilter) {
+        elementsCache.categoryFilter.addEventListener('change', (e) => {
+          currentPage = 1;
+          fetchPosts(1, e.target.value, elementsCache.sortPosts?.value, elementsCache.searchInput?.value);
+        });
+      }
+
+      // Sort posts
+      if (elementsCache.sortPosts) {
+        elementsCache.sortPosts.addEventListener('change', (e) => {
+          currentPage = 1;
+          fetchPosts(1, elementsCache.categoryFilter?.value, e.target.value, elementsCache.searchInput?.value);
+        });
+      }
+
+      // Load more button
+      if (elementsCache.loadMoreBtn) {
+        elementsCache.loadMoreBtn.addEventListener('click', () => {
+          currentPage++;
+          fetchPosts(currentPage, elementsCache.categoryFilter?.value, elementsCache.sortPosts?.value, elementsCache.searchInput?.value);
+        });
+      }
+    }
+
+    // Initialize the forum page
+    document.addEventListener('DOMContentLoaded', async () => {
+      initializeElements();
+      setupEventListeners();
+      
+      // Load data
+      await Promise.all([
+        fetchForumStats(),
+        fetchCategories(),
+        fetchPosts()
+      ]);
+    });
+  </script>
+
+  <!-- Custom CSS for additional styling -->
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .post-title:hover {
+      text-decoration: underline;
+    }
+    
+    /* Loading animation */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .loading {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</BaseLayout>
